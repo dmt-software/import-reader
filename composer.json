@@ -1,0 +1,35 @@
+{
+  "name": "dmt-software/import-reader",
+  "description": "Read parts of a file/stream into a series of objects",
+  "keywords": ["import", "file", "stream", "reader", "iterator", "csv", "json", "xml"],
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Bas de Mes",
+      "email": "bas@dmt-software.nl"
+    }
+  ],
+  "require": {
+    "php": ">=7.4",
+    "ext-iconv": "*",
+    "ext-json": "*",
+    "ext-libxml": "*",
+    "ext-simplexml": "*",
+    "ext-xmlreader": "*",
+    "pcrov/jsonreader": "^1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "DMT\\Import\\Reader\\": "src/"
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.5"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "DMT\\Test\\Import\\Reader\\": "tests/"
+    }
+  }
+}
