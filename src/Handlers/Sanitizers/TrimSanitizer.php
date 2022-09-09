@@ -38,7 +38,7 @@ final class TrimSanitizer implements SanitizerInterface
         if (is_string($currentRow)) {
             $currentRow = call_user_func($method, $currentRow, $this->chars);
         } elseif (is_array($currentRow)) {
-            $currentRow = array_map($method, $currentRow, [$this->chars]);
+            $currentRow = array_map(fn($column) => call_user_func($method, $column, $this->chars), $currentRow);
         }
 
         return $currentRow;

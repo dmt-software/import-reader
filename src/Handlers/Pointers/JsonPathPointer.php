@@ -2,6 +2,7 @@
 
 namespace DMT\Import\Reader\Handlers\Pointers;
 
+use DMT\Import\Reader\Exceptions\ReaderReadException;
 use DMT\Import\Reader\Exceptions\UnreadableException;
 use pcrov\JsonReader\Exception;
 use pcrov\JsonReader\JsonReader;
@@ -21,7 +22,7 @@ final class JsonPathPointer implements PointerInterface
     /**
      * @param JsonReader $reader
      * @return void
-     * @throws Exception
+     * @throws ReaderReadException
      * @throws UnreadableException
      */
     public function setPointer($reader): void
@@ -41,7 +42,7 @@ final class JsonPathPointer implements PointerInterface
         }
 
         if ($reader->type() != JsonReader::ARRAY) {
-            throw new UnreadableException('Path not found');
+            throw new ReaderReadException('Path not found');
         }
 
         $reader->read();

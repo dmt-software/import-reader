@@ -3,6 +3,7 @@
 namespace DMT\Import\Reader\Handlers;
 
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
+use DMT\Import\Reader\Exceptions\ReaderReadException;
 
 interface HandlerInterface
 {
@@ -11,7 +12,7 @@ interface HandlerInterface
      *
      * @param int $offset The first line or part to read.
      * @return void
-     * @throws ExceptionInterface
+     * @throws ReaderReadException
      */
     public function setPointer(int $offset = 0): void;
 

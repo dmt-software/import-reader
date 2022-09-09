@@ -40,7 +40,7 @@ final class GenericToObjectDecorator implements DecoratorInterface
         }
 
         if (!is_object($currentRow) || $type === self::UNDEFINED_TYPE) {
-            throw new DecoratorApplyException('Type mismatch');
+            throw DecoratorApplyException::create('Type mismatch');
         }
 
         return $currentRow;

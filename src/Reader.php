@@ -4,8 +4,11 @@ namespace DMT\Import\Reader;
 
 use DMT\Import\Reader\Decorators\DecoratorInterface;
 use DMT\Import\Reader\Decorators\GenericToObjectDecorator;
+use DMT\Import\Reader\Exceptions\DecoratorApplyException;
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
+use DMT\Import\Reader\Exceptions\ReaderReadException;
 use DMT\Import\Reader\Handlers\HandlerInterface;
+use function PHPUnit\Framework\classHasAttribute;
 
 class Reader
 {
@@ -42,10 +45,15 @@ class Reader
         }
 
         foreach ($this->handler->read() as $position => $currentRow) {
-            foreach ($this->decorators as $decorator) {
-                $currentRow = $decorator->apply($currentRow);
+            try {
+                foreach ($this->decorators as $decorator) {
+                    $currentRow = $decorator->apply($currentRow);
+                }
+
+                yield $position + $offset => $currentRow;
+            } catch (DecoratorApplyException $exception) {
+                trigger_error('Skipped row ' . ($position + $offset), E_USER_WARNING);
             }
-            yield $position => $currentRow;
         }
     }
 }
