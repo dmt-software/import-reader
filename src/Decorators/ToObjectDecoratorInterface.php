@@ -4,14 +4,14 @@ namespace DMT\Import\Reader\Decorators;
 
 use DMT\Import\Reader\Exceptions\DecoratorApplyException;
 
-interface DecoratorInterface
+interface ToObjectDecoratorInterface extends DecoratorInterface
 {
     /**
      * Apply the decorator to the row.
      *
-     * @param object $currentRow The row received from an earlier applied decorator.
+     * @param string|array $currentRow The row received from the reader.
      * @return object The decorated row.
      * @throws DecoratorApplyException
      */
-    public function apply(object $currentRow): object;
+    public function apply($currentRow): object;
 }

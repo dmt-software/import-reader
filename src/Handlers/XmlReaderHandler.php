@@ -3,11 +3,15 @@
 namespace DMT\Import\Reader\Handlers;
 
 use DMT\Import\Reader\Exceptions\ReaderReadException;
-use DMT\Import\Reader\Exceptions\UnreadableException;
 use DMT\Import\Reader\Handlers\Pointers\PointerInterface;
 use DMT\Import\Reader\Handlers\Sanitizers\SanitizerInterface;
 use XMLReader;
 
+/**
+ * Xml reader handler.
+ *
+ * This class handles the reading of a file into chunks of xml.
+ */
 final class XmlReaderHandler implements HandlerInterface
 {
     private XMLReader $reader;
@@ -30,40 +34,54 @@ final class XmlReaderHandler implements HandlerInterface
         $this->sanitizers = $sanitizers;
     }
 
-    public function setPointer(int $offset = 0): void
+    /**
+     * Set file pointer.
+     *
+     * This sets the file to a specific element within the xml.
+     *
+     * @param int $skip The amount of elements to skip.
+     *
+     * @throws ReaderReadException When the end of the file is reached.
+     */
+    public function setPointer(int $skip = 0): void
     {
         $this->pointer->setPointer($this->reader);
 
-        $position = -1;
-        while ($position <= $offset - 1) {
-            if (($data = $this->read()) === null) {
+        $position = 0;
+        while ($position++ < $skip) {
+            if (!$this->reader->readOuterXml()) {
                 throw new ReaderReadException('End of file reached');
             }
-            [$position => $data] = $data;
+            $this->reader->next($this->reader->localName);
         }
     }
 
+    /**
+     * Read the file.
+     *
+     * During the reading process the handler might sanitize the xml strings retrieved from the file.
+     *
+     * @return iterable
+     *
+     * @see SanitizerInterface
+     */
     public function read(): iterable
     {
         $processed = 0;
         do {
             if (!$xml = $this->reader->readOuterXml()) {
-                throw new UnreadableException('XML can not be read');
+                throw new ReaderReadException('XML can not be read');
             }
-            yield $processed++ => $this->sanitize($xml);
+
+            foreach ($this->sanitizers as $sanitizer) {
+                $xml = $sanitizer->sanitize($xml);
+            }
+
+            yield ++$processed => $xml;
 
             if ($this->reader->next($this->reader->localName) === false) {
                 break;
             }
         } while (true);
-    }
-
-    private function sanitize(string $currentRow): string
-    {
-        foreach ($this->sanitizers as $sanitizer) {
-            $currentRow = $sanitizer->sanitize($currentRow);
-        }
-
-        return $currentRow;
     }
 }

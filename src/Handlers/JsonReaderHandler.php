@@ -30,16 +30,18 @@ final class JsonReaderHandler implements HandlerInterface
     }
 
 
-    public function setPointer(int $offset = 0): void
+    public function setPointer(int $skip = 0): void
     {
         $this->pointer->setPointer($this->reader);
 
-        $position = -1;
-        while ($position <= $offset - 1) {
-            if (($data = $this->read()) === null) {
+        $depth = max($this->reader->depth() -1, 0);
+        $position = 0;
+        while (++$position <= $skip) {
+            $this->reader->next();
+
+            if ($this->reader->depth() < $depth || !$this->reader->value()) {
                 throw new ReaderReadException('End of file reached');
             }
-            [$position => $data] = $data;
         }
     }
 
@@ -49,16 +51,13 @@ final class JsonReaderHandler implements HandlerInterface
         $processed = 0;
 
         do {
-            yield $processed++ => $this->sanitize($this->reader->value());
+            $json = json_encode($this->reader->value());
+
+            foreach ($this->sanitizers as $sanitizer) {
+                $json = $sanitizer->sanitize($json);
+            }
+
+            yield ++$processed => $json;
         } while ($this->reader->next() && $this->reader->depth() > $depth);
-    }
-
-    private function sanitize(string $currentRow): string
-    {
-        foreach ($this->sanitizers as $sanitizer) {
-            $currentRow = $sanitizer->sanitize($currentRow);
-        }
-
-        return $currentRow;
     }
 }

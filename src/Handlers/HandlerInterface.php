@@ -10,11 +10,11 @@ interface HandlerInterface
     /**
      * Set the pointer to the right part of the file.
      *
-     * @param int $offset The first line or part to read.
+     * @param int $skip The amount ot items to skip.
      * @return void
      * @throws ReaderReadException
      */
-    public function setPointer(int $offset = 0): void;
+    public function setPointer(int $skip = 0): void;
 
     /**
      * Read through a file.

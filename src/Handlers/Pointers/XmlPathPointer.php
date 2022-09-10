@@ -3,7 +3,6 @@
 namespace DMT\Import\Reader\Handlers\Pointers;
 
 use DMT\Import\Reader\Exceptions\ReaderReadException;
-use DMT\Import\Reader\Exceptions\UnreadableException;
 use XMLReader;
 
 /**
@@ -48,7 +47,6 @@ class XmlPathPointer implements PointerInterface
      * @param XMLReader $reader The file reader to use.
      * @return void
      * @throws ReaderReadException
-     * @throws UnreadableException
      */
     public function setPointer($reader): void
     {

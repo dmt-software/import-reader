@@ -1,0 +1,27 @@
+<cars>
+    <brands>3</brands>
+    <types>8</types>
+    <car>
+        <make>BMW</make>
+        <models>
+            <model>320</model>
+            <model>X3</model>
+            <model>X5</model>
+        </models>
+    </car>
+    <car>
+        <make>Fiat</make>
+        <models>
+            <model>500</model>
+            <model>Panda</model>
+        </models>
+    </car>
+    <car>
+        <make>Ford</make>
+        <models>
+            <model>Fiësta</model>
+            <model>Focus</model>
+            <model>Mustang</model>
+        </models>
+    </car>
+</cars>

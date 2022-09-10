@@ -17,7 +17,7 @@ use DMT\Import\Reader\Exceptions\DecoratorApplyException;
  *
  * Custom type of readers should use their own Decorator to provide a collection of objects.
  */
-final class GenericToObjectDecorator implements DecoratorInterface
+final class GenericToObjectDecorator implements ToObjectDecoratorInterface
 {
     public const TYPE_XML = 'xml';
     public const TYPE_CSV = 'csv';

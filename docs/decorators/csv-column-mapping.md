@@ -38,3 +38,7 @@ $mapping3 = [
    3 => 'address', // replaces col4 with address
 ];
 ```
+
+## Error handling
+
+When a column is mapped but not found in the row that row is skipped by the reader.

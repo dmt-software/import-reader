@@ -1,0 +1,27 @@
+[
+  {
+    "license": "open source",
+    "languages": [
+      {
+        "name": "javascript",
+        "since": 1995,
+        "by": "Brendan Eich"
+      },
+      {
+        "name": "php",
+        "since": 1995,
+        "by": "Rasmus Lerdorf"
+      }
+    ]
+  },
+  {
+    "license": "closed source",
+    "languages": [
+      {
+        "name": "C#",
+        "since": 2000,
+        "by": "Anders Hejlsberg"
+      }
+    ]
+  }
+]

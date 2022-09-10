@@ -32,15 +32,15 @@ final class CsvReaderHandler implements HandlerInterface
     /**
      * Set file pointer.
      *
-     * This sets the file to a specific row.
+     * This sets the file pointer to a specific row.
      *
-     * @param int $offset The starting row.
+     * @param int $skip The rows to skip.
      *
      * @throws ReaderReadException When the end of the file is reached.
      */
-    public function setPointer(int $offset = 0): void
+    public function setPointer(int $skip = 0): void
     {
-        $this->reader->seek($offset);
+        $this->reader->seek($skip);
 
         if ($this->reader->eof()) {
             throw new ReaderReadException('End of file reached');
@@ -48,10 +48,9 @@ final class CsvReaderHandler implements HandlerInterface
     }
 
     /**
-     * Read throw the file.
+     * Read the file.
      *
      * Empty csv lines will be ignored.
-     *
      * During the reading process the handler might sanitize the rows retrieved from the file.
      *
      * @return iterable
