@@ -3,7 +3,6 @@
 namespace DMT\Import\Reader\Decorators\Csv;
 
 use ArrayObject;
-use DMT\Import\Reader\Decorators\DecoratorInterface;
 use DMT\Import\Reader\Decorators\GenericToObjectDecorator;
 use DMT\Import\Reader\Exceptions\DecoratorApplyException;
 
@@ -18,7 +17,7 @@ use DMT\Import\Reader\Exceptions\DecoratorApplyException;
  *
  * @see GenericToObjectDecorator
  */
-class ColumnMappingDecorator implements DecoratorInterface
+class ColumnMappingDecorator implements CsvDecoratorInterface
 {
     private array $mapping = [];
 
