@@ -3,7 +3,7 @@
 namespace DMT\Test\Import\Reader;
 
 use DMT\Import\Reader\Decorators\GenericToObjectDecorator;
-use DMT\Import\Reader\Decorators\Json\ToDataTransferObjectDecorator;
+use DMT\Import\Reader\Decorators\Json\JsonToObjectDecorator;
 use DMT\Import\Reader\Handlers\JsonReaderHandler;
 use DMT\Import\Reader\Handlers\Pointers\JsonPathPointer;
 use DMT\Import\Reader\Handlers\Sanitizers\TrimSanitizer;
@@ -67,7 +67,7 @@ class JsonReaderTest extends TestCase
                 new TrimSanitizer()
             ),
             new GenericToObjectDecorator(),
-            new ToDataTransferObjectDecorator(Language::class, [
+            new JsonToObjectDecorator(Language::class, [
                 'name' => 'name',
                 'since' => 'since',
                 'by' => 'author',

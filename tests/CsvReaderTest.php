@@ -4,7 +4,7 @@ namespace DMT\Test\Import\Reader;
 
 use ArrayObject;
 use DMT\Import\Reader\Decorators\Csv\ColumnMappingDecorator;
-use DMT\Import\Reader\Decorators\Csv\ToDataTransferObjectDecorator;
+use DMT\Import\Reader\Decorators\Csv\CsvToObjectDecorator;
 use DMT\Import\Reader\Decorators\GenericToObjectDecorator;
 use DMT\Import\Reader\Handlers\CsvReaderHandler;
 use DMT\Import\Reader\Handlers\Sanitizers\TrimSanitizer;
@@ -75,7 +75,7 @@ class CsvReaderTest extends TestCase
                 new TrimSanitizer('.', TrimSanitizer::TRIM_RIGHT)
             ),
             new GenericToObjectDecorator(),
-            new ToDataTransferObjectDecorator(Plane::class, [
+            new CsvToObjectDecorator(Plane::class, [
                 'col1' => 'type',
                 'col2' => 'speed',
                 'col3' => 'seats',

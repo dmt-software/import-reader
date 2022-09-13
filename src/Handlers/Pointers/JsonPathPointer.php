@@ -40,7 +40,7 @@ final class JsonPathPointer implements PointerInterface
             throw new ReaderReadException('Unable to read');
         }
 
-        if ($reader->type() != JsonReader::ARRAY) {
+        if ($reader->type() != JsonReader::ARRAY && $reader->type() != JsonReader::OBJECT) {
             throw new ReaderReadException('Path not found');
         }
 
