@@ -15,9 +15,8 @@ class JsonToObjectDecoratorTest extends TestCase
      * @dataProvider provideRow
      *
      * @param stdClass $currentRow
+     * @param array $mapping
      * @param Language $expected
-     *
-     * @return void
      */
     public function testDecorate(stdClass $currentRow, array $mapping, Language $expected): void
     {

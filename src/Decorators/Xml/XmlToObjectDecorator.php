@@ -2,7 +2,6 @@
 
 namespace DMT\Import\Reader\Decorators\Xml;
 
-use Decorators\Xml\XmlDecoratorInterface;
 use DMT\Import\Reader\Exceptions\DecoratorApplyException;
 use Error;
 use ReflectionClass;
@@ -37,12 +36,21 @@ class XmlToObjectDecorator implements XmlDecoratorInterface
      */
     public function apply(SimpleXMLElement $currentRow): object
     {
-        $entity = (new ReflectionClass($this->fqcn))->newInstanceWithoutConstructor();
+        $object = new ReflectionClass($this->fqcn);
+        $entity = $object->newInstanceWithoutConstructor();
 
         foreach ($this->mapping as $key => $property) {
             try {
                 if (property_exists($entity, $property) || method_exists($entity, '__set')) {
-                    $entity->$property = $currentRow->xpath($key);
+                    $value = $currentRow->xpath($key);
+
+                    if ($object->getProperty($property)->getType()->getName() == 'array') {
+                        $value = $this->normalizeNodeList($value);
+                    } else {
+                        $value = $value ? strval($value[0]) : null;
+                    }
+
+                    $entity->$property = $value;
                 }
             } catch (Error $e) {
                 throw DecoratorApplyException::create('Can not set %s on %s', $property, $this->fqcn);
@@ -50,5 +58,22 @@ class XmlToObjectDecorator implements XmlDecoratorInterface
         }
 
         return $entity;
+    }
+
+    private function normalizeNodeList($value): array
+    {
+        if (!is_array($value) || count($value) == 0) {
+            return [];
+        }
+
+        if (count($value[0]->children()) > 0) {
+            foreach ($value as &$elem) {
+                $elem = array_map('strval', $elem->xpath('*'));
+            }
+        } else {
+            $value = array_map('strval', $value);
+        }
+
+        return $value;
     }
 }

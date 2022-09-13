@@ -1,6 +1,6 @@
 <?php
 
-namespace Decorators\Xml;
+namespace DMT\Import\Reader\Decorators\Xml;
 
 use DMT\Import\Reader\Decorators\DecoratorInterface;
 use DMT\Import\Reader\Exceptions\DecoratorApplyException;

@@ -16,8 +16,6 @@ class CsvToObjectDecoratorTest extends TestCase
      *
      * @param ArrayObject $currentRow
      * @param Language $expected
-     *
-     * @return void
      */
     public function testDecorate(ArrayObject $currentRow, array $mapping, Language $expected): void
     {

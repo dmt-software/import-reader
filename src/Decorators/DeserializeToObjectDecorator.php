@@ -20,16 +20,18 @@ class DeserializeToObjectDecorator implements ToObjectDecoratorInterface
 
     private SerializerInterface $serializer;
     private string $fqcn;
-    private string $type;
+    private ?string $type;
 
     /**
      * @param SerializerInterface $serializer
      * @param string $fqcn
+     * @param string|null $format
      */
-    public function __construct(SerializerInterface $serializer, string $fqcn)
+    public function __construct(SerializerInterface $serializer, string $fqcn, string $format = null)
     {
         $this->serializer = $serializer;
         $this->fqcn = $fqcn;
+        $this->type = $format;
     }
 
     /**
