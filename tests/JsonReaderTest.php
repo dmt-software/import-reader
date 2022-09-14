@@ -4,12 +4,9 @@ namespace DMT\Test\Import\Reader;
 
 use DMT\Import\Reader\Decorators\GenericToObjectDecorator;
 use DMT\Import\Reader\Decorators\Json\JsonToObjectDecorator;
-use DMT\Import\Reader\Handlers\JsonReaderHandler;
-use DMT\Import\Reader\Handlers\Pointers\JsonPathPointer;
 use DMT\Import\Reader\Handlers\Sanitizers\TrimSanitizer;
 use DMT\Import\Reader\Reader;
 use DMT\Test\Import\Reader\Fixtures\Language;
-use pcrov\JsonReader\JsonReader;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -25,15 +22,8 @@ class JsonReaderTest extends TestCase
      */
     public function testImportJson(string $file)
     {
-        $jsonReader = new JsonReader();
-        $jsonReader->open(__DIR__ . '/files/programming.json');
-
         $reader = new Reader(
-            new JsonReaderHandler(
-                $jsonReader,
-                new JsonPathPointer(),
-                new TrimSanitizer()
-            ),
+            $this->handlerFactory->createJsonReaderHandler($file, [], new TrimSanitizer()),
             new GenericToObjectDecorator()
         );
 
@@ -57,13 +47,10 @@ class JsonReaderTest extends TestCase
 
     public function testReadJsonIntoDataTransferObjects()
     {
-        $jsonReader = new JsonReader();
-        $jsonReader->open(__DIR__ . '/files/programming.json');
-
         $reader = new Reader(
-            new JsonReaderHandler(
-                $jsonReader,
-                new JsonPathPointer('.languages'),
+            $this->handlerFactory->createJsonReaderHandler(
+                __DIR__ . '/files/programming.json',
+                ['path' => '.languages'],
                 new TrimSanitizer()
             ),
             new GenericToObjectDecorator(),

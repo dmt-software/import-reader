@@ -6,12 +6,10 @@ use ArrayObject;
 use DMT\Import\Reader\Decorators\Csv\ColumnMappingDecorator;
 use DMT\Import\Reader\Decorators\Csv\CsvToObjectDecorator;
 use DMT\Import\Reader\Decorators\GenericToObjectDecorator;
-use DMT\Import\Reader\Handlers\CsvReaderHandler;
 use DMT\Import\Reader\Handlers\Sanitizers\TrimSanitizer;
 use DMT\Import\Reader\Reader;
 use DMT\Test\Import\Reader\Fixtures\Plane;
 use PHPUnit\Framework\TestCase;
-use SplFileObject;
 
 class CsvReaderTest extends TestCase
 {
@@ -26,10 +24,7 @@ class CsvReaderTest extends TestCase
     public function testImportCsv(string $file): void
     {
         $reader = new Reader(
-            new CsvReaderHandler(
-                new SplFileObject($file),
-                new TrimSanitizer('.', TrimSanitizer::TRIM_RIGHT)
-            ),
+            $this->handlerFactory->createCsvReaderHandler($file, [], new TrimSanitizer('.', TrimSanitizer::TRIM_RIGHT)),
             new GenericToObjectDecorator(),
             new ColumnMappingDecorator(
                 [
@@ -70,8 +65,9 @@ class CsvReaderTest extends TestCase
     public function testReadCsvToDataTransferObjects()
     {
         $reader = new Reader(
-            new CsvReaderHandler(
-                new SplFileObject(__DIR__ . '/files/planes.csv'),
+            $this->handlerFactory->createCsvReaderHandler(
+                __DIR__ . '/files/planes.csv',
+                [],
                 new TrimSanitizer('.', TrimSanitizer::TRIM_RIGHT)
             ),
             new GenericToObjectDecorator(),

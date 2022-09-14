@@ -8,6 +8,7 @@ use DMT\Import\Reader\Exceptions\ExceptionInterface;
 use DMT\Test\Import\Reader\Fixtures\Language;
 use DMT\Test\Import\Reader\Fixtures\Program;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use SimpleXMLElement;
 
 class XmlToObjectDecoratorTest extends TestCase
@@ -40,15 +41,15 @@ class XmlToObjectDecoratorTest extends TestCase
      * @dataProvider provideFailure
      *
      * @param SimpleXMLElement $currentRow
-     * @param ExceptionInterface $exception
+     * @param ExceptionInterface|RuntimeException $exception
      */
     public function testFailure(SimpleXMLElement $currentRow, ExceptionInterface $exception): void
     {
         $this->expectExceptionObject($exception);
 
         $decorator = new XmlToObjectDecorator(
-            Language::class,
-            ['by' => 'author', 'year' => 'since'],
+            Program::class,
+            ['license' => 'license', 'language' => 'languages'],
         );
 
         $decorator->apply($currentRow);
@@ -60,12 +61,12 @@ class XmlToObjectDecoratorTest extends TestCase
 
         return [
             'set null on property type string' => [
-                simplexml_load_string('<languages/>'),
-                DecoratorApplyException::create($message, 'author', Language::class),
+                simplexml_load_string('<program/>'),
+                DecoratorApplyException::create($message, 'license', Program::class),
             ],
-            'set null on property type int' => [
-                simplexml_load_string('<languages><by/></languages>'),
-                DecoratorApplyException::create($message, 'since', Language::class),
+            'set null on property type array' => [
+                simplexml_load_string('<program><license/></program>'),
+                DecoratorApplyException::create($message, 'languages', Program::class),
             ],
         ];
     }
@@ -102,8 +103,7 @@ class XmlToObjectDecoratorTest extends TestCase
                 <ns1:name>javascript</ns1:name>
                 <ns1:year>1995</ns1:year>
                 <ns1:by>Brendan Eich</ns1:by>
-            </language>'
-        );
+            </language>');
         $mapping = [
             '//*[local-name()="name"]' => 'name',
             '*[local-name()="year"]' => 'since',
@@ -126,8 +126,7 @@ class XmlToObjectDecoratorTest extends TestCase
                 <license>open source</license>
                 <language>javascript</language>
                 <language>php</language>
-            </program>'
-        );
+            </program>');
         $mapping = ['license' => 'license', 'language' => 'languages'];
         $expected = new Program('open source', ['javascript', 'php']);
 
@@ -148,11 +147,11 @@ class XmlToObjectDecoratorTest extends TestCase
                     <language><name>javascript</name><since>1995</since><by>Brendan Eich</by></language>
                     <language><name>php</name><since>1995</since><by>Rasmus Lerdorf</by></language>
                 </languages>
-            </program>'
-        );
+            </program>');
         $mapping = ['license' => 'license', 'languages/language' => 'languages'];
         $expected = new Program(
-            'open source', [
+            'open source',
+            [
                 ['javascript', '1995', 'Brendan Eich'],
                 ['php', '1995', 'Rasmus Lerdorf'],
             ]

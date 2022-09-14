@@ -3,13 +3,10 @@
 namespace DMT\Test\Import\Reader;
 
 use DMT\Import\Reader\Decorators\GenericToObjectDecorator;
-use DMT\Import\Reader\Handlers\Pointers\XmlPathPointer;
 use DMT\Import\Reader\Handlers\Sanitizers\EncodingSanitizer;
-use DMT\Import\Reader\Handlers\XmlReaderHandler;
 use DMT\Import\Reader\Reader;
 use PHPUnit\Framework\TestCase;
 use SimpleXMLElement;
-use XMLReader;
 
 class XmlReaderTest extends TestCase
 {
@@ -24,9 +21,9 @@ class XmlReaderTest extends TestCase
     public function testImportXml(string $file): void
     {
         $reader = new Reader(
-            new XmlReaderHandler(
-                XMLReader::open($file, 'UTF-8'),
-                new XmlPathPointer('cars/car'),
+            $this->handlerFactory->createXmlReaderHandler(
+                $file,
+                ['encoding' => 'UTF-8', 'path' => 'cars/car'],
                 new EncodingSanitizer('UTF-8', 'ASCII//TRANSLIT')
             ),
             new GenericToObjectDecorator()

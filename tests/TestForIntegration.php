@@ -3,6 +3,7 @@
 namespace DMT\Test\Import\Reader;
 
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
+use DMT\Import\Reader\Handlers\HandlerFactory;
 use Psr\Log\LoggerInterface;
 use Psr\Log\Test\TestLogger;
 
@@ -11,6 +12,7 @@ use Psr\Log\Test\TestLogger;
  */
 trait TestForIntegration
 {
+    protected HandlerFactory $handlerFactory;
     private LoggerInterface $logger;
     private $originalErrorHandler = null;
 
@@ -19,6 +21,7 @@ trait TestForIntegration
      */
     public function setUp(): void
     {
+        $this->handlerFactory = new HandlerFactory();
         $this->logger = new TestLogger();
         $this->originalErrorHandler = set_error_handler(
             function ($code, $message, $file, $line, $context) {
@@ -28,7 +31,8 @@ trait TestForIntegration
                 $this->logger->warning(sprintf('%s: %s', $message, $exception->getMessage()));
 
                 return true;
-            }, E_USER_WARNING
+            },
+            E_USER_WARNING
         );
     }
 

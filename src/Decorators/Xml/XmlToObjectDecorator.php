@@ -60,10 +60,10 @@ class XmlToObjectDecorator implements XmlDecoratorInterface
         return $entity;
     }
 
-    private function normalizeNodeList($value): array
+    private function normalizeNodeList($value): ?array
     {
         if (!is_array($value) || count($value) == 0) {
-            return [];
+            return null;
         }
 
         if (count($value[0]->children()) > 0) {
