@@ -1,8 +1,7 @@
 <?php
 
-namespace Decorators;
+namespace DMT\Import\Reader\Decorators;
 
-use DMT\Import\Reader\Decorators\ToObjectDecoratorInterface;
 use DMT\Import\Reader\Exceptions\DecoratorApplyException;
 use JMS\Serializer\Exception\Exception;
 use JMS\Serializer\SerializerInterface;

@@ -2,9 +2,19 @@
 
 namespace DMT\Test\Import\Reader\Fixtures;
 
+use JMS\Serializer\Annotation as JMS;
+
+/**
+ * @property string $name
+ * @property int $since
+ * @property string $author
+ */
 class Language
 {
     /**
+     * @JMS\XmlElement(cdata=false)
+     * @JMS\Type("string")
+     *
      * The programming language name.
      *
      * @var string
@@ -12,6 +22,9 @@ class Language
     protected string $name;
 
     /**
+     * @JMS\XmlElement(cdata=false)
+     * @JMS\Type("int")
+     *
      * The year it was first released.
      *
      * @var int
@@ -19,6 +32,10 @@ class Language
     protected int $since;
 
     /**
+     * @JMS\XmlElement(cdata=false)
+     * @JMS\SerializedName("by")
+     * @JMS\Type("string")
+     *
      * The author of the language.
      *
      * @var string
@@ -49,5 +66,10 @@ class Language
         if (property_exists($this, $property)) {
             $this->$property = $value;
         }
+    }
+
+    public function __get(string $property)
+    {
+        return property_exists($this, $property) ? $this->$property : null;
     }
 }
