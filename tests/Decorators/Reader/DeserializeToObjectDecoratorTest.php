@@ -1,8 +1,8 @@
 <?php
 
-namespace DMT\Test\Import\Reader\Decorators;
+namespace DMT\Test\Import\Reader\Decorators\Reader;
 
-use DMT\Import\Reader\Decorators\DeserializeToObjectDecorator;
+use DMT\Import\Reader\Decorators\Reader\DeserializeRowDecorator;
 use DMT\Test\Import\Reader\Fixtures\Language;
 use DMT\Test\Import\Reader\Fixtures\Program;
 use JMS\Serializer\SerializerBuilder;
@@ -17,7 +17,7 @@ class DeserializeToObjectDecoratorTest extends TestCase
      */
     public function testDecorate($currentRow): void
     {
-        $decorator = new DeserializeToObjectDecorator(SerializerBuilder::create()->build(), Program::class);
+        $decorator = new DeserializeRowDecorator(SerializerBuilder::create()->build(), Program::class);
         $program = $decorator->apply($currentRow);
 
         $this->assertInstanceOf(Program::class, $program);

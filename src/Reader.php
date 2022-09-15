@@ -3,12 +3,10 @@
 namespace DMT\Import\Reader;
 
 use DMT\Import\Reader\Decorators\DecoratorInterface;
-use DMT\Import\Reader\Decorators\GenericToObjectDecorator;
+use DMT\Import\Reader\Decorators\Reader\GenericReaderDecorator;
 use DMT\Import\Reader\Exceptions\DecoratorApplyException;
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
-use DMT\Import\Reader\Exceptions\ReaderReadException;
 use DMT\Import\Reader\Handlers\HandlerInterface;
-use function PHPUnit\Framework\classHasAttribute;
 
 class Reader
 {
@@ -41,7 +39,7 @@ class Reader
         $this->handler->setPointer($offset);
 
         if (count($this->decorators) === 0) {
-            $this->decorators = [new GenericToObjectDecorator()];
+            $this->decorators = [new GenericReaderDecorator()];
         }
 
         foreach ($this->handler->read() as $position => $currentRow) {

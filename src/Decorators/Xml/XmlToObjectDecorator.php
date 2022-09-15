@@ -2,13 +2,14 @@
 
 namespace DMT\Import\Reader\Decorators\Xml;
 
+use DMT\Import\Reader\Decorators\DecoratorInterface;
 use DMT\Import\Reader\Exceptions\DecoratorApplyException;
 use Error;
 use ReflectionClass;
 use ReflectionException;
 use SimpleXMLElement;
 
-class XmlToObjectDecorator implements XmlDecoratorInterface
+class XmlToObjectDecorator implements DecoratorInterface
 {
     private string $fqcn;
     private array $mapping;
@@ -28,13 +29,13 @@ class XmlToObjectDecorator implements XmlDecoratorInterface
      *
      * This tries to initiate and populate a DataTransferObject.
      *
-     * @param SimpleXMLElement $currentRow The current csv row.
+     * @param SimpleXMLElement|object $currentRow The current csv row.
      *
      * @return object Instance of an object according to type stored in fqcn.
      * @throws DecoratorApplyException When the initialization of the object failed.
      * @throws ReflectionException
      */
-    public function apply(SimpleXMLElement $currentRow): object
+    public function apply(object $currentRow): object
     {
         $object = new ReflectionClass($this->fqcn);
         $entity = $object->newInstanceWithoutConstructor();

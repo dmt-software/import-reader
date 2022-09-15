@@ -3,7 +3,7 @@
 namespace Decorators;
 
 use ArrayObject;
-use DMT\Import\Reader\Decorators\GenericToObjectDecorator;
+use DMT\Import\Reader\Decorators\Reader\GenericReaderDecorator;
 use DMT\Import\Reader\Exceptions\DecoratorApplyException;
 use PHPUnit\Framework\TestCase;
 
@@ -16,9 +16,9 @@ class GenericToObjectDecoratorTest extends TestCase
      * @param object $expected
      * @return void
      */
-    public function testApply($row, object $expected): void
+    public function testDecorate($row, object $expected): void
     {
-        $decorator = new GenericToObjectDecorator();
+        $decorator = new GenericReaderDecorator();
 
         $this->assertEquals($expected, $decorator->apply($row));
     }
@@ -47,7 +47,7 @@ class GenericToObjectDecoratorTest extends TestCase
     {
         $this->expectExceptionObject($exception);
 
-        $decorator = new GenericToObjectDecorator();
+        $decorator = new GenericReaderDecorator();
         $decorator->apply($row);
     }
 

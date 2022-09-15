@@ -1,8 +1,9 @@
 <?php
 
-namespace DMT\Import\Reader\Decorators;
+namespace DMT\Import\Reader\Decorators\Reader;
 
 use ArrayObject;
+use DMT\Import\Reader\Decorators\ReaderDecoratorInterface;
 use DMT\Import\Reader\Exceptions\DecoratorApplyException;
 
 /**
@@ -17,7 +18,7 @@ use DMT\Import\Reader\Exceptions\DecoratorApplyException;
  *
  * Custom type of readers should use their own Decorator to provide a collection of objects.
  */
-final class GenericToObjectDecorator implements ToObjectDecoratorInterface
+final class GenericReaderDecorator implements ReaderDecoratorInterface
 {
     public const TYPE_XML = 'xml';
     public const TYPE_CSV = 'csv';

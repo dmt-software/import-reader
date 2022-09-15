@@ -3,6 +3,7 @@
 namespace DMT\Import\Reader\Decorators\Csv;
 
 use ArrayObject;
+use DMT\Import\Reader\Decorators\DecoratorInterface;
 use DMT\Import\Reader\Exceptions\DecoratorApplyException;
 use Error;
 use ReflectionClass;
@@ -11,7 +12,7 @@ use ReflectionException;
 /**
  * Decorator to transform a row into a Data Transfer or a Value Object.
  */
-class CsvToObjectDecorator implements CsvDecoratorInterface
+class CsvToObjectDecorator implements DecoratorInterface
 {
     private string $fqcn;
     private array $mapping;
@@ -37,7 +38,7 @@ class CsvToObjectDecorator implements CsvDecoratorInterface
      * @throws DecoratorApplyException When the initialization of the object failed.
      * @throws ReflectionException
      */
-    public function apply(ArrayObject $currentRow): object
+    public function apply(object $currentRow): object
     {
         $entity = (new ReflectionClass($this->fqcn))->newInstanceWithoutConstructor();
 

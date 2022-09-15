@@ -3,7 +3,8 @@
 namespace DMT\Import\Reader\Decorators\Csv;
 
 use ArrayObject;
-use DMT\Import\Reader\Decorators\GenericToObjectDecorator;
+use DMT\Import\Reader\Decorators\DecoratorInterface;
+use DMT\Import\Reader\Decorators\Reader\GenericReaderDecorator;
 use DMT\Import\Reader\Exceptions\DecoratorApplyException;
 
 /**
@@ -15,9 +16,9 @@ use DMT\Import\Reader\Exceptions\DecoratorApplyException;
  * The column mapping can be an associative array where the keys are named with col{n} and their new column name or
  * a normal array where the columns are replaced based on their index.
  *
- * @see GenericToObjectDecorator
+ * @see GenericReaderDecorator
  */
-class ColumnMappingDecorator implements CsvDecoratorInterface
+class ColumnMappingDecorator implements DecoratorInterface
 {
     private array $mapping = [];
 

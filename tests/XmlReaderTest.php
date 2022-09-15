@@ -2,7 +2,7 @@
 
 namespace DMT\Test\Import\Reader;
 
-use DMT\Import\Reader\Decorators\GenericToObjectDecorator;
+use DMT\Import\Reader\Decorators\Reader\GenericReaderDecorator;
 use DMT\Import\Reader\Handlers\Sanitizers\EncodingSanitizer;
 use DMT\Import\Reader\Reader;
 use PHPUnit\Framework\TestCase;
@@ -26,7 +26,7 @@ class XmlReaderTest extends TestCase
                 ['encoding' => 'UTF-8', 'path' => 'cars/car'],
                 new EncodingSanitizer('UTF-8', 'ASCII//TRANSLIT')
             ),
-            new GenericToObjectDecorator()
+            new GenericReaderDecorator()
         );
 
         foreach ($reader->read(1) as $row => $car) {
