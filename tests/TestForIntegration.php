@@ -14,7 +14,6 @@ trait TestForIntegration
 {
     protected HandlerFactory $handlerFactory;
     private LoggerInterface $logger;
-    private $originalErrorHandler = null;
 
     /**
      * @group integration
@@ -23,10 +22,10 @@ trait TestForIntegration
     {
         $this->handlerFactory = new HandlerFactory();
         $this->logger = new TestLogger();
-        $this->originalErrorHandler = set_error_handler(
+        set_error_handler(
             function ($code, $message, $file, $line, $context) {
                 /** @var ExceptionInterface $exception */
-                $exception = $context['exception'];
+                $exception = $context['exception'] ?? new \Exception();
 
                 $this->logger->warning(sprintf('%s: %s', $message, $exception->getMessage()));
 
@@ -38,6 +37,6 @@ trait TestForIntegration
 
     public function tearDown(): void
     {
-        set_error_handler($this->originalErrorHandler);
+        restore_error_handler();
     }
 }
