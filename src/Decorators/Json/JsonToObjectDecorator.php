@@ -41,7 +41,7 @@ class JsonToObjectDecorator implements DecoratorInterface
 
         foreach ($this->mapping as $key => $property) {
             try {
-                if (!property_exists($entity, $property) && method_exists($entity, '__set')) {
+                if (!property_exists($entity, $property) && !method_exists($entity, '__set')) {
                     continue;
                 }
                 $value = $currentRow;

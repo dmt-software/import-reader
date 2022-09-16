@@ -7,6 +7,7 @@ use DMT\Import\Reader\Exceptions\DecoratorApplyException;
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
 use DMT\Test\Import\Reader\Fixtures\Language;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use stdClass;
 
 class JsonToObjectDecoratorTest extends TestCase
@@ -48,7 +49,7 @@ class JsonToObjectDecoratorTest extends TestCase
      * @dataProvider provideFailure
      *
      * @param stdClass $currentRow
-     * @param ExceptionInterface $exception
+     * @param ExceptionInterface|RuntimeException $exception
      * @return void
      */
     public function testFailure(stdClass $currentRow, ExceptionInterface $exception)

@@ -1,6 +1,6 @@
 <?php
 
-namespace Decorators;
+namespace DMT\Test\Import\Reader\Decorators\Reader;
 
 use ArrayObject;
 use DMT\Import\Reader\Decorators\Reader\GenericReaderDecorator;
