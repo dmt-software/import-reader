@@ -1,8 +1,8 @@
 <?php
 
-namespace DMT\Import\Reader\Decorators\Reader;
+namespace DMT\Import\Reader\Decorators\Handler;
 
-use DMT\Import\Reader\Decorators\ReaderDecoratorInterface;
+use DMT\Import\Reader\Decorators\HandlerDecoratorInterface;
 use DMT\Import\Reader\Exceptions\DecoratorException;
 use JMS\Serializer\Exception\Exception;
 use JMS\Serializer\SerializerInterface;
@@ -13,7 +13,7 @@ use JMS\Serializer\SerializerInterface;
  * This uses JMS serializer to transform a xml or json string into an object.
  * To enable this JMS serializer must be installed (`composer require jms/serializer`).
  */
-final class DeserializeRowDecorator implements ReaderDecoratorInterface
+final class DeserializeToObjectDecorator implements HandlerDecoratorInterface
 {
     public const TYPE_XML = 'xml';
     public const TYPE_JSON = 'json';

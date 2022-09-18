@@ -1,8 +1,8 @@
 <?php
 
-namespace DMT\Test\Import\Reader\Decorators\Reader;
+namespace DMT\Test\Import\Reader\Decorators\Handler;
 
-use DMT\Import\Reader\Decorators\Reader\ToSimpleXmlElementDecorator;
+use DMT\Import\Reader\Decorators\Handler\ToSimpleXmlElementDecorator;
 use DMT\Import\Reader\Exceptions\DecoratorException;
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
 use PHPUnit\Framework\TestCase;

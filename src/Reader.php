@@ -3,7 +3,7 @@
 namespace DMT\Import\Reader;
 
 use DMT\Import\Reader\Decorators\DecoratorInterface;
-use DMT\Import\Reader\Decorators\Reader\GenericReaderDecorator;
+use DMT\Import\Reader\Decorators\Handler\GenericHandlerDecorator;
 use DMT\Import\Reader\Exceptions\DecoratorException;
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
 use DMT\Import\Reader\Exceptions\ReaderReadException;
@@ -40,7 +40,7 @@ final class Reader
         $this->handler->setPointer($skip);
 
         if (count($this->decorators) === 0) {
-            $this->decorators = [new GenericReaderDecorator()];
+            $this->decorators = [new GenericHandlerDecorator()];
         }
 
         $position = -1;

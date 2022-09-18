@@ -1,13 +1,13 @@
 <?php
 
-namespace DMT\Import\Reader\Decorators\Reader;
+namespace DMT\Import\Reader\Decorators\Handler;
 
-use DMT\Import\Reader\Decorators\ReaderDecoratorInterface;
+use DMT\Import\Reader\Decorators\HandlerDecoratorInterface;
 use DMT\Import\Reader\Exceptions\DecoratorException;
 use SimpleXMLElement;
 use Throwable;
 
-final class ToSimpleXmlElementDecorator implements ReaderDecoratorInterface
+final class ToSimpleXmlElementDecorator implements HandlerDecoratorInterface
 {
     private int $options = 0;
     private ?string $namespace;

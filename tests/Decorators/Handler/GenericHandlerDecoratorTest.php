@@ -1,13 +1,13 @@
 <?php
 
-namespace DMT\Test\Import\Reader\Decorators\Reader;
+namespace DMT\Test\Import\Reader\Decorators\Handler;
 
 use ArrayObject;
-use DMT\Import\Reader\Decorators\Reader\GenericReaderDecorator;
+use DMT\Import\Reader\Decorators\Handler\GenericHandlerDecorator;
 use DMT\Import\Reader\Exceptions\DecoratorException;
 use PHPUnit\Framework\TestCase;
 
-class GenericToObjectDecoratorTest extends TestCase
+class GenericHandlerDecoratorTest extends TestCase
 {
     /**
      * @dataProvider provideRow
@@ -18,7 +18,7 @@ class GenericToObjectDecoratorTest extends TestCase
      */
     public function testDecorate($row, object $expected): void
     {
-        $decorator = new GenericReaderDecorator();
+        $decorator = new GenericHandlerDecorator();
 
         $this->assertEquals($expected, $decorator->decorate($row));
     }
@@ -47,7 +47,7 @@ class GenericToObjectDecoratorTest extends TestCase
     {
         $this->expectExceptionObject($exception);
 
-        $decorator = new GenericReaderDecorator();
+        $decorator = new GenericHandlerDecorator();
         $decorator->decorate($row);
     }
 

@@ -4,7 +4,7 @@ namespace DMT\Import\Reader\Decorators;
 
 use DMT\Import\Reader\Exceptions\DecoratorException;
 
-interface ReaderDecoratorInterface extends DecoratorInterface
+interface HandlerDecoratorInterface extends DecoratorInterface
 {
     /**
      * Apply the decorator to the raw value received from reader.

@@ -5,7 +5,9 @@ This decorator is always called after the `GenericToObjectDecorator`.
 ## Usage
 
 ```php
-use DMT\Import\Reader\Decorators\Reader\GenericReaderDecorator;use DMT\Import\Reader\Handlers\CsvReaderHandler;use DMT\Import\Reader\Reader;
+use DMT\Import\Reader\Decorators\Handler\GenericHandlerDecorator;
+use DMT\Import\Reader\Handlers\CsvReaderHandler;
+use DMT\Import\Reader\Reader;
   
 $mapping = [
    'col1' => 'name',
@@ -15,7 +17,7 @@ $mapping = [
 /** @var CsvReaderHandler $handler */ 
 $reader = new Reader(
     $handler,
-    new GenericReaderDecorator(),
+    new GenericHandlerDecorator(),
     new ColumnDecorator($mapping)
 );
 ```

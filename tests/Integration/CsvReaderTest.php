@@ -5,7 +5,7 @@ namespace DMT\Test\Import\Reader\Integration;
 use ArrayObject;
 use DMT\Import\Reader\Decorators\Csv\ColumnMappingDecorator;
 use DMT\Import\Reader\Decorators\Csv\CsvToObjectDecorator;
-use DMT\Import\Reader\Decorators\Reader\GenericReaderDecorator;
+use DMT\Import\Reader\Decorators\Handler\GenericHandlerDecorator;
 use DMT\Import\Reader\Handlers\Sanitizers\TrimSanitizer;
 use DMT\Import\Reader\Reader;
 use DMT\Test\Import\Reader\Fixtures\Plane;
@@ -25,7 +25,7 @@ class CsvReaderTest extends TestCase
     {
         $reader = new Reader(
             $this->handlerFactory->createCsvReaderHandler($file, [], new TrimSanitizer('.', TrimSanitizer::TRIM_RIGHT)),
-            new GenericReaderDecorator(),
+            new GenericHandlerDecorator(),
             new ColumnMappingDecorator(
                 [
                     'col1' => 'make&model',
@@ -70,7 +70,7 @@ class CsvReaderTest extends TestCase
                 [],
                 new TrimSanitizer('.', TrimSanitizer::TRIM_RIGHT)
             ),
-            new GenericReaderDecorator(),
+            new GenericHandlerDecorator(),
             new CsvToObjectDecorator(Plane::class, [
                 'col1' => 'type',
                 'col2' => 'speed',

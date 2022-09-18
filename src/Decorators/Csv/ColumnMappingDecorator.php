@@ -4,7 +4,7 @@ namespace DMT\Import\Reader\Decorators\Csv;
 
 use ArrayObject;
 use DMT\Import\Reader\Decorators\DecoratorInterface;
-use DMT\Import\Reader\Decorators\Reader\GenericReaderDecorator;
+use DMT\Import\Reader\Decorators\Handler\GenericHandlerDecorator;
 use DMT\Import\Reader\Exceptions\DecoratorException;
 
 /**
@@ -16,7 +16,7 @@ use DMT\Import\Reader\Exceptions\DecoratorException;
  * The column mapping can be an associative array where the keys are named with col{n} and their new column name or
  * a normal array where the columns are replaced based on their index.
  *
- * @see GenericReaderDecorator
+ * @see GenericHandlerDecorator
  */
 class ColumnMappingDecorator implements DecoratorInterface
 {

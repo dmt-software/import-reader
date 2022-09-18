@@ -3,7 +3,7 @@
 namespace DMT\Test\Import\Reader\Integration;
 
 use DMT\Import\Reader\Decorators\Json\JsonToObjectDecorator;
-use DMT\Import\Reader\Decorators\Reader\GenericReaderDecorator;
+use DMT\Import\Reader\Decorators\Handler\GenericHandlerDecorator;
 use DMT\Import\Reader\Handlers\Sanitizers\TrimSanitizer;
 use DMT\Import\Reader\Reader;
 use DMT\Test\Import\Reader\Fixtures\Language;
@@ -24,7 +24,7 @@ class JsonReaderTest extends TestCase
     {
         $reader = new Reader(
             $this->handlerFactory->createJsonReaderHandler($file, ['path' => '.'], new TrimSanitizer()),
-            new GenericReaderDecorator()
+            new GenericHandlerDecorator()
         );
 
         foreach ($reader->read() as $row => $programming) {
@@ -53,7 +53,7 @@ class JsonReaderTest extends TestCase
                 ['path' => '.languages'],
                 new TrimSanitizer()
             ),
-            new GenericReaderDecorator(),
+            new GenericHandlerDecorator(),
             new JsonToObjectDecorator(Language::class, [
                 'name' => 'name',
                 'since' => 'since',
