@@ -1,6 +1,6 @@
 <?php
 
-namespace DMT\Test\Import\Reader;
+namespace DMT\Test\Import\Reader\Integration;
 
 use DMT\Import\Reader\Decorators\Reader\GenericReaderDecorator;
 use DMT\Import\Reader\Handlers\Sanitizers\EncodingSanitizer;
@@ -39,7 +39,7 @@ class XmlReaderTest extends TestCase
 
     public function provideXmlFile(): iterable
     {
-        $file = __DIR__ . '/files/cars.xml';
+        $file = __DIR__ . '/../files/cars.xml';
 
         return [
             'local file' => [$file],

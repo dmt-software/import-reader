@@ -4,7 +4,7 @@ namespace DMT\Import\Reader\Decorators\Csv;
 
 use ArrayObject;
 use DMT\Import\Reader\Decorators\DecoratorInterface;
-use DMT\Import\Reader\Exceptions\DecoratorApplyException;
+use DMT\Import\Reader\Exceptions\DecoratorException;
 use Error;
 use ReflectionClass;
 use ReflectionException;
@@ -12,7 +12,7 @@ use ReflectionException;
 /**
  * Decorator to transform a row into a Data Transfer or a Value Object.
  */
-class CsvToObjectDecorator implements DecoratorInterface
+final class CsvToObjectDecorator implements DecoratorInterface
 {
     private string $fqcn;
     private array $mapping;
@@ -35,10 +35,10 @@ class CsvToObjectDecorator implements DecoratorInterface
      * @param ArrayObject|object $currentRow The current csv row.
      *
      * @return object Instance of an object according to type stored in fqcn.
-     * @throws DecoratorApplyException When the initialization of the object failed.
+     * @throws DecoratorException When the initialization of the object failed.
      * @throws ReflectionException
      */
-    public function apply(object $currentRow): object
+    public function decorate(object $currentRow): object
     {
         $entity = (new ReflectionClass($this->fqcn))->newInstanceWithoutConstructor();
 
@@ -49,7 +49,7 @@ class CsvToObjectDecorator implements DecoratorInterface
                     $entity->$property = $value;
                 }
             } catch (Error $e) {
-                throw DecoratorApplyException::create('Can not set %s on %s', $property, $this->fqcn);
+                throw DecoratorException::create('Can not set %s on %s', $property, $this->fqcn);
             }
         }
 

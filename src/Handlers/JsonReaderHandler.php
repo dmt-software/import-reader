@@ -2,26 +2,27 @@
 
 namespace DMT\Import\Reader\Handlers;
 
-use DMT\Import\Reader\Exceptions\ReaderReadException;
-use DMT\Import\Reader\Handlers\Pointers\PointerInterface;
+use DMT\Import\Reader\Exceptions\UnreadableException;
+use DMT\Import\Reader\Handlers\FilePointers\FilePointerInterface;
 use DMT\Import\Reader\Handlers\Sanitizers\SanitizerInterface;
+use pcrov\JsonReader\Exception;
 use pcrov\JsonReader\JsonReader;
 
 final class JsonReaderHandler implements HandlerInterface
 {
     private JsonReader $reader;
-    private PointerInterface $pointer;
+    private FilePointerInterface $pointer;
     /** @var SanitizerInterface[] */
     private array $sanitizers = [];
 
     /**
      * @param JsonReader $reader
-     * @param PointerInterface $pointer
+     * @param FilePointerInterface $pointer
      * @param SanitizerInterface[] $sanitizers
      */
     public function __construct(
-        JsonReader         $reader,
-        PointerInterface   $pointer,
+        JsonReader           $reader,
+        FilePointerInterface $pointer,
         SanitizerInterface ...$sanitizers
     ) {
         $this->reader = $reader;
@@ -29,20 +30,9 @@ final class JsonReaderHandler implements HandlerInterface
         $this->sanitizers = $sanitizers;
     }
 
-
     public function setPointer(int $skip = 0): void
     {
-        $this->pointer->setPointer($this->reader);
-
-        $depth = max($this->reader->depth() -1, 0);
-        $position = 0;
-        while (++$position <= $skip) {
-            $this->reader->next();
-
-            if ($this->reader->depth() < $depth || !$this->reader->value()) {
-                throw new ReaderReadException('End of file reached');
-            }
-        }
+        $this->pointer->seek($this->reader, $skip);
     }
 
     public function read(): iterable
@@ -51,13 +41,17 @@ final class JsonReaderHandler implements HandlerInterface
         $processed = 0;
 
         do {
-            $json = json_encode($this->reader->value());
+            try {
+                $json = json_encode($this->reader->value());
 
-            foreach ($this->sanitizers as $sanitizer) {
-                $json = $sanitizer->sanitize($json);
+                foreach ($this->sanitizers as $sanitizer) {
+                    $json = $sanitizer->sanitize($json);
+                }
+
+                yield ++$processed => $json;
+            } catch (Exception $exception) {
+                throw UnreadableException::unreadable('json', $exception);
             }
-
-            yield ++$processed => $json;
         } while ($this->reader->next() && $this->reader->depth() > $depth);
     }
 }

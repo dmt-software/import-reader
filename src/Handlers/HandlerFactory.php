@@ -2,8 +2,8 @@
 
 namespace DMT\Import\Reader\Handlers;
 
-use DMT\Import\Reader\Handlers\Pointers\JsonPathPointer;
-use DMT\Import\Reader\Handlers\Pointers\XmlPathPointer;
+use DMT\Import\Reader\Handlers\FilePointers\JsonPathFilePointer;
+use DMT\Import\Reader\Handlers\FilePointers\XmlPathFilePointer;
 use DMT\Import\Reader\Handlers\Sanitizers\SanitizerInterface;
 use pcrov\JsonReader\JsonReader;
 use SplFileObject;
@@ -52,7 +52,7 @@ class HandlerFactory
         $fileHandler = new JsonReader($config['flags'] ?? 0);
         $fileHandler->open($fileOrUri);
 
-        $pointer = new JsonPathPointer($config['path'] ?? '');
+        $pointer = new JsonPathFilePointer($config['path'] ?? '');
 
         return new JsonReaderHandler($fileHandler, $pointer, ...$sanitizers);
     }
@@ -73,7 +73,7 @@ class HandlerFactory
         $fileHandler = new XMLReader();
         $fileHandler->open($fileOrUri, $config['encoding'] ?? null, $config['flags'] ?? 0);
 
-        $pointer = new XmlPathPointer($config['path'] ?? '');
+        $pointer = new XmlPathFilePointer($config['path'] ?? '');
 
         return new XmlReaderHandler($fileHandler, $pointer, ...$sanitizers);
     }

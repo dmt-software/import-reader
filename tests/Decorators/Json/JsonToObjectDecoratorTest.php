@@ -3,7 +3,7 @@
 namespace DMT\Test\Import\Reader\Decorators\Json;
 
 use DMT\Import\Reader\Decorators\Json\JsonToObjectDecorator;
-use DMT\Import\Reader\Exceptions\DecoratorApplyException;
+use DMT\Import\Reader\Exceptions\DecoratorException;
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
 use DMT\Test\Import\Reader\Fixtures\Language;
 use PHPUnit\Framework\TestCase;
@@ -23,7 +23,7 @@ class JsonToObjectDecoratorTest extends TestCase
     {
         $decorator = new JsonToObjectDecorator(Language::class, $mapping);
 
-        $this->assertEquals($expected, $decorator->apply($currentRow));
+        $this->assertEquals($expected, $decorator->decorate($currentRow));
     }
 
     public function provideRow(): iterable
@@ -61,7 +61,7 @@ class JsonToObjectDecoratorTest extends TestCase
             ['name' => 'name', 'year' => 'since', 'by' => 'author']
         );
 
-        $decorator->apply($currentRow);
+        $decorator->decorate($currentRow);
     }
 
     public function provideFailure(): iterable
@@ -71,11 +71,11 @@ class JsonToObjectDecoratorTest extends TestCase
         return [
             'set null on property type string' => [
                 (object)['name' => '', 'year' => 1970, 'by' => null],
-                DecoratorApplyException::create($message, 'author', Language::class),
+                DecoratorException::create($message, 'author', Language::class),
             ],
             'set null on property type int' => [
                 (object)['name' => '', 'year' => null, 'by' => ''],
-                DecoratorApplyException::create($message, 'since', Language::class),
+                DecoratorException::create($message, 'since', Language::class),
             ],
         ];
     }

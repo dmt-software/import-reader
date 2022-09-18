@@ -18,7 +18,7 @@ class DeserializeToObjectDecoratorTest extends TestCase
     public function testDecorate($currentRow): void
     {
         $decorator = new DeserializeRowDecorator(SerializerBuilder::create()->build(), Program::class);
-        $program = $decorator->apply($currentRow);
+        $program = $decorator->decorate($currentRow);
 
         $this->assertInstanceOf(Program::class, $program);
         $this->assertContainsOnlyInstancesOf(Language::class, $program->languages);

@@ -3,13 +3,13 @@
 namespace DMT\Import\Reader\Decorators\Json;
 
 use DMT\Import\Reader\Decorators\DecoratorInterface;
-use DMT\Import\Reader\Exceptions\DecoratorApplyException;
+use DMT\Import\Reader\Exceptions\DecoratorException;
 use Error;
 use ReflectionClass;
 use ReflectionException;
 use stdClass;
 
-class JsonToObjectDecorator implements DecoratorInterface
+final class JsonToObjectDecorator implements DecoratorInterface
 {
     private string $fqcn;
     private array $mapping;
@@ -32,10 +32,10 @@ class JsonToObjectDecorator implements DecoratorInterface
      * @param stdClass|object $currentRow The current csv row.
      *
      * @return object Instance of an object according to type stored in fqcn.
-     * @throws DecoratorApplyException When the initialization of the object failed.
+     * @throws DecoratorException When the initialization of the object failed.
      * @throws ReflectionException
      */
-    public function apply(object $currentRow): object
+    public function decorate(object $currentRow): object
     {
         $entity = (new ReflectionClass($this->fqcn))->newInstanceWithoutConstructor();
 
@@ -51,7 +51,7 @@ class JsonToObjectDecorator implements DecoratorInterface
                 }
                 $entity->$property = $value;
             } catch (Error $e) {
-                throw DecoratorApplyException::create('Can not set %s on %s', $property, $this->fqcn);
+                throw DecoratorException::create('Can not set %s on %s', $property, $this->fqcn);
             }
         }
 

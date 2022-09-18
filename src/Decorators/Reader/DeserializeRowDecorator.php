@@ -3,7 +3,7 @@
 namespace DMT\Import\Reader\Decorators\Reader;
 
 use DMT\Import\Reader\Decorators\ReaderDecoratorInterface;
-use DMT\Import\Reader\Exceptions\DecoratorApplyException;
+use DMT\Import\Reader\Exceptions\DecoratorException;
 use JMS\Serializer\Exception\Exception;
 use JMS\Serializer\SerializerInterface;
 
@@ -13,7 +13,7 @@ use JMS\Serializer\SerializerInterface;
  * This uses JMS serializer to transform a xml or json string into an object.
  * To enable this JMS serializer must be installed (`composer require jms/serializer`).
  */
-class DeserializeRowDecorator implements ReaderDecoratorInterface
+final class DeserializeRowDecorator implements ReaderDecoratorInterface
 {
     public const TYPE_XML = 'xml';
     public const TYPE_JSON = 'json';
@@ -37,12 +37,12 @@ class DeserializeRowDecorator implements ReaderDecoratorInterface
     /**
      * @inheritDoc
      */
-    public function apply($currentRow): object
+    public function decorate($currentRow): object
     {
         try {
             return $this->serializer->deserialize($currentRow, $this->fqcn, $this->getType($currentRow));
         } catch (Exception $exception) {
-            throw new DecoratorApplyException('Deserialization fails', 0, $exception);
+            throw new DecoratorException('Deserialization fails', 0, $exception);
         }
     }
 

@@ -3,7 +3,7 @@
 namespace DMT\Import\Reader\Decorators\Reader;
 
 use DMT\Import\Reader\Decorators\ReaderDecoratorInterface;
-use DMT\Import\Reader\Exceptions\DecoratorApplyException;
+use DMT\Import\Reader\Exceptions\DecoratorException;
 use SimpleXMLElement;
 use Throwable;
 
@@ -27,14 +27,14 @@ final class ToSimpleXmlElementDecorator implements ReaderDecoratorInterface
      *
      * @param string $currentRow The current part of the xml read.
      * @return object|SimpleXMLElement
-     * @throws DecoratorApplyException When a invalid xml is given.
+     * @throws DecoratorException When a invalid xml is given.
      */
-    public function apply($currentRow): object
+    public function decorate($currentRow): object
     {
         try {
             return new SimpleXMLElement($currentRow, $this->options, false, $this->namespace);
         } catch (Throwable $exception) {
-            throw new DecoratorApplyException('Invalid xml', 0, $exception);
+            throw new DecoratorException('Invalid xml', 0, $exception);
         }
     }
 }

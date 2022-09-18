@@ -4,7 +4,7 @@ namespace DMT\Test\Import\Reader\Decorators\Csv;
 
 use ArrayObject;
 use DMT\Import\Reader\Decorators\Csv\CsvToObjectDecorator;
-use DMT\Import\Reader\Exceptions\DecoratorApplyException;
+use DMT\Import\Reader\Exceptions\DecoratorException;
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
 use DMT\Test\Import\Reader\Fixtures\Language;
 use PHPUnit\Framework\TestCase;
@@ -21,7 +21,7 @@ class CsvToObjectDecoratorTest extends TestCase
     {
         $decorator = new CsvToObjectDecorator(Language::class, $mapping);
 
-        $this->assertEquals($expected, $decorator->apply($currentRow));
+        $this->assertEquals($expected, $decorator->decorate($currentRow));
     }
 
     public function provideRow(): iterable
@@ -56,7 +56,7 @@ class CsvToObjectDecoratorTest extends TestCase
             ['col1' => 'name', 'col2' => 'since', 'col3' => 'author']
         );
 
-        $decorator->apply($currentRow);
+        $decorator->decorate($currentRow);
     }
 
     public function provideFailure(): iterable
@@ -66,11 +66,11 @@ class CsvToObjectDecoratorTest extends TestCase
         return [
             'set null on property type string' => [
                 new ArrayObject(['col1' => null, 'col2' => '1970', 'col3' => '']),
-                DecoratorApplyException::create($message, 'name', Language::class),
+                DecoratorException::create($message, 'name', Language::class),
             ],
             'set null on property type int' => [
                 new ArrayObject(['col1' => '', 'col2' => null, 'col3' => '']),
-                DecoratorApplyException::create($message, 'since', Language::class),
+                DecoratorException::create($message, 'since', Language::class),
             ],
         ];
     }

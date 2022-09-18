@@ -4,7 +4,7 @@ namespace DMT\Test\Import\Reader\Decorators\Reader;
 
 use ArrayObject;
 use DMT\Import\Reader\Decorators\Reader\GenericReaderDecorator;
-use DMT\Import\Reader\Exceptions\DecoratorApplyException;
+use DMT\Import\Reader\Exceptions\DecoratorException;
 use PHPUnit\Framework\TestCase;
 
 class GenericToObjectDecoratorTest extends TestCase
@@ -20,7 +20,7 @@ class GenericToObjectDecoratorTest extends TestCase
     {
         $decorator = new GenericReaderDecorator();
 
-        $this->assertEquals($expected, $decorator->apply($row));
+        $this->assertEquals($expected, $decorator->decorate($row));
     }
 
     public function provideRow(): iterable
@@ -40,23 +40,23 @@ class GenericToObjectDecoratorTest extends TestCase
      * @dataProvider provideFailure
      *
      * @param mixed $row
-     * @param DecoratorApplyException $exception
+     * @param DecoratorException $exception
      * @return void
      */
-    public function testFailure($row, DecoratorApplyException $exception): void
+    public function testFailure($row, DecoratorException $exception): void
     {
         $this->expectExceptionObject($exception);
 
         $decorator = new GenericReaderDecorator();
-        $decorator->apply($row);
+        $decorator->decorate($row);
     }
 
     public function provideFailure(): iterable
     {
         return [
-            'null' => [null, new DecoratorApplyException('Type mismatch')],
-            'object' => [$this, new DecoratorApplyException('Type mismatch')],
-            'csv-string' => ['title;author', new DecoratorApplyException('Type mismatch')],
+            'null' => [null, new DecoratorException('Type mismatch')],
+            'object' => [$this, new DecoratorException('Type mismatch')],
+            'csv-string' => ['title;author', new DecoratorException('Type mismatch')],
         ];
     }
 }

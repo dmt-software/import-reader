@@ -2,7 +2,7 @@
 
 namespace DMT\Import\Reader\Handlers;
 
-use DMT\Import\Reader\Exceptions\ReaderReadException;
+use DMT\Import\Reader\Exceptions\UnreadableException;
 use DMT\Import\Reader\Handlers\Sanitizers\SanitizerInterface;
 use SplFileObject;
 
@@ -36,14 +36,14 @@ final class CsvReaderHandler implements HandlerInterface
      *
      * @param int $skip The rows to skip.
      *
-     * @throws ReaderReadException When the end of the file is reached.
+     * @throws UnreadableException When the end of the file is reached.
      */
     public function setPointer(int $skip = 0): void
     {
         $this->reader->seek($skip);
 
         if ($this->reader->eof()) {
-            throw new ReaderReadException('End of file reached');
+            throw UnreadableException::eof();
         }
     }
 

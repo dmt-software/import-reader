@@ -3,7 +3,7 @@
 namespace DMT\Import\Reader\Handlers;
 
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
-use DMT\Import\Reader\Exceptions\ReaderReadException;
+use DMT\Import\Reader\Exceptions\UnreadableException;
 
 interface HandlerInterface
 {
@@ -12,7 +12,7 @@ interface HandlerInterface
      *
      * @param int $skip The amount ot items to skip.
      * @return void
-     * @throws ReaderReadException
+     * @throws UnreadableException
      */
     public function setPointer(int $skip = 0): void;
 

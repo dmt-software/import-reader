@@ -4,7 +4,7 @@ namespace DMT\Import\Reader\Decorators\Reader;
 
 use ArrayObject;
 use DMT\Import\Reader\Decorators\ReaderDecoratorInterface;
-use DMT\Import\Reader\Exceptions\DecoratorApplyException;
+use DMT\Import\Reader\Exceptions\DecoratorException;
 
 /**
  * Generic to object decorator
@@ -27,7 +27,7 @@ final class GenericReaderDecorator implements ReaderDecoratorInterface
 
     private ?string $type = self::UNDEFINED_TYPE;
 
-    public function apply($currentRow): object
+    public function decorate($currentRow): object
     {
         $type = $this->getType($currentRow);
 
@@ -41,7 +41,7 @@ final class GenericReaderDecorator implements ReaderDecoratorInterface
         }
 
         if (!is_object($currentRow) || $type === self::UNDEFINED_TYPE) {
-            throw DecoratorApplyException::create('Type mismatch');
+            throw DecoratorException::create('Type mismatch');
         }
 
         return $currentRow;

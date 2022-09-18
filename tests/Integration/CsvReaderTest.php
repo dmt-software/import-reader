@@ -1,6 +1,6 @@
 <?php
 
-namespace DMT\Test\Import\Reader;
+namespace DMT\Test\Import\Reader\Integration;
 
 use ArrayObject;
 use DMT\Import\Reader\Decorators\Csv\ColumnMappingDecorator;
@@ -47,7 +47,7 @@ class CsvReaderTest extends TestCase
 
     public function provideCsvFile(): iterable
     {
-        $file = __DIR__ . '/files/planes.csv';
+        $file = __DIR__ . '/../files/planes.csv';
         $temp = tempnam(sys_get_temp_dir(), 'php');
         $data = file_get_contents($file);
         $data .= PHP_EOL;
@@ -66,7 +66,7 @@ class CsvReaderTest extends TestCase
     {
         $reader = new Reader(
             $this->handlerFactory->createCsvReaderHandler(
-                __DIR__ . '/files/planes.csv',
+                __DIR__ . '/../files/planes.csv',
                 [],
                 new TrimSanitizer('.', TrimSanitizer::TRIM_RIGHT)
             ),

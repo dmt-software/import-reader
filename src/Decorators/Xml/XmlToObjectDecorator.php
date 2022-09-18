@@ -3,13 +3,13 @@
 namespace DMT\Import\Reader\Decorators\Xml;
 
 use DMT\Import\Reader\Decorators\DecoratorInterface;
-use DMT\Import\Reader\Exceptions\DecoratorApplyException;
+use DMT\Import\Reader\Exceptions\DecoratorException;
 use Error;
 use ReflectionClass;
 use ReflectionException;
 use SimpleXMLElement;
 
-class XmlToObjectDecorator implements DecoratorInterface
+final class XmlToObjectDecorator implements DecoratorInterface
 {
     private string $fqcn;
     private array $mapping;
@@ -32,10 +32,10 @@ class XmlToObjectDecorator implements DecoratorInterface
      * @param SimpleXMLElement|object $currentRow The current csv row.
      *
      * @return object Instance of an object according to type stored in fqcn.
-     * @throws DecoratorApplyException When the initialization of the object failed.
+     * @throws DecoratorException When the initialization of the object failed.
      * @throws ReflectionException
      */
-    public function apply(object $currentRow): object
+    public function decorate(object $currentRow): object
     {
         $object = new ReflectionClass($this->fqcn);
         $entity = $object->newInstanceWithoutConstructor();
@@ -54,7 +54,7 @@ class XmlToObjectDecorator implements DecoratorInterface
                     $entity->$property = $value;
                 }
             } catch (Error $e) {
-                throw DecoratorApplyException::create('Can not set %s on %s', $property, $this->fqcn);
+                throw DecoratorException::create('Can not set %s on %s', $property, $this->fqcn);
             }
         }
 

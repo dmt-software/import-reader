@@ -4,11 +4,12 @@ namespace DMT\Import\Reader;
 
 use DMT\Import\Reader\Decorators\DecoratorInterface;
 use DMT\Import\Reader\Decorators\Reader\GenericReaderDecorator;
-use DMT\Import\Reader\Exceptions\DecoratorApplyException;
+use DMT\Import\Reader\Exceptions\DecoratorException;
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
+use DMT\Import\Reader\Exceptions\ReaderReadException;
 use DMT\Import\Reader\Handlers\HandlerInterface;
 
-class Reader
+final class Reader
 {
     private HandlerInterface $handler;
     /** @var DecoratorInterface[] */
@@ -28,30 +29,35 @@ class Reader
      * Read through a file.
      *
      * By default, php objects will be returned like a stdClass, ArrayObject or SimpleXmlElement.
-     * People are encouraged to use or create a decorator that returns a data transfer object (DTO).
+     * People are encouraged to use or create a decorator that returns a data transfer object (DTO) or value object.
      *
-     * @param int $offset
+     * @param int $skip
      * @return iterable
-     * @throws ExceptionInterface
+     * @throws ReaderReadException
      */
-    public function read(int $offset = 0): iterable
+    public function read(int $skip = 0): iterable
     {
-        $this->handler->setPointer($offset);
+        $this->handler->setPointer($skip);
 
         if (count($this->decorators) === 0) {
             $this->decorators = [new GenericReaderDecorator()];
         }
 
-        foreach ($this->handler->read() as $position => $currentRow) {
-            try {
-                foreach ($this->decorators as $decorator) {
-                    $currentRow = $decorator->apply($currentRow);
-                }
+        $position = -1;
+        try {
+            foreach ($this->handler->read() as $position => $currentRow) {
+                try {
+                    foreach ($this->decorators as $decorator) {
+                        $currentRow = $decorator->decorate($currentRow);
+                    }
 
-                yield $position + $offset => $currentRow;
-            } catch (DecoratorApplyException $exception) {
-                trigger_error('Skipped row ' . ($position + $offset), E_USER_WARNING);
+                    yield $position + $skip => $currentRow;
+                } catch (DecoratorException $exception) {
+                    trigger_error('Skipped row ' . ($position + $skip), E_USER_WARNING);
+                }
             }
+        } catch (ExceptionInterface $exception) {
+            throw ReaderReadException::readError(++$position + $skip);
         }
     }
 }

@@ -3,7 +3,7 @@
 namespace DMT\Test\Import\Reader\Decorators\Xml;
 
 use DMT\Import\Reader\Decorators\Xml\XmlToObjectDecorator;
-use DMT\Import\Reader\Exceptions\DecoratorApplyException;
+use DMT\Import\Reader\Exceptions\DecoratorException;
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
 use DMT\Test\Import\Reader\Fixtures\Language;
 use DMT\Test\Import\Reader\Fixtures\Program;
@@ -24,7 +24,7 @@ class XmlToObjectDecoratorTest extends TestCase
     {
         $decorator = new XmlToObjectDecorator(get_class($expected), $mapping);
 
-        $this->assertEquals($expected, $decorator->apply($currentRow));
+        $this->assertEquals($expected, $decorator->decorate($currentRow));
     }
 
     public function provideRow(): iterable
@@ -52,7 +52,7 @@ class XmlToObjectDecoratorTest extends TestCase
             ['license' => 'license', 'language' => 'languages'],
         );
 
-        $decorator->apply($currentRow);
+        $decorator->decorate($currentRow);
     }
 
     public function provideFailure(): iterable
@@ -62,11 +62,11 @@ class XmlToObjectDecoratorTest extends TestCase
         return [
             'set null on property type string' => [
                 simplexml_load_string('<program/>'),
-                DecoratorApplyException::create($message, 'license', Program::class),
+                DecoratorException::create($message, 'license', Program::class),
             ],
             'set null on property type array' => [
                 simplexml_load_string('<program><license/></program>'),
-                DecoratorApplyException::create($message, 'languages', Program::class),
+                DecoratorException::create($message, 'languages', Program::class),
             ],
         ];
     }

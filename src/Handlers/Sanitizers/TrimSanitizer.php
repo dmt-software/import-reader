@@ -16,13 +16,13 @@ final class TrimSanitizer implements SanitizerInterface
     private int $direction;
 
     /**
-     * @param string $chars
-     * @param int $direction
+     * @param string|null $chars
+     * @param int|null $direction
      */
-    public function __construct(string $chars = " \t\n\r\0\x0B", int $direction = self::TRIM_LEFT | self::TRIM_RIGHT)
+    public function __construct(string $chars = null, int $direction = null)
     {
-        $this->chars = $chars;
-        $this->direction = $direction;
+        $this->chars = $chars ?? " \t\n\r\0\x0B";
+        $this->direction = $direction ?? self::TRIM_LEFT | self::TRIM_RIGHT;
     }
 
     public function sanitize($currentRow)

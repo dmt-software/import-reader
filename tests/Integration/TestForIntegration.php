@@ -1,6 +1,6 @@
 <?php
 
-namespace DMT\Test\Import\Reader;
+namespace DMT\Test\Import\Reader\Integration;
 
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
 use DMT\Import\Reader\Handlers\HandlerFactory;

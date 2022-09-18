@@ -2,8 +2,8 @@
 
 namespace DMT\Import\Reader\Handlers;
 
-use DMT\Import\Reader\Exceptions\ReaderReadException;
-use DMT\Import\Reader\Handlers\Pointers\PointerInterface;
+use DMT\Import\Reader\Exceptions\UnreadableException;
+use DMT\Import\Reader\Handlers\FilePointers\FilePointerInterface;
 use DMT\Import\Reader\Handlers\Sanitizers\SanitizerInterface;
 use XMLReader;
 
@@ -15,18 +15,18 @@ use XMLReader;
 final class XmlReaderHandler implements HandlerInterface
 {
     private XMLReader $reader;
-    private PointerInterface $pointer;
+    private FilePointerInterface $pointer;
     /** @var SanitizerInterface[] */
     private array $sanitizers = [];
 
     /**
      * @param XMLReader $reader
-     * @param PointerInterface $pointer
+     * @param FilePointerInterface $pointer
      * @param SanitizerInterface ...$sanitizers
      */
     public function __construct(
-        XMLReader          $reader,
-        PointerInterface   $pointer,
+        XMLReader            $reader,
+        FilePointerInterface $pointer,
         SanitizerInterface ...$sanitizers
     ) {
         $this->reader = $reader;
@@ -41,19 +41,11 @@ final class XmlReaderHandler implements HandlerInterface
      *
      * @param int $skip The amount of elements to skip.
      *
-     * @throws ReaderReadException When the end of the file is reached.
+     * @throws UnreadableException When the end of the file is reached.
      */
     public function setPointer(int $skip = 0): void
     {
-        $this->pointer->setPointer($this->reader);
-
-        $position = 0;
-        while ($position++ < $skip) {
-            if (!$this->reader->readOuterXml()) {
-                throw new ReaderReadException('End of file reached');
-            }
-            $this->reader->next($this->reader->localName);
-        }
+        $this->pointer->seek($this->reader, $skip);
     }
 
     /**
@@ -70,7 +62,7 @@ final class XmlReaderHandler implements HandlerInterface
         $processed = 0;
         do {
             if (!$xml = $this->reader->readOuterXml()) {
-                throw new ReaderReadException('XML can not be read');
+                throw UnreadableException::unreadable('xml');
             }
 
             foreach ($this->sanitizers as $sanitizer) {

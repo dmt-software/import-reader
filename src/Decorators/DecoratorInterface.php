@@ -2,7 +2,7 @@
 
 namespace DMT\Import\Reader\Decorators;
 
-use DMT\Import\Reader\Exceptions\DecoratorApplyException;
+use DMT\Import\Reader\Exceptions\DecoratorException;
 
 interface DecoratorInterface
 {
@@ -11,7 +11,7 @@ interface DecoratorInterface
      *
      * @param object $currentRow The row received from an earlier applied decorator.
      * @return object The decorated row.
-     * @throws DecoratorApplyException
+     * @throws DecoratorException
      */
-    public function apply(object $currentRow): object;
+    public function decorate(object $currentRow): object;
 }

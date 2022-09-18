@@ -5,7 +5,7 @@ namespace DMT\Import\Reader\Decorators\Csv;
 use ArrayObject;
 use DMT\Import\Reader\Decorators\DecoratorInterface;
 use DMT\Import\Reader\Decorators\Reader\GenericReaderDecorator;
-use DMT\Import\Reader\Exceptions\DecoratorApplyException;
+use DMT\Import\Reader\Exceptions\DecoratorException;
 
 /**
  * Column mapper.
@@ -36,9 +36,9 @@ class ColumnMappingDecorator implements DecoratorInterface
      * @param ArrayObject|object $currentRow the row from a csv.
      *
      * @return ArrayObject|object The decorated row.
-     * @throws DecoratorApplyException When a column from mapping is not found in the row.
+     * @throws DecoratorException When a column from mapping is not found in the row.
      */
-    public function apply(object $currentRow): object
+    public function decorate(object $currentRow): object
     {
         $replace = [];
         foreach ($this->mapping as $key => $column) {
@@ -48,7 +48,7 @@ class ColumnMappingDecorator implements DecoratorInterface
 
             $col = is_int($key) ? 'col' . ($key + 1) : $key;
             if (!isset($currentRow[$col])) {
-                throw DecoratorApplyException::create('Mapped column %s not found', $key);
+                throw DecoratorException::create('Mapped column %s not found', $key);
             }
 
             $replace[$column] = $currentRow[$col];

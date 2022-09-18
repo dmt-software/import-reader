@@ -1,6 +1,6 @@
 <?php
 
-namespace DMT\Test\Import\Reader;
+namespace DMT\Test\Import\Reader\Integration;
 
 use DMT\Import\Reader\Decorators\Json\JsonToObjectDecorator;
 use DMT\Import\Reader\Decorators\Reader\GenericReaderDecorator;
@@ -23,7 +23,7 @@ class JsonReaderTest extends TestCase
     public function testImportJson(string $file)
     {
         $reader = new Reader(
-            $this->handlerFactory->createJsonReaderHandler($file, [], new TrimSanitizer()),
+            $this->handlerFactory->createJsonReaderHandler($file, ['path' => '.'], new TrimSanitizer()),
             new GenericReaderDecorator()
         );
 
@@ -37,7 +37,7 @@ class JsonReaderTest extends TestCase
 
     public function provideJsonFile(): iterable
     {
-        $file = __DIR__ . '/files/programming.json';
+        $file = __DIR__ . '/../files/programming.json';
 
         return [
             'local file' => [$file],
@@ -49,7 +49,7 @@ class JsonReaderTest extends TestCase
     {
         $reader = new Reader(
             $this->handlerFactory->createJsonReaderHandler(
-                __DIR__ . '/files/programming.json',
+                __DIR__ . '/../files/programming.json',
                 ['path' => '.languages'],
                 new TrimSanitizer()
             ),

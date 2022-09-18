@@ -3,7 +3,7 @@
 namespace DMT\Test\Import\Reader\Decorators\Reader;
 
 use DMT\Import\Reader\Decorators\Reader\ToSimpleXmlElementDecorator;
-use DMT\Import\Reader\Exceptions\DecoratorApplyException;
+use DMT\Import\Reader\Exceptions\DecoratorException;
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
 use PHPUnit\Framework\TestCase;
 use SimpleXMLElement;
@@ -18,7 +18,7 @@ class ToSimpleXmlElementDecoratorTest extends TestCase
      */
     public function testDecorate(string $currentRow, string $namespace = null)
     {
-        $bookXml = (new ToSimpleXmlElementDecorator($namespace))->apply($currentRow);
+        $bookXml = (new ToSimpleXmlElementDecorator($namespace))->decorate($currentRow);
 
         $this->assertNotEmpty(strval($bookXml->title));
         $this->assertInstanceOf(SimpleXMLElement::class, $bookXml->title);
@@ -49,15 +49,15 @@ class ToSimpleXmlElementDecoratorTest extends TestCase
         $this->expectExceptionObject($exception);
 
         $decorator = new ToSimpleXmlElementDecorator();
-        $decorator->apply($currentRow);
+        $decorator->decorate($currentRow);
     }
 
     public function provideFailure(): iterable
     {
         return [
-            'empty xml' => ['', DecoratorApplyException::create('Invalid xml')],
-            'json' => ['{"book":{}}', DecoratorApplyException::create('Invalid xml')],
-            'csv' => [['col1' => 'title'], DecoratorApplyException::create('Invalid xml')],
+            'empty xml' => ['', DecoratorException::create('Invalid xml')],
+            'json' => ['{"book":{}}', DecoratorException::create('Invalid xml')],
+            'csv' => [['col1' => 'title'], DecoratorException::create('Invalid xml')],
         ];
     }
 }

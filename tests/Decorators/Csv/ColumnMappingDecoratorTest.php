@@ -4,7 +4,7 @@ namespace DMT\Test\Import\Reader\Decorators\Csv;
 
 use ArrayObject;
 use DMT\Import\Reader\Decorators\Csv\ColumnMappingDecorator;
-use DMT\Import\Reader\Exceptions\DecoratorApplyException;
+use DMT\Import\Reader\Exceptions\DecoratorException;
 use PHPUnit\Framework\TestCase;
 
 class ColumnMappingDecoratorTest extends TestCase
@@ -27,7 +27,7 @@ class ColumnMappingDecoratorTest extends TestCase
             'col5' => 'New York',
         ], ArrayObject::ARRAY_AS_PROPS);
 
-        $this->assertEquals($expected, $decorator->apply($row));
+        $this->assertEquals($expected, $decorator->decorate($row));
     }
 
     /**
@@ -38,14 +38,14 @@ class ColumnMappingDecoratorTest extends TestCase
      */
     public function testFailure(array $mapping): void
     {
-        $this->expectException(DecoratorApplyException::class);
+        $this->expectException(DecoratorException::class);
 
         $row = new ArrayObject([
             'col1' => 'John',
             'col2' => 'Do',
         ], ArrayObject::ARRAY_AS_PROPS);
 
-        (new ColumnMappingDecorator($mapping))->apply($row);
+        (new ColumnMappingDecorator($mapping))->decorate($row);
     }
 
     public function provideMapping(): iterable
