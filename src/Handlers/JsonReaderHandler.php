@@ -53,5 +53,7 @@ final class JsonReaderHandler implements HandlerInterface
                 throw UnreadableException::unreadable('json', $exception);
             }
         } while ($this->reader->next() && $this->reader->depth() > $depth);
+
+        $this->reader->close();
     }
 }

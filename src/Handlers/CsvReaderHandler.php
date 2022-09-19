@@ -13,7 +13,7 @@ use SplFileObject;
  */
 final class CsvReaderHandler implements HandlerInterface
 {
-    private SplFileObject $reader;
+    private ?SplFileObject $reader;
     /** @var SanitizerInterface[] */
     private array $sanitizers = [];
 
@@ -72,5 +72,7 @@ final class CsvReaderHandler implements HandlerInterface
 
             $this->reader->next();
         } while (!$this->reader->eof());
+
+        $this->reader = null;
     }
 }

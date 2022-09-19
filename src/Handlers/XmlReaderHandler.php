@@ -27,8 +27,9 @@ final class XmlReaderHandler implements HandlerInterface
     public function __construct(
         XMLReader            $reader,
         FilePointerInterface $pointer,
-        SanitizerInterface ...$sanitizers
-    ) {
+        SanitizerInterface   ...$sanitizers
+    )
+    {
         $this->reader = $reader;
         $this->pointer = $pointer;
         $this->sanitizers = $sanitizers;
@@ -59,6 +60,7 @@ final class XmlReaderHandler implements HandlerInterface
      */
     public function read(): iterable
     {
+
         $processed = 0;
         do {
             if (!$xml = $this->reader->readOuterXml()) {
@@ -75,5 +77,7 @@ final class XmlReaderHandler implements HandlerInterface
                 break;
             }
         } while (true);
+
+        $this->reader->close();
     }
 }
