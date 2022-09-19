@@ -28,8 +28,7 @@ final class XmlReaderHandler implements HandlerInterface
         XMLReader            $reader,
         FilePointerInterface $pointer,
         SanitizerInterface   ...$sanitizers
-    )
-    {
+    ) {
         $this->reader = $reader;
         $this->pointer = $pointer;
         $this->sanitizers = $sanitizers;

@@ -8,6 +8,7 @@ use DMT\Import\Reader\Exceptions\DecoratorException;
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
 use DMT\Import\Reader\Exceptions\ReaderReadException;
 use DMT\Import\Reader\Handlers\HandlerInterface;
+use Iterator;
 
 final class Reader
 {
@@ -32,10 +33,10 @@ final class Reader
      * People are encouraged to use or create a decorator that returns a data transfer object (DTO) or value object.
      *
      * @param int $skip
-     * @return iterable
+     * @return Iterator
      * @throws ReaderReadException
      */
-    public function read(int $skip = 0): iterable
+    public function read(int $skip = 0): Iterator
     {
         $this->handler->setPointer($skip);
 
