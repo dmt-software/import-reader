@@ -49,12 +49,12 @@ class ReaderBuilder
      * The sanitizer will become available in the options to build a reader.
      * The value for the option should match the constructor arguments.
      *
-     * @param string $key The key to reference the sanitizer in config options.
+     * @param string $configKey The key to reference the sanitizer in config options.
      * @param string $sanitizerClassName The sanitizer class.
      */
-    public function addSanitizer(string $key, string $sanitizerClassName): void
+    public function addSanitizer(string $configKey, string $sanitizerClassName): void
     {
-        $this->sanitizers[$key] = $sanitizerClassName;
+        $this->sanitizers[$configKey] = $sanitizerClassName;
     }
 
     /**
@@ -92,14 +92,14 @@ class ReaderBuilder
      * @param array $options The configuration options (@see createHandler())
      * @return ReaderInterface
      */
-    public function buildArrayReader(string $file, array $options): ReaderInterface
+    public function buildToArrayReader(string $file, array $options): ReaderInterface
     {
         $readerOptions = [
             'mapping' => $options['mapping'] ?? null,
             'namespace' => $options['namespace'] ?? null,
         ];
 
-        return new ArrayReader($this->createHandler($file, $options), $readerOptions);
+        return new ToArrayReader($this->createHandler($file, $options), $readerOptions);
     }
 
     /**
@@ -110,7 +110,7 @@ class ReaderBuilder
      * @param SerializerInterface|null $serializer The deserialize handler.
      * @return ReaderInterface
      */
-    public function buildObjectsReader(string $file, array $options, SerializerInterface $serializer = null): ReaderInterface
+    public function buildToObjectReader(string $file, array $options, SerializerInterface $serializer = null): ReaderInterface
     {
         $readerOptions = [
             'class' => $options['class'] ?? null,
@@ -118,7 +118,7 @@ class ReaderBuilder
             'namespace' => $options['namespace'] ?? null,
         ];
 
-        return new ObjectsReader($this->createHandler($file, $options), $readerOptions, $serializer);
+        return new ToObjectReader($this->createHandler($file, $options), $readerOptions, $serializer);
     }
 
     /**
@@ -141,7 +141,7 @@ class ReaderBuilder
      *
      * @return HandlerInterface
      */
-    private function createHandler(string $file, array $options): HandlerInterface
+    public function createHandler(string $file, array $options): HandlerInterface
     {
         $handlerFactory = new HandlerFactory();
         $handler = $options['handler'] ?? $this->getHandlerTypeForFile($file);
@@ -151,7 +151,7 @@ class ReaderBuilder
                 return $handlerFactory
                     ->createCsvReaderHandler($file, $options, ...$this->getSanitizersFromOptions($options));
             case JsonReaderHandler::class:
-                return $handlerFactory->createCsvReaderHandler($file, $options);
+                return $handlerFactory->createJsonReaderHandler($file, $options);
             case XmlReaderHandler::class:
                 return $handlerFactory->createXmlReaderHandler($file, $options);
             default:
@@ -197,7 +197,7 @@ class ReaderBuilder
     {
         $extension = pathinfo($file, PATHINFO_EXTENSION);
 
-        if (array_key_exists($extension, $this->extensionToHandler)) {
+        if (!array_key_exists($extension, $this->extensionToHandler)) {
             throw new InvalidArgumentException('Can not determine a handler for the import file');
         }
 

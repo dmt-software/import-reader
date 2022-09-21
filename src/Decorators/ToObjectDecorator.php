@@ -35,7 +35,7 @@ final class ToObjectDecorator implements DecoratorInterface
      * Transform the row into a value object or DTO.
      *
      * @param object $currentRow The current row to decorate
-     * @return object An instance of class <$this->fqcn>
+     * @return object An instance of class <$this->className>
      */
     public function decorate(object $currentRow): object
     {

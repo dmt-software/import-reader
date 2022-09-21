@@ -20,7 +20,7 @@ use Iterator;
  *
  * Reads an import file into a list of arrays.
  */
-final class ArrayReader implements ReaderInterface
+final class ToArrayReader implements ReaderInterface
 {
     private ReaderInterface $reader;
 
@@ -46,8 +46,9 @@ final class ArrayReader implements ReaderInterface
         if ($handler instanceof CsvReaderHandler && isset($mapping)) {
             $decorators[] = new ColumnMappingDecorator($mapping);
         }
+        $decorators[] = new ToArrayDecorator();
 
-        $this->reader = new Reader($handler, ...$decorators, new ToArrayDecorator());
+        $this->reader = new Reader($handler, ...$decorators);
     }
 
     /**

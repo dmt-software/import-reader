@@ -21,7 +21,7 @@ use JMS\Serializer\SerializerInterface;
  *
  * Reads an import file into a series of (user defined) objects.
  */
-final class ObjectsReader implements ReaderInterface
+final class ToObjectReader implements ReaderInterface
 {
     private ReaderInterface $reader;
 

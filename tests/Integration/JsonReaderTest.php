@@ -50,8 +50,7 @@ class JsonReaderTest extends TestCase
         $reader = new Reader(
             $this->handlerFactory->createJsonReaderHandler(
                 __DIR__ . '/../files/programming.json',
-                ['path' => '.languages'],
-                new TrimSanitizer()
+                ['path' => '.languages']
             ),
             new GenericHandlerDecorator(),
             new JsonToObjectDecorator(Language::class, [

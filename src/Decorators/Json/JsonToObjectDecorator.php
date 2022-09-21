@@ -11,16 +11,16 @@ use stdClass;
 
 final class JsonToObjectDecorator implements DecoratorInterface
 {
-    private string $fqcn;
+    private string $className;
     private array $mapping;
 
     /**
-     * @param string $fqcn The fully qualified class name.
+     * @param string $className The fully qualified class name.
      * @param array $mapping The property in json object (using dotted path) to property mapping.
      */
-    public function __construct(string $fqcn, array $mapping)
+    public function __construct(string $className, array $mapping)
     {
-        $this->fqcn = $fqcn;
+        $this->className = $className;
         $this->mapping = $mapping;
     }
 
@@ -29,15 +29,15 @@ final class JsonToObjectDecorator implements DecoratorInterface
      *
      * This tries to initiate and populate a DataTransferObject.
      *
-     * @param stdClass|object $currentRow The current csv row.
+     * @param stdClass|object $currentRow The current json object.
      *
-     * @return object Instance of an object according to type stored in fqcn.
+     * @return object Instance of an object according to type stored in className property.
      * @throws DecoratorException When the initialization of the object failed.
      * @throws ReflectionException
      */
     public function decorate(object $currentRow): object
     {
-        $entity = (new ReflectionClass($this->fqcn))->newInstanceWithoutConstructor();
+        $entity = (new ReflectionClass($this->className))->newInstanceWithoutConstructor();
 
         foreach ($this->mapping as $key => $property) {
             try {
@@ -51,7 +51,7 @@ final class JsonToObjectDecorator implements DecoratorInterface
                 }
                 $entity->$property = $value;
             } catch (Error $e) {
-                throw DecoratorException::create('Can not set %s on %s', $property, $this->fqcn);
+                throw DecoratorException::create('Can not set %s on %s', $property, $this->className);
             }
         }
 

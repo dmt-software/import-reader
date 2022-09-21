@@ -31,6 +31,42 @@ class ReaderTest extends TestCase
         $this->assertSame(count($rows), $row);
     }
 
+    /**
+     * @dataProvider provideRows
+     *
+     * @param array $rows
+     * @param string $expected
+     */
+    public function testReadWithFilter(array $rows, string $expected): void
+    {
+        $noCsvFilter = function($row) {
+            return !in_array('csv', (array)$row);
+        };
+
+        $reader = new Reader($this->getReaderHandler($rows));
+
+        foreach ($reader->read(0, $noCsvFilter) as $value) {
+            $this->assertInstanceOf($expected, $value);
+            $this->assertNotContains('csv', get_object_vars($value));
+        }
+    }
+
+    /**
+     * @dataProvider provideRows
+     *
+     * @param array $rows
+     * @param string $expected
+     */
+    public function testReaderSkipRows(array $rows, string $expected): void
+    {
+        $reader = new Reader($this->getReaderHandler($rows));
+
+        foreach ($reader->read(2) as $row => $value) {
+            $this->assertInstanceOf($expected, $value);
+            $this->assertGreaterThanOrEqual(3, $row);
+        }
+    }
+
     public function provideRows(): iterable
     {
         return [
@@ -46,7 +82,7 @@ class ReaderTest extends TestCase
 
         $reader = new Reader($this->getReaderHandler(['{"type": "json"}', UnreadableException::unreadable('json')]));
 
-        foreach ($reader->read() as $row => $value) {
+        foreach ($reader->read() as $value) {
             $this->assertInstanceOf(stdClass::class, $value);
         }
     }
