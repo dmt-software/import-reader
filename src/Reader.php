@@ -85,7 +85,7 @@ final class Reader implements ReaderInterface
         }
     }
 
-    private function decorateRow(object $currentRow): object
+    private function decorateRow($currentRow): object
     {
         foreach ($this->decorators as $decorator) {
             $currentRow = $decorator->decorate($currentRow);
