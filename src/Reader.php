@@ -72,9 +72,13 @@ final class Reader implements ReaderInterface
         try {
             foreach ($this->handler->read() as $position => $currentRow) {
                 try {
+                    foreach ($this->decorators as $decorator) {
+                        $currentRow = $decorator->decorate($currentRow);
+                    }
+
                     $key = $position + $skip;
                     if ($filter($currentRow, $key)) {
-                        yield $key => $this->decorateRow($currentRow);
+                        yield $key => $currentRow;
                     }
                 } catch (DecoratorException $exception) {
                     trigger_error('Skipped row ' . ($position + $skip), E_USER_WARNING);
@@ -83,14 +87,5 @@ final class Reader implements ReaderInterface
         } catch (ExceptionInterface $exception) {
             throw ReaderReadException::readError(++$position + $skip);
         }
-    }
-
-    private function decorateRow($currentRow): object
-    {
-        foreach ($this->decorators as $decorator) {
-            $currentRow = $decorator->decorate($currentRow);
-        }
-
-        return $currentRow;
     }
 }
