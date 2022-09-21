@@ -11,6 +11,9 @@ use DMT\Import\Reader\Reader;
 use DMT\Test\Import\Reader\Fixtures\Plane;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @group integration
+ */
 class CsvReaderTest extends TestCase
 {
     use TestForIntegration;

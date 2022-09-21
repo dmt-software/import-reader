@@ -10,6 +10,9 @@ use DMT\Test\Import\Reader\Fixtures\Language;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
+/**
+ * @group integration
+ */
 class JsonReaderTest extends TestCase
 {
     use TestForIntegration;

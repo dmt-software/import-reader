@@ -1,6 +1,6 @@
 {
   "name": "dmt-software/import-reader",
-  "description": "Read parts of a file/stream into a series of objects",
+  "description": "Read parts of a file/stream into a series of objects or arrays",
   "keywords": ["import", "file", "stream", "reader", "iterator", "csv", "json", "xml"],
   "type": "library",
   "license": "MIT",

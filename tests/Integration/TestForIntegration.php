@@ -15,9 +15,6 @@ trait TestForIntegration
     protected HandlerFactory $handlerFactory;
     private LoggerInterface $logger;
 
-    /**
-     * @group integration
-     */
     public function setUp(): void
     {
         $this->handlerFactory = new HandlerFactory();

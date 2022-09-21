@@ -8,6 +8,9 @@ use DMT\Import\Reader\Reader;
 use PHPUnit\Framework\TestCase;
 use SimpleXMLElement;
 
+/**
+ * @group integration
+ */
 class XmlReaderTest extends TestCase
 {
     use TestForIntegration;
