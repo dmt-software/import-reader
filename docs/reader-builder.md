@@ -91,17 +91,21 @@ foreach ($reader->read() as $array) { /* import array */ }
 
 ## Configuration
 
-| **option** | **usage**                                  | **value**                                        |
-|------------|--------------------------------------------|--------------------------------------------------|
-| handler    | the handler to use                         | \<string\> class name of the handler             |
-| delimiter  | control character for csv import           | \<string\> delimiter character                   |
-| enclosure  | control character for csv import           | \<string\> enclosure character                   |
-| escape     | control character for csv import           | \<string\> escape character                      |
-| path       | the path of the items to read              | \<string\> path to the first item to read        |
-| flags      | xml or json options                        | \<int\> bitmask options                          |
-| encoding   | sanitizer to fix encoding                  | \<string\> the encoding of the import file       |
-| trim       | sanitizer to trim characters from raw data | \<array\> containing the chars and direction     |
-| \<custom\> | a custom sanitizer added to the builder    | \<mixed\> should match the constructor arguments |
+Depending on the type of reader requested the following options are available: 
+
+| **option** | **usage**                                  | **value**                                          |
+|------------|--------------------------------------------|----------------------------------------------------|
+| handler    | the handler to use                         | \<string\> class name of the handler               |
+| delimiter  | control character for csv import           | \<string\> delimiter character                     |
+| enclosure  | control character for csv import           | \<string\> enclosure character                     |
+| escape     | control character for csv import           | \<string\> escape character                        |
+| path       | the path of the items to read              | \<string\> path to the first item to read          |
+| flags      | xml or json options                        | \<int\> bitmask options                            |
+| class      | the object to return                       | \<string\> the class name of the objects to return |
+| mapping    | column or object property mapping          | \<array\> mapping to key or property               |
+| encoding   | sanitizer to fix encoding                  | \<string\> the encoding of the import file         |
+| trim       | sanitizer to trim characters from raw data | \<array\> containing the chars and direction       |
+| \<custom\> | a custom sanitizer added to the builder    | \<mixed\> should match the constructor arguments   |
 
 ### adding extension to autodetect handler
 

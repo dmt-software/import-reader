@@ -126,7 +126,7 @@ final class ReaderBuilder
      *
      * @param string $file The file or protocol wrapper to read.
      * @param array $options The configuration options:
-     *      handler   : the type of handler to use, required for custom handlers
+     *      handler   : the type of handler to use
      *      delimiter : the delimiter for csv files
      *      enclosure : the enclosure for csv files
      *      escape    : the escape character for csv
@@ -138,6 +138,10 @@ final class ReaderBuilder
      *      trim      : array with chars and direction
      *      encoding  : the encoding of the file (when not utf-8)
      *      <custom>  : <custom sanitizer options>
+     *
+     *      class     : the class to return for each read item.
+     *      mapping   : csv column, xml xpath of json (dotted) path to property mapping
+     *                  if no class is given (csv only) the keys are mapped to array keys.
      *
      * @return HandlerInterface
      */
