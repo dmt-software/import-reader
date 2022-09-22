@@ -9,7 +9,7 @@ use pcrov\JsonReader\JsonReader;
 use SplFileObject;
 use XMLReader;
 
-class HandlerFactory
+final class HandlerFactory
 {
     /**
      * Create a reader handler for a csv file.

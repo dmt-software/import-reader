@@ -6,7 +6,7 @@ use ArrayObject;
 use DMT\Import\Reader\Decorators\DecoratorInterface;
 use stdClass;
 
-class JsonToArrayDecorator implements DecoratorInterface
+final class JsonToArrayDecorator implements DecoratorInterface
 {
     /**
      * Transform the rows to an ArrayObject.

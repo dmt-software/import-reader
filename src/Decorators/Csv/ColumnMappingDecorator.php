@@ -18,7 +18,7 @@ use DMT\Import\Reader\Exceptions\DecoratorException;
  *
  * @see GenericHandlerDecorator
  */
-class ColumnMappingDecorator implements DecoratorInterface
+final class ColumnMappingDecorator implements DecoratorInterface
 {
     private array $mapping = [];
 

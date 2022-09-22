@@ -9,7 +9,7 @@ use DMT\Import\Reader\Exceptions\DecoratorException;
 use SimpleXMLElement;
 use stdClass;
 
-class ToArrayDecorator implements DecoratorInterface
+final class ToArrayDecorator implements DecoratorInterface
 {
     private ?DecoratorInterface $typeDecorator = null;
 

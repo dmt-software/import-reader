@@ -28,4 +28,27 @@ foreach ($reader->read() as $key => $customer) {
     // process customer
 }
 ```
-@see the [reader builder](docs/reader-builder.md) for configuration options.
+Visit the [reader builder](docs/reader-builder.md) documentation for configuration options.
+
+### Manually create a (customized) reader
+
+```php
+use DMT\Import\Reader\Decorators\DecoratorInterface;
+use DMT\Import\Reader\Decorators\Handler\GenericHandlerDecorator;
+use DMT\Import\Reader\Handlers\JsonReaderHandler;
+use DMT\Import\Reader\Reader;
+use DMT\Import\Reader\Handlers\Sanitizers\SanitizerInterface;
+use pcrov\JsonReader\JsonReader;
+
+$internalReader = new JsonReader();
+$internalReader->open('/path/to/some.json');
+
+/** @var DecoratorInterface[] $decorators */
+/** @var SanitizerInterface[] $sanitizers */
+$reader = new Reader(
+    new JsonReaderHandler($internalReader, ...$sanitizers),
+    new GenericHandlerDecorator(), ...$decorators
+);
+```
+Visit the [reader handler](docs/reader-handler.md) documentation for more information on the handlers, internal readers
+and sanitizers.

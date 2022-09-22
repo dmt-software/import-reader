@@ -23,7 +23,7 @@ use XMLReader;
  *
  * Path /Blog/Post/Comments will set the pointer for the reader to the first Comments element.
  */
-class XmlPathFilePointer implements FilePointerInterface
+final class XmlPathFilePointer implements FilePointerInterface
 {
     /**
      * The path to iterate from.

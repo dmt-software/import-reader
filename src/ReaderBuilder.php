@@ -19,7 +19,7 @@ use JMS\Serializer\SerializerInterface;
 /**
  * Builder to help build a reader from configuration options.
  */
-class ReaderBuilder
+final class ReaderBuilder
 {
     private array $extensionToHandler = [
         'csv' => CsvReaderHandler::class,

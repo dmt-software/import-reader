@@ -6,7 +6,7 @@ use ArrayObject;
 use DMT\Import\Reader\Decorators\DecoratorInterface;
 use SimpleXMLElement;
 
-class XmlToArrayDecorator implements DecoratorInterface
+final class XmlToArrayDecorator implements DecoratorInterface
 {
     /**
      * Transform the rows into ArrayObject instances.
