@@ -30,7 +30,7 @@ foreach ($reader->read() as $key => $customer) {
 ```
 Visit the [reader builder](docs/reader-builder.md) documentation for configuration options.
 
-### Manually create a (customized) reader
+### Manually create a reader
 
 ```php
 use DMT\Import\Reader\Decorators\DecoratorInterface;
