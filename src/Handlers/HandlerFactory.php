@@ -2,6 +2,7 @@
 
 namespace DMT\Import\Reader\Handlers;
 
+use Closure;
 use DMT\Import\Reader\Handlers\FilePointers\JsonPathFilePointer;
 use DMT\Import\Reader\Handlers\FilePointers\XmlPathFilePointer;
 use DMT\Import\Reader\Handlers\Sanitizers\SanitizerInterface;
@@ -11,27 +12,34 @@ use XMLReader;
 
 final class HandlerFactory
 {
+    private $initializeHandlerCallback = [];
+
+    public function addInitializeHandlerCallback(string $handler, Closure $callback): void
+    {
+        $this->initializeHandlerCallback[$handler] = $callback;
+    }
+
     /**
      * Create a reader handler for a csv file.
      *
      * @param string $fileOrUri The file or wrapper uri that contains the file.
-     * @param array $configuration Optional configuration with <delimiter>, <enclosure> and <escape> characters.
+     * @param array $config Optional configuration with <delimiter>, <enclosure> and <escape> characters.
      * @param SanitizerInterface ...$sanitizers Optional sanitizers to apply on the raw values.
      * @return HandlerInterface
      */
     public function createCsvReaderHandler(
         string $fileOrUri,
-        array $configuration = [],
+        array $config = [],
         SanitizerInterface ...$sanitizers
     ): HandlerInterface {
-        $configuration = [
-            $configuration['delimiter'] ?? ',',
-            $configuration['enclosure'] ?? '"',
-            $configuration['escape'] ?? '\\'
+        $config = [
+            $config['delimiter'] ?? ',',
+            $config['enclosure'] ?? '"',
+            $config['escape'] ?? '\\'
         ];
 
         $fileHandler = new SplFileObject($fileOrUri);
-        $fileHandler->setCsvControl(...$configuration);
+        $fileHandler->setCsvControl(...$config);
 
         return new CsvReaderHandler($fileHandler, ...$sanitizers);
     }
@@ -76,5 +84,28 @@ final class HandlerFactory
         $pointer = new XmlPathFilePointer($config['path'] ?? '');
 
         return new XmlReaderHandler($fileHandler, $pointer, ...$sanitizers);
+    }
+
+    /**
+     * Create a custom handler.
+     *
+     * @param string $fileOrUri The file or wrapper uri that contains the file.
+     * @param string $customHandlerClass The handler to initiate.
+     * @param SanitizerInterface ...$sanitizers Optional sanitizers to apply on the raw values.
+     * @return HandlerInterface
+     */
+    public function createCustomReaderHandler(
+        string $fileOrUri,
+        string $customHandlerClass,
+        SanitizerInterface ...$sanitizers
+    ): HandlerInterface {
+        $callback = $this->initializeHandlerCallback[$customHandlerClass] ?? null;
+
+        if (!$callback) {
+            $callback = function (string $fileOrUri) use ($customHandlerClass) {
+                return new $customHandlerClass(new SplFileObject($fileOrUri));
+            };
+        }
+        return $callback($fileOrUri);
     }
 }

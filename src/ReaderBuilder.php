@@ -21,6 +21,8 @@ use JMS\Serializer\SerializerInterface;
  */
 final class ReaderBuilder
 {
+    private HandlerFactory $handlerFactory;
+
     private array $extensionToHandler = [
         'csv' => CsvReaderHandler::class,
         'json' => JsonReaderHandler::class,
@@ -31,6 +33,11 @@ final class ReaderBuilder
         'trim' => TrimSanitizer::class,
         'encoding' => EncodingSanitizer::class,
     ];
+
+    public function __construct(HandlerFactory $handlerFactory = null)
+    {
+        $this->handlerFactory = $handlerFactory ?? new HandlerFactory();
+    }
 
     /**
      * Add a extension to handler mapping.
@@ -147,19 +154,19 @@ final class ReaderBuilder
      */
     public function createHandler(string $file, array $options): HandlerInterface
     {
-        $handlerFactory = new HandlerFactory();
         $handler = $options['handler'] ?? $this->getHandlerTypeForFile($file);
 
         switch ($handler) {
             case CsvReaderHandler::class:
-                return $handlerFactory
+                return $this->handlerFactory
                     ->createCsvReaderHandler($file, $options, ...$this->getSanitizersFromOptions($options));
             case JsonReaderHandler::class:
-                return $handlerFactory->createJsonReaderHandler($file, $options);
+                return $this->handlerFactory->createJsonReaderHandler($file, $options);
             case XmlReaderHandler::class:
-                return $handlerFactory->createXmlReaderHandler($file, $options);
+                return $this->handlerFactory->createXmlReaderHandler($file, $options);
             default:
-                throw new InvalidArgumentException('No custom handlers supported yet');
+                return $this->handlerFactory
+                    ->createCustomReaderHandler($file, $handler, ...$this->getSanitizersFromOptions($options));
         }
     }
 

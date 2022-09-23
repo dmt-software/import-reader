@@ -58,6 +58,34 @@ class HandlerFactoryTest extends TestCase
         $this->assertSame($path, $this->getPropertyValue($pointer, 'path'));
     }
 
+    public function testCreateCustomReaderHandler(): void
+    {
+        $this->getMockBuilder(CustomReaderHandlerStub::class)
+            ->setMockClassName('CustomHandler')
+            ->disableOriginalConstructor()
+            ->getMockForAbstractClass();
+
+        $handler = (new HandlerFactory())->createCustomReaderHandler('php://memory', 'CustomHandler');
+
+        $this->assertInstanceOf(SplFileObject::class, $handler->reader);
+    }
+
+    public function testCreateCustomReaderHandlerWithCallback(): void
+    {
+        $handlerFactory = new HandlerFactory();
+        $handlerFactory->addInitializeHandlerCallback('CustomHandler', function (string $file) {
+            $reader = (object)compact('file');
+
+            return $this->getMockBuilder(CustomReaderHandlerStub::class)
+                ->setMockClassName('CustomHandler')
+                ->setConstructorArgs([$reader])
+                ->getMockForAbstractClass();
+        });
+        $handler = $handlerFactory->createCustomReaderHandler('php://memory', 'CustomHandler');
+
+        $this->assertEquals((object)['file' => 'php://memory'], $handler->reader);
+    }
+
     private function getPropertyValue(object $object, $property)
     {
         $reader = new ReflectionProperty($object, $property);
