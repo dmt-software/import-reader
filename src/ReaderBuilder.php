@@ -5,6 +5,7 @@ namespace DMT\Import\Reader;
 use DMT\Import\Reader\Decorators\Csv\ColumnMappingDecorator;
 use DMT\Import\Reader\Decorators\Handler\GenericHandlerDecorator;
 use DMT\Import\Reader\Decorators\Handler\ToSimpleXmlElementDecorator;
+use DMT\Import\Reader\Exceptions\UnreadableException;
 use DMT\Import\Reader\Handlers\CsvReaderHandler;
 use DMT\Import\Reader\Handlers\HandlerFactory;
 use DMT\Import\Reader\Handlers\HandlerInterface;
@@ -13,8 +14,8 @@ use DMT\Import\Reader\Handlers\Sanitizers\EncodingSanitizer;
 use DMT\Import\Reader\Handlers\Sanitizers\SanitizerInterface;
 use DMT\Import\Reader\Handlers\Sanitizers\TrimSanitizer;
 use DMT\Import\Reader\Handlers\XmlReaderHandler;
-use InvalidArgumentException;
 use JMS\Serializer\SerializerInterface;
+use RuntimeException;
 
 /**
  * Builder to help build a reader from configuration options.
@@ -209,7 +210,10 @@ final class ReaderBuilder
         $extension = pathinfo($file, PATHINFO_EXTENSION);
 
         if (!array_key_exists($extension, $this->extensionToHandler)) {
-            throw new InvalidArgumentException('Can not determine a handler for the import file');
+            throw UnreadableException::unreadable(
+                $file,
+                new RuntimeException('no handler found for file type')
+            );
         }
 
         return $this->extensionToHandler[$extension];

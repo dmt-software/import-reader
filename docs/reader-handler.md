@@ -2,7 +2,7 @@
 
 All reader handlers use an internal reader to read through a file and a series of sanitizers to apply to the raw values 
 returned by these internal reader. All internal readers (should) support both a path to a file and a 
-[protocol wrapper](https://www.php.net/manual/en/wrappers.php) that points to a file.   
+[protocol wrapper](https://www.php.net/manual/en/wrappers.php) to a file.   
 
 ## CsvReaderHandler
 

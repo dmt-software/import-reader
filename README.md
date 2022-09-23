@@ -52,3 +52,49 @@ $reader = new Reader(
 ```
 Visit the [reader handler](docs/reader-handler.md) documentation for more information on the handlers, internal readers
 and sanitizers.
+
+## Error Handling
+
+### UnreadableException
+
+This is thrown when the given file can not be read. This can have several causes:
+
+ * file is unreadable
+ * can not set file pointer
+ * end of file reached whilst set file pointer
+ * file pointer is set to the wrong return type 
+
+```php
+use DMT\Import\Reader\Exceptions\UnreadableException;
+
+try {
+    $readerBuilder->build($file, $options = []);
+} catch (UnreadableException $exception) {
+    // File can not be processed
+}
+```
+
+### ReaderReadException
+
+This can happen when a single chunk can not be read from the file. It will stop execution of the reading process.
+
+```php
+use DMT\Import\Reader\Exceptions\ReaderReadException;
+
+try {
+    foreach ($reader->read() as $n => $object) {
+        // import object
+    }
+} catch (ReaderReadException $exception) {
+    // execution stopped, after $n rows
+}
+```
+
+### DecoratorException
+
+This exception happens "silently": it triggers a user warning and continues the reading process. This makes it possible 
+to have the output send to STDOUT/STDERR depending on the server configuration and error reporting setting.     
+
+### Other Exceptions or Errors
+
+Any other kind of failures are (most likely) problems that are caused by implementing this software incorrect.
