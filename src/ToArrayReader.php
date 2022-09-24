@@ -2,11 +2,9 @@
 
 namespace DMT\Import\Reader;
 
-use ArrayObject;
 use CallbackFilterIterator;
 use Closure;
 use DMT\Import\Reader\Decorators\Csv\ColumnMappingDecorator;
-use DMT\Import\Reader\Decorators\Handler\GenericHandlerDecorator;
 use DMT\Import\Reader\Decorators\Handler\ToSimpleXmlElementDecorator;
 use DMT\Import\Reader\Decorators\ToArrayDecorator;
 use DMT\Import\Reader\Exceptions\ReaderReadException;
@@ -37,15 +35,15 @@ final class ToArrayReader implements ReaderInterface
         $namespace = $options['namespace'] ?? null;
         $mapping = $options['mapping'] ?? null;
 
-        $handlerDecorator = new GenericHandlerDecorator();
+        $decorators = [];
         if ($namespace && $handler instanceof XmlReaderHandler) {
-            $handlerDecorator = new ToSimpleXmlElementDecorator($namespace);
+            $decorators[] = new ToSimpleXmlElementDecorator($namespace);
         }
 
-        $decorators = [$handlerDecorator];
         if ($handler instanceof CsvReaderHandler && isset($mapping)) {
             $decorators[] = new ColumnMappingDecorator($mapping);
         }
+
         $decorators[] = new ToArrayDecorator();
 
         $this->reader = new Reader($handler, ...$decorators);

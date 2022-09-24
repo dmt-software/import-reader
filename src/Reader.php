@@ -39,6 +39,10 @@ final class Reader implements ReaderInterface
      */
     public function __construct(HandlerInterface $handler, DecoratorInterface ...$decorators)
     {
+        if (!$decorators || !$decorators[0] instanceof HandlerDecoratorInterface) {
+            array_unshift($decorators, new GenericHandlerDecorator());
+        }
+
         $this->handler = $handler;
         $this->decorators = $decorators;
     }
@@ -58,14 +62,6 @@ final class Reader implements ReaderInterface
     public function read(int $skip = 0, Closure $filter = null): Iterator
     {
         $this->handler->setPointer($skip);
-
-        if (count($this->decorators) === 0) {
-            $this->decorators = [new GenericHandlerDecorator()];
-        }
-
-        if (!$this->decorators[0] instanceof HandlerDecoratorInterface) {
-            throw new InvalidArgumentException('Set a HandlerDecorator first before other decorators can be applied');
-        }
 
         $filter ??= fn($currentRow, $key) => true;
         $position = -1;

@@ -4,9 +4,7 @@ namespace DMT\Import\Reader;
 
 use CallbackFilterIterator;
 use Closure;
-use DMT\Import\Reader\Decorators\DecoratorInterface;
 use DMT\Import\Reader\Decorators\Handler\DeserializeToObjectDecorator;
-use DMT\Import\Reader\Decorators\Handler\GenericHandlerDecorator;
 use DMT\Import\Reader\Decorators\Handler\ToSimpleXmlElementDecorator;
 use DMT\Import\Reader\Decorators\ToObjectDecorator;
 use DMT\Import\Reader\Exceptions\ReaderReadException;
@@ -38,11 +36,20 @@ final class ToObjectReader implements ReaderInterface
     public function __construct(HandlerInterface $handler, array $options, SerializerInterface $serializer = null)
     {
         $className = $options['class'] ?? null;
+        $mapping = $options['mapping'] ?? null;
+        $namespace = $options['namespace'] ?? null;
 
         if ($serializer && ($handler instanceof XmlReaderHandler || $handler instanceof JsonReaderHandler)) {
             $this->reader = new Reader($handler, new DeserializeToObjectDecorator($serializer, $className));
         } else {
-            $this->reader = new Reader($handler, ...$this->getDecorators($handler, $options));
+            $decorators = [];
+            if ($namespace && $handler instanceof XmlReaderHandler) {
+                $decorators[] = new ToSimpleXmlElementDecorator($namespace);
+            }
+
+            $decorators[] = new ToObjectDecorator($className, $mapping);
+
+            $this->reader = new Reader($handler, ...$decorators);
         }
     }
 
@@ -60,26 +67,5 @@ final class ToObjectReader implements ReaderInterface
             $this->reader->read($skip),
             $filter ?? fn($currentRow, $key) => true
         );
-    }
-
-    /**
-     * Get the decorators for the reader.
-     *
-     * @param HandlerInterface $handler
-     * @param array $options
-     * @return DecoratorInterface[]
-     */
-    private function getDecorators(HandlerInterface $handler, array $options): array
-    {
-        $className = $options['class'] ?? null;
-        $mapping = $options['mapping'] ?? null;
-        $namespace = $options['namespace'] ?? null;
-
-        $handlerDecorator = new GenericHandlerDecorator();
-        if ($namespace && $handler instanceof XmlReaderHandler) {
-            $handlerDecorator = new ToSimpleXmlElementDecorator($namespace);
-        }
-
-        return [$handlerDecorator, new ToObjectDecorator($className, $mapping)];
     }
 }
