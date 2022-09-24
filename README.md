@@ -92,9 +92,10 @@ try {
 
 ### DecoratorException
 
-This exception happens "silently": it triggers a user warning and continues the reading process. This makes it possible 
-to have the output send to STDOUT/STDERR depending on the server configuration and error reporting setting.     
+This exception happens silently. It triggers a user warning and continues the reading process. Depending on you server 
+configuration this warning is ignored or send to STDOUT or STDERR.   
 
 ### Other Exceptions or Errors
 
-Any other kind of failures are (most likely) problems that are caused by implementing this software incorrect.
+Any other kind of failures are (most likely) problems that are caused by configuration faults or when this software 
+is implemented incorrect.

@@ -162,9 +162,13 @@ final class ReaderBuilder
                 return $this->handlerFactory
                     ->createCsvReaderHandler($file, $options, ...$this->getSanitizersFromOptions($options));
             case JsonReaderHandler::class:
-                return $this->handlerFactory->createJsonReaderHandler($file, $options);
+                $sanitizers = $this->getSanitizersFromOptions(array_diff_key($options, array_flip(['encoding'])));
+                return $this->handlerFactory->createJsonReaderHandler($file, $options, ...$sanitizers);
             case XmlReaderHandler::class:
-                return $this->handlerFactory->createXmlReaderHandler($file, $options);
+                $sanitizers = $this->getSanitizersFromOptions(
+                    array_diff_key($options, array_flip(['encoding', 'trim']))
+                );
+                return $this->handlerFactory->createXmlReaderHandler($file, $options, ...$sanitizers);
             default:
                 return $this->handlerFactory
                     ->createCustomReaderHandler($file, $handler, ...$this->getSanitizersFromOptions($options));
