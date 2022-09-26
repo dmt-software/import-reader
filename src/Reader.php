@@ -48,6 +48,19 @@ final class Reader implements ReaderInterface
     }
 
     /**
+     * Add a decorator.
+     *
+     * @param DecoratorInterface $decorator
+     * @return Reader
+     */
+    public function addDecorator(DecoratorInterface $decorator): self
+    {
+        $this->decorators[] = $decorator;
+
+        return $this;
+    }
+
+    /**
      * Read through a file.
      *
      * By default, php objects will be returned like a stdClass, ArrayObject or SimpleXmlElement.
