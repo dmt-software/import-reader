@@ -35,13 +35,15 @@ final class Reader implements ReaderInterface
      * Reader.
      *
      * @param HandlerInterface $handler
+     * @param HandlerDecoratorInterface|null $decorator
      * @param DecoratorInterface ...$decorators
      */
-    public function __construct(HandlerInterface $handler, DecoratorInterface ...$decorators)
-    {
-        if (!$decorators || !$decorators[0] instanceof HandlerDecoratorInterface) {
-            array_unshift($decorators, new GenericHandlerDecorator());
-        }
+    public function __construct(
+        HandlerInterface $handler,
+        HandlerDecoratorInterface $decorator = null,
+        DecoratorInterface ...$decorators
+    ) {
+        array_unshift($decorators, $decorator ?? new GenericHandlerDecorator());
 
         $this->handler = $handler;
         $this->decorators = $decorators;

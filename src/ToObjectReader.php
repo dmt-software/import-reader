@@ -42,14 +42,12 @@ final class ToObjectReader implements ReaderInterface
         if ($serializer && ($handler instanceof XmlReaderHandler || $handler instanceof JsonReaderHandler)) {
             $this->reader = new Reader($handler, new DeserializeToObjectDecorator($serializer, $className));
         } else {
-            $decorators = [];
+            $handlerDecorator = null;
             if ($namespace && $handler instanceof XmlReaderHandler) {
-                $decorators[] = new ToSimpleXmlElementDecorator($namespace);
+                $handlerDecorator = new ToSimpleXmlElementDecorator($namespace);
             }
 
-            $decorators[] = new ToObjectDecorator($className, $mapping);
-
-            $this->reader = new Reader($handler, ...$decorators);
+            $this->reader = new Reader($handler, $handlerDecorator,  new ToObjectDecorator($className, $mapping));
         }
     }
 

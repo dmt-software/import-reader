@@ -137,3 +137,5 @@ $builder->addSanitizer('url-decode', $decodeUrlSanitizer);
 
 $reader = $builder->build($file, $options = ['url-decode' => $raw = true|false])
 ```
+
+See also the [sanitizer documentation](output-control.md#sanitizers).

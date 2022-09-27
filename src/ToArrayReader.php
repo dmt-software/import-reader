@@ -35,18 +35,17 @@ final class ToArrayReader implements ReaderInterface
         $namespace = $options['namespace'] ?? null;
         $mapping = $options['mapping'] ?? null;
 
-        $decorators = [];
+        $handlerDecorator = null;
         if ($namespace && $handler instanceof XmlReaderHandler) {
-            $decorators[] = new ToSimpleXmlElementDecorator($namespace);
+            $handlerDecorator = new ToSimpleXmlElementDecorator($namespace);
         }
+
+        $this->reader = new Reader($handler, $handlerDecorator);
 
         if ($handler instanceof CsvReaderHandler && isset($mapping)) {
-            $decorators[] = new ColumnMappingDecorator($mapping);
+            $this->reader->addDecorator(new ColumnMappingDecorator($mapping));
         }
-
-        $decorators[] = new ToArrayDecorator();
-
-        $this->reader = new Reader($handler, ...$decorators);
+        $this->reader->addDecorator(new ToArrayDecorator());
     }
 
     /**

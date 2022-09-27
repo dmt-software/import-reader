@@ -7,30 +7,10 @@ The reader is designed to go through a file to return chunks of its contents as 
 
 ## Usage
 
-### Using the reader builder.
+### Create a reader
 
-Read a file into a series of defined objects.
-```php
-use DMT\Import\Reader\ReaderBuilder;
-
-$reader = (new ReaderBuilder())->build(
-    'file://customers.xml', [
-        'class' => Customer::class,
-        'mapping' => [
-            'name/@id' => 'number',
-            'name' => 'name',
-        ],
-        'path' => '/customers/customer'
-    ]
-);
-
-foreach ($reader->read() as $key => $customer) {
-    // process customer
-}
-```
-Visit the [reader builder](docs/reader-builder.md) documentation for configuration options.
-
-### Manually create a reader
+The reader can be created manually or the [reader builder](docs/reader-builder.md) can be used to create a (default) 
+reader or a pre-configured one. 
 
 ```php
 use DMT\Import\Reader\Decorators\DecoratorInterface;
@@ -47,11 +27,51 @@ $internalReader->open('/path/to/some.json');
 /** @var SanitizerInterface[] $sanitizers */
 $reader = new Reader(
     new JsonReaderHandler($internalReader, ...$sanitizers),
-    new GenericHandlerDecorator(), ...$decorators
+    new GenericHandlerDecorator(), 
+    ...$decorators
 );
 ```
-Visit the [reader handler](docs/reader-handler.md) documentation for more information on the handlers, internal readers
-and sanitizers.
+Visit the [reader handler](docs/reader-handler.md) documentation for more information on the handlers internal readers
+and [sanitizers](docs/output-control.md#sanitizers).
+
+### Adding decorators
+
+Once a default reader is created, it is possible to add extra decorators to apply on each object that is returned by
+the read method. 
+
+```php
+use DMT\Import\Reader\Decorators\ToObjectDecorator;
+use DMT\Import\Reader\Reader;
+
+/** @var Reader $reader */
+$reader->addDecorator(new ToObjectDecorator(Customer::class, ['id' => 'id', 'name' => 'fullName', ]));
+
+foreach ($reader->read() as $customer) {
+    // import customer;
+}
+```
+More on decorators see the [documentation](docs/output-control.md#decorators).
+
+### Adding filters
+
+Besides controlling the output by using a decorator a part of the object stream the reader returns can be skipped or 
+filtered.
+
+```php
+use DMT\Import\Reader\Reader;
+
+/** start on item 4 */ 
+$skip = 3;
+/** skip all objects that has no id */
+$filter = function (object $current) { 
+    return isset($current->id); 
+}
+
+foreach ($reader->read($skip, $filter) as $item) {
+    // import item
+}
+```
+Visit the [filters section](docs/output-control.md#filters) for more information about filter callbacks.
 
 ## Error Handling
 
@@ -70,7 +90,7 @@ use DMT\Import\Reader\Exceptions\UnreadableException;
 try {
     $readerBuilder->build($file, $options = []);
 } catch (UnreadableException $exception) {
-    // File can not be processed
+    // file can not be processed
 }
 ```
 
