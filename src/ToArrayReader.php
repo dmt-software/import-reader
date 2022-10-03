@@ -44,8 +44,9 @@ final class ToArrayReader implements ReaderInterface
 
         if ($handler instanceof CsvReaderHandler && isset($mapping)) {
             $this->reader->addDecorator(new ColumnMappingDecorator($mapping));
+        } else {
+            $this->reader->addDecorator(new ToArrayDecorator($mapping));
         }
-        $this->reader->addDecorator(new ToArrayDecorator());
     }
 
     /**
