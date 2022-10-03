@@ -35,4 +35,31 @@ class JsonToArrayDecoratorTest extends TestCase
             ],
         ];
     }
+
+    public function testDecorateWithMapping(): void
+    {
+        $row = json_decode('{
+            "employee": "John Do",
+            "role": "developer",
+            "experience": {
+                "years": 5
+            },
+            "languages": ["php", "javascript"]
+        }');
+
+        $decorator = new JsonToArrayDecorator([
+            'employee' => 'name',
+            'experience.years' => 'experience',
+            'languages' => 'languages'
+        ]);
+
+        $this->assertEquals(
+            new ArrayObject([
+                'name' => 'John Do',
+                'experience' => '5',
+                'languages' => ['php', 'javascript']
+            ]),
+            $decorator->decorate($row)
+        );
+    }
 }

@@ -12,6 +12,15 @@ use stdClass;
 final class ToArrayDecorator implements DecoratorInterface
 {
     private ?DecoratorInterface $typeDecorator = null;
+    private ?array $mapping;
+
+    /**
+     * @param array|null $mapping
+     */
+    public function __construct(array $mapping = null)
+    {
+        $this->mapping = $mapping ?: null;
+    }
 
     /**
      * Transform the rows to an ArrayObject.
@@ -40,11 +49,11 @@ final class ToArrayDecorator implements DecoratorInterface
     private function getDecoratorForType(object $currentRow): DecoratorInterface
     {
         if ($currentRow instanceof SimpleXMLElement) {
-            return new XmlToArrayDecorator();
+            return new XmlToArrayDecorator($this->mapping);
         }
 
         if ($currentRow instanceof stdClass) {
-            return new JsonToArrayDecorator();
+            return new JsonToArrayDecorator($this->mapping);
         }
 
         throw DecoratorException::create('Unsupported type');

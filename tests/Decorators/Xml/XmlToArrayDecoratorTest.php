@@ -43,4 +43,30 @@ class XmlToArrayDecoratorTest extends TestCase
             ]
         ];
     }
+
+    public function testDecorateWithMapping(): void
+    {
+        $row = simplexml_load_string('<xml>
+            <name>John Do</name>
+            <role>Developer</role>
+            <language>php</language>
+            <language>javascript</language>
+            <experience><years>5</years></experience>
+        </xml>');
+
+        $decorator = new XmlToArrayDecorator([
+            'name' => 'name',
+            'experience/years' => 'experience',
+            'language' => 'languages'
+        ]);
+
+        $this->assertEquals(
+            new ArrayObject([
+                'name' => 'John Do',
+                'experience' => '5',
+                'languages' => ['php', 'javascript']
+            ]),
+            $decorator->decorate($row)
+        );
+    }
 }
