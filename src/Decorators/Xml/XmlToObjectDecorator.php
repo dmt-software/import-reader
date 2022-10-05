@@ -67,7 +67,7 @@ final class XmlToObjectDecorator implements DecoratorInterface
             return null;
         }
 
-        if (count($value[0]->children()) > 0) {
+        if (count($value[0]->children() ?? []) > 0) {
             foreach ($value as &$elem) {
                 $elem = array_map('strval', $elem->xpath('*'));
             }
