@@ -37,7 +37,8 @@ final class JsonToObjectDecorator implements DecoratorInterface
      */
     public function decorate(object $currentRow): object
     {
-        $entity = (new ReflectionClass($this->className))->newInstanceWithoutConstructor();
+        $object = new ReflectionClass($this->className);
+        $entity = $object->newInstanceWithoutConstructor();
 
         foreach ($this->mapping as $key => $property) {
             try {
@@ -49,6 +50,14 @@ final class JsonToObjectDecorator implements DecoratorInterface
                 foreach ($paths as $path) {
                     $value = $value->$path ?? null;
                 }
+
+                $type = $object->getProperty($property)->getType()->getName();
+                if ($value && !is_array($value) && $type == 'array') {
+                    $value = [$value];
+                } elseif (is_array($value) && $type != 'array') {
+                    [$value] = $value;
+                }
+
                 $entity->$property = $value;
             } catch (Error $e) {
                 throw DecoratorException::create('Can not set %s on %s', $property, $this->className);

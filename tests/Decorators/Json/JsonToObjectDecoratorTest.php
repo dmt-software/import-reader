@@ -6,6 +6,7 @@ use DMT\Import\Reader\Decorators\Json\JsonToObjectDecorator;
 use DMT\Import\Reader\Exceptions\DecoratorException;
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
 use DMT\Test\Import\Reader\Fixtures\Language;
+use DMT\Test\Import\Reader\Fixtures\Program;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use stdClass;
@@ -43,6 +44,29 @@ class JsonToObjectDecoratorTest extends TestCase
                 new Language('php', 1995, 'Rasmus Lerdorf'),
             ],
         ];
+    }
+
+    public function testDecorateToArrayValues(): void
+    {
+        $decorator = new JsonToObjectDecorator(Program::class, ['license' => 'license', 'language' => 'languages']);
+
+        /** @var Program $program */
+        $program = $decorator->decorate(json_decode('{"license": "open source", "language": "php"}'));
+
+        $this->assertSame('open source', $program->license);
+        $this->assertIsArray($program->languages);
+        $this->assertContains('php', $program->languages);
+    }
+
+    public function testDecorateFromArrayValues(): void
+    {
+        $decorator = new JsonToObjectDecorator(Program::class, ['licenses' => 'license', 'languages' => 'languages']);
+
+        /** @var Program $program */
+        $program = $decorator->decorate(json_decode('{"licenses": ["MIT", "GNU"], "languages": []}'));
+
+        $this->assertSame('MIT', $program->license);
+        $this->assertIsArray($program->languages);
     }
 
     /**
