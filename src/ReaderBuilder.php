@@ -103,7 +103,6 @@ final class ReaderBuilder
         $readerOptions = [
             'mapping' => $options['mapping'] ?? null,
             'namespace' => $options['namespace'] ?? null,
-            'mapping' => $options['mapping'] ?? null,
         ];
 
         return new ToArrayReader($this->createHandler($file, $options), $readerOptions);
