@@ -12,100 +12,104 @@ use XMLReader;
 
 final class HandlerFactory
 {
-    private $initializeHandlerCallback = [];
+    /**
+     * @var array <string, Closure>
+     */
+    private array $handlerInstantiators = [];
 
-    public function addInitializeHandlerCallback(string $handler, Closure $callback): void
+    public function __construct()
     {
-        $this->initializeHandlerCallback[$handler] = $callback;
+        foreach ($this->getDefaultInitializeHandlerCallbacks() as $handlerClassName => $instantiator) {
+            $this->addInitializeHandlerCallback($handlerClassName, $instantiator);
+        }
     }
 
     /**
-     * Create a reader handler for a csv file.
+     * Add handler instantiator callback.
      *
-     * @param string $fileOrUri The file or wrapper uri that contains the file.
-     * @param array $config Optional configuration with <delimiter>, <enclosure> and <escape> characters.
-     * @param SanitizerInterface ...$sanitizers Optional sanitizers to apply on the raw values.
+     * @param string $handlerClassName
+     * @param Closure(string $fileOrUri, array $config, SanitizerInterface[] $sanitizers): HandlerInterface $instantiator
+     *
+     * @return void
+     */
+    public function addInitializeHandlerCallback(string $handlerClassName, Closure $instantiator): void
+    {
+        $this->handlerInstantiators[$handlerClassName] = $instantiator;
+    }
+
+    /**
+     * Create reader handler.
+     *
+     * @param string $handlerClassName
+     * @param string $fileOrUri
+     * @param array $config
+     * @param SanitizerInterface[] $sanitizers
+     *
      * @return HandlerInterface
      */
-    public function createCsvReaderHandler(
+    public function createReaderHandler(
+        string $handlerClassName,
         string $fileOrUri,
         array $config = [],
-        SanitizerInterface ...$sanitizers
+        array $sanitizers = []
     ): HandlerInterface {
-        $config = [
-            $config['delimiter'] ?? ',',
-            $config['enclosure'] ?? '"',
-            $config['escape'] ?? '\\'
-        ];
+        $instantiator = $this->getInstantiatorForHandler($handlerClassName);
 
-        $fileHandler = new SplFileObject($fileOrUri);
-        $fileHandler->setCsvControl(...$config);
-
-        return new CsvReaderHandler($fileHandler, ...$sanitizers);
+        return $instantiator($fileOrUri, $config, $sanitizers);
     }
 
     /**
-     * Create a reader handler for a json file.
+     * Get instantiator for a handler.
      *
-     * @param string $fileOrUri The file or wrapper uri that contains the file.
-     * @param array $config Optional configuration that contains the json <flags> and dotted <path> of the json.
-     * @param SanitizerInterface ...$sanitizers $sanitizers Optional sanitizers to apply on the raw json string.
-     * @return HandlerInterface
-     */
-    public function createJsonReaderHandler(
-        string $fileOrUri,
-        array $config = [],
-        SanitizerInterface ...$sanitizers
-    ): HandlerInterface {
-        $fileHandler = new JsonReader($config['flags'] ?? 0);
-        $fileHandler->open($fileOrUri);
-
-        $pointer = new JsonPathFilePointer($config['path'] ?? '');
-
-        return new JsonReaderHandler($fileHandler, $pointer, ...$sanitizers);
-    }
-
-    /**
-     * Create a reader handler for a xml file.
+     * @param string $handlerClassName
      *
-     * @param string $fileOrUri The file or wrapper uri that contains the file.
-     * @param array $config Optional configuration that contains the <encoding>, <version> and <path> of the xml.
-     * @param SanitizerInterface ...$sanitizers Optional sanitizers to apply on the string of xml.
-     * @return HandlerInterface
+     * @return Closure
      */
-    public function createXmlReaderHandler(
-        string $fileOrUri,
-        array $config = [],
-        SanitizerInterface ...$sanitizers
-    ): HandlerInterface {
-        $fileHandler = new XMLReader();
-        $fileHandler->open($fileOrUri, $config['encoding'] ?? null, $config['flags'] ?? 0);
-
-        $pointer = new XmlPathFilePointer($config['path'] ?? '');
-
-        return new XmlReaderHandler($fileHandler, $pointer, ...$sanitizers);
-    }
-
-    /**
-     * Create a custom handler.
-     *
-     * @param string $fileOrUri The file or wrapper uri that contains the file.
-     * @param string $customHandlerClass The handler to initiate.
-     * @param SanitizerInterface ...$sanitizers Optional sanitizers to apply on the raw values.
-     * @return HandlerInterface
-     */
-    public function createCustomReaderHandler(
-        string $fileOrUri,
-        string $customHandlerClass,
-        SanitizerInterface ...$sanitizers
-    ): HandlerInterface {
-        $callback = $this->initializeHandlerCallback[$customHandlerClass] ?? null;
-
-        if (!$callback) {
-            $callback = function (string $fileOrUri) use ($customHandlerClass) {
-                return new $customHandlerClass(new SplFileObject($fileOrUri));
+    private function getInstantiatorForHandler(string $handlerClassName): Closure
+    {
+        if (!array_key_exists($handlerClassName, $this->handlerInstantiators)) {
+            return function (string $fileOrUri, array $config, array $sanitizers) use ($handlerClassName) {
+                return new $handlerClassName(new SplFileObject($fileOrUri), ...$sanitizers);
             };
         }
-        return $callback($fileOrUri);
+
+        return $this->handlerInstantiators[$handlerClassName];
+    }
+
+    /**
+     * Get the default handler callbacks.
+     *
+     * @return array <string, Closure>
+     */
+    private function getDefaultInitializeHandlerCallbacks(): array
+    {
+        return [
+            CsvReaderHandler::class => function (string $file, array $config, array $sanitizers): HandlerInterface {
+                $fileHandler = new SplFileObject($file);
+                $fileHandler->setCsvControl(
+                    $config['delimiter'] ?? ',',
+                    $config['enclosure'] ?? '"',
+                    $config['escape'] ?? '\\'
+                );
+
+                return new CsvReaderHandler($fileHandler, ...$sanitizers);
+            },
+            XmlReaderHandler::class => function (string $file, array $config, array $sanitizers): HandlerInterface {
+                $pointer = new XmlPathFilePointer($config['path'] ?? '');
+
+                $fileHandler = new XMLReader();
+                $fileHandler->open($file, $config['encoding'] ?? null, $config['flags'] ?? 0);
+
+                return new XmlReaderHandler($fileHandler, $pointer, ...$sanitizers);
+            },
+            JsonReaderHandler::class => function (string $file, array $config, array $sanitizers): HandlerInterface {
+                $pointer = new JsonPathFilePointer($config['path'] ?? '');
+
+                $fileHandler = new JsonReader($config['flags'] ?? 0);
+                $fileHandler->open($file);
+
+                return new JsonReaderHandler($fileHandler, $pointer, ...$sanitizers);
+            }
+        ];
     }
 }

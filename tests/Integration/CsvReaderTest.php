@@ -6,6 +6,7 @@ use ArrayObject;
 use DMT\Import\Reader\Decorators\Csv\ColumnMappingDecorator;
 use DMT\Import\Reader\Decorators\Csv\CsvToObjectDecorator;
 use DMT\Import\Reader\Decorators\Handler\GenericHandlerDecorator;
+use DMT\Import\Reader\Handlers\CsvReaderHandler;
 use DMT\Import\Reader\Handlers\Sanitizers\TrimSanitizer;
 use DMT\Import\Reader\Reader;
 use DMT\Test\Import\Reader\Fixtures\Plane;
@@ -27,7 +28,12 @@ class CsvReaderTest extends TestCase
     public function testImportCsv(string $file): void
     {
         $reader = new Reader(
-            $this->handlerFactory->createCsvReaderHandler($file, [], new TrimSanitizer('.', TrimSanitizer::TRIM_RIGHT)),
+            $this->handlerFactory->createReaderHandler(
+                CsvReaderHandler::class,
+                $file,
+                [],
+                [new TrimSanitizer('.', TrimSanitizer::TRIM_RIGHT)]
+            ),
             new GenericHandlerDecorator(),
             new ColumnMappingDecorator(
                 [
@@ -68,10 +74,11 @@ class CsvReaderTest extends TestCase
     public function testReadCsvToDataTransferObjects()
     {
         $reader = new Reader(
-            $this->handlerFactory->createCsvReaderHandler(
+            $this->handlerFactory->createReaderHandler(
+                CsvReaderHandler::class,
                 __DIR__ . '/../files/planes.csv',
                 [],
-                new TrimSanitizer('.', TrimSanitizer::TRIM_RIGHT)
+                [new TrimSanitizer('.', TrimSanitizer::TRIM_RIGHT)]
             ),
             new GenericHandlerDecorator(),
             new CsvToObjectDecorator(Plane::class, [

@@ -23,7 +23,7 @@ class HandlerFactoryTest extends TestCase
             'enclosure' => "'"
         ];
 
-        $handler = (new HandlerFactory())->createCsvReaderHandler('php://memory', $csvControl);
+        $handler = (new HandlerFactory())->createReaderHandler(CsvReaderHandler::class, 'php://memory', $csvControl);
 
         /** @var SplFileObject $innerReader */
         $innerReader = $this->getPropertyValue($handler, 'reader');
@@ -37,7 +37,8 @@ class HandlerFactoryTest extends TestCase
     public function testCreateXmlReaderHandler(): void
     {
         $path = 'some/element';
-        $handler = (new HandlerFactory())->createXmlReaderHandler('php://memory', compact('path'));
+        $handler = (new HandlerFactory())
+            ->createReaderHandler(XmlReaderHandler::class, 'php://memory', compact('path'));
         $pointer = $this->getPropertyValue($handler, 'pointer');
 
         $this->assertInstanceOf(XmlReaderHandler::class, $handler);
@@ -49,7 +50,8 @@ class HandlerFactoryTest extends TestCase
     public function testCreateJsonReaderHandler(): void
     {
         $path = 'some.object';
-        $handler = (new HandlerFactory())->createJsonReaderHandler('php://memory', compact('path'));
+        $handler = (new HandlerFactory())
+            ->createReaderHandler(JsonReaderHandler::class, 'php://memory', compact('path'));
         $pointer = $this->getPropertyValue($handler, 'pointer');
 
         $this->assertInstanceOf(JsonReaderHandler::class, $handler);
@@ -65,7 +67,8 @@ class HandlerFactoryTest extends TestCase
             ->disableOriginalConstructor()
             ->getMockForAbstractClass();
 
-        $handler = (new HandlerFactory())->createCustomReaderHandler('php://memory', 'CustomHandler');
+        $handler = (new HandlerFactory())
+            ->createReaderHandler('CustomHandler', 'php://memory');
 
         $this->assertInstanceOf(SplFileObject::class, $handler->reader);
     }
@@ -81,7 +84,7 @@ class HandlerFactoryTest extends TestCase
                 ->setConstructorArgs([$reader])
                 ->getMockForAbstractClass();
         });
-        $handler = $handlerFactory->createCustomReaderHandler('php://memory', 'CustomHandler');
+        $handler = $handlerFactory->createReaderHandler('CustomHandler', 'php://memory');
 
         $this->assertEquals((object)['file' => 'php://memory'], $handler->reader);
     }

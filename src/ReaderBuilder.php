@@ -156,31 +156,29 @@ final class ReaderBuilder
         $handler = $options['handler'] ?? $this->getHandlerTypeForFile($file);
 
         switch ($handler) {
-            case CsvReaderHandler::class:
-                return $this->handlerFactory
-                    ->createCsvReaderHandler($file, $options, ...$this->getSanitizersFromOptions($options));
             case JsonReaderHandler::class:
-                $sanitizers = $this->getSanitizersFromOptions(array_diff_key($options, array_flip(['encoding'])));
-                return $this->handlerFactory->createJsonReaderHandler($file, $options, ...$sanitizers);
+                $sanitizers = $this->getSanitizersFromOptions($options, ['encoding']);
+                break;
             case XmlReaderHandler::class:
-                $sanitizers = $this->getSanitizersFromOptions(
-                    array_diff_key($options, array_flip(['encoding', 'trim']))
-                );
-                return $this->handlerFactory->createXmlReaderHandler($file, $options, ...$sanitizers);
+                $sanitizers = $this->getSanitizersFromOptions($options, ['encoding', 'trim']);
+                break;
             default:
-                return $this->handlerFactory
-                    ->createCustomReaderHandler($file, $handler, ...$this->getSanitizersFromOptions($options));
+                $sanitizers = $this->getSanitizersFromOptions($options);
+                break;
         }
+
+        return $this->handlerFactory->createReaderHandler($handler, $file, $options, $sanitizers);
     }
 
     /**
      * Get the sanitizers from options.
      *
      * @param array $options The configuration options.
+     * @param array $exclude The sanitizers to ignore
      *
-     * @return SanitizerInterface[]
+     * @return SanitizerInterface
      */
-    private function getSanitizersFromOptions(array $options): array
+    private function getSanitizersFromOptions(array $options, array $exclude = []): array
     {
         $encoding = $options['encoding'] ?? 'utf-8';
         if (strcasecmp($encoding, 'utf-8') === 0) {
@@ -193,6 +191,9 @@ final class ReaderBuilder
 
         $sanitizers = [];
         foreach ($this->sanitizers as $option => $sanitizer) {
+            if (array_key_exists($option, $exclude)) {
+                continue;
+            }
             if (array_key_exists($option, $options)) {
                 $sanitizers[] = new $sanitizer(...$options[$option]);
             }

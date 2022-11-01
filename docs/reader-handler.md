@@ -70,12 +70,10 @@ $jsonReaderHandler = new XmlReaderHandler($innerReader, new XmlPathFilePointer($
 The handler factory can be used to construct a reader for a file type with certain options, as documented in the
 reader builder [configuration](reader-builder.md#configuration).
 
- * createCsvReaderHandler
- * createJsonReaderHandler
- * createXmlReaderHandler
-
 ```php
-$factory->createCsvReaderHandler($file, $options = ['delimiter' => ';']); 
+use DMT\Import\Reader\Handlers\CsvReaderHandler;
+
+$factory->createReaderHandler(CsvReaderHandler::class, $file, $options = ['delimiter' => ';']); 
 ```
 
 ### Custom handlers

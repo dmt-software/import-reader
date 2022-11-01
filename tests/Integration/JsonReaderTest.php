@@ -4,6 +4,7 @@ namespace DMT\Test\Import\Reader\Integration;
 
 use DMT\Import\Reader\Decorators\Json\JsonToObjectDecorator;
 use DMT\Import\Reader\Decorators\Handler\GenericHandlerDecorator;
+use DMT\Import\Reader\Handlers\JsonReaderHandler;
 use DMT\Import\Reader\Handlers\Sanitizers\TrimSanitizer;
 use DMT\Import\Reader\Reader;
 use DMT\Test\Import\Reader\Fixtures\Language;
@@ -26,7 +27,12 @@ class JsonReaderTest extends TestCase
     public function testImportJson(string $file)
     {
         $reader = new Reader(
-            $this->handlerFactory->createJsonReaderHandler($file, ['path' => '.'], new TrimSanitizer()),
+            $this->handlerFactory->createReaderHandler(
+                JsonReaderHandler::class,
+                $file,
+                ['path' => '.'],
+                [new TrimSanitizer()]
+            ),
             new GenericHandlerDecorator()
         );
 
@@ -51,7 +57,8 @@ class JsonReaderTest extends TestCase
     public function testReadJsonIntoDataTransferObjects()
     {
         $reader = new Reader(
-            $this->handlerFactory->createJsonReaderHandler(
+            $this->handlerFactory->createReaderHandler(
+                JsonReaderHandler::class,
                 __DIR__ . '/../files/programming.json',
                 ['path' => '.languages']
             ),

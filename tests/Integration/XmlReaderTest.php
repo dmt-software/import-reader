@@ -4,6 +4,7 @@ namespace DMT\Test\Import\Reader\Integration;
 
 use DMT\Import\Reader\Decorators\Handler\GenericHandlerDecorator;
 use DMT\Import\Reader\Handlers\Sanitizers\EncodingSanitizer;
+use DMT\Import\Reader\Handlers\XmlReaderHandler;
 use DMT\Import\Reader\Reader;
 use PHPUnit\Framework\TestCase;
 use SimpleXMLElement;
@@ -24,10 +25,11 @@ class XmlReaderTest extends TestCase
     public function testImportXml(string $file): void
     {
         $reader = new Reader(
-            $this->handlerFactory->createXmlReaderHandler(
+            $this->handlerFactory->createReaderHandler(
+                XmlReaderHandler::class,
                 $file,
                 ['encoding' => 'UTF-8', 'path' => 'cars/car'],
-                new EncodingSanitizer('UTF-8', 'ASCII//TRANSLIT')
+                [new EncodingSanitizer('UTF-8', 'ASCII//TRANSLIT')]
             ),
             new GenericHandlerDecorator()
         );
