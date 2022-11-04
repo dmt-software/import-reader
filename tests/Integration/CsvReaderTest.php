@@ -9,6 +9,7 @@ use DMT\Import\Reader\Decorators\Handler\GenericHandlerDecorator;
 use DMT\Import\Reader\Handlers\CsvReaderHandler;
 use DMT\Import\Reader\Handlers\Sanitizers\TrimSanitizer;
 use DMT\Import\Reader\Reader;
+use DMT\Import\Reader\ReaderBuilder;
 use DMT\Test\Import\Reader\Fixtures\Plane;
 use PHPUnit\Framework\TestCase;
 
@@ -95,5 +96,23 @@ class CsvReaderTest extends TestCase
 
         $this->assertTrue($this->logger->hasWarningThatContains('Skipped row 3'));
         $this->assertSame(4, $row);
+    }
+
+    public function testCsvReaderFromBuilder()
+    {
+        $reader = (new ReaderBuilder())
+            ->build(__DIR__ . '/../files/planes.csv', [
+                'trim' => ['.', TrimSanitizer::TRIM_RIGHT],
+                'mapping' => [
+                    'col1' => 'type',
+                    'col8' => 'year',
+                ]
+            ]);
+
+        foreach ($reader->read(1) as $plane) {
+            $this->assertInstanceOf(ArrayObject::class, $plane);
+            $this->assertObjectHasAttribute('type', $plane);
+            $this->assertObjectHasAttribute('year', $plane);
+        }
     }
 }

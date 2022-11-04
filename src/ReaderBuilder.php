@@ -3,6 +3,7 @@
 namespace DMT\Import\Reader;
 
 use DMT\Import\Reader\Decorators\Csv\ColumnMappingDecorator;
+use DMT\Import\Reader\Decorators\Handler\GenericHandlerDecorator;
 use DMT\Import\Reader\Decorators\Handler\ToSimpleXmlElementDecorator;
 use DMT\Import\Reader\Exceptions\UnreadableException;
 use DMT\Import\Reader\Handlers\CsvReaderHandler;
@@ -85,6 +86,7 @@ final class ReaderBuilder
         }
 
         if ($handler instanceof CsvReaderHandler && isset($mapping)) {
+            $decorators[] = new GenericHandlerDecorator();
             $decorators[] = new ColumnMappingDecorator($mapping);
         }
 
