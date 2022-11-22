@@ -214,13 +214,15 @@ final class ReaderBuilder
     {
         $extension = pathinfo($file, PATHINFO_EXTENSION);
 
-        if (!array_key_exists($extension, $this->extensionToHandler)) {
-            throw UnreadableException::unreadable(
-                $file,
-                new RuntimeException('no handler found for file type')
-            );
+        if (array_key_exists($extension, $this->extensionToHandler)) {
+            return $this->extensionToHandler[$extension];
         }
 
-        return $this->extensionToHandler[$extension];
+        $extension = strtolower($extension);
+        if (array_key_exists($extension, $this->extensionToHandler)) {
+            return $this->extensionToHandler[$extension];
+        }
+
+        throw UnreadableException::unreadable($file, new RuntimeException('no handler found for file type'));
     }
 }

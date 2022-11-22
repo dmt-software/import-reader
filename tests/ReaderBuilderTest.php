@@ -2,6 +2,8 @@
 
 namespace DMT\Test\Import\Reader;
 
+use DMT\Import\Reader\Exceptions\UnreadableException;
+use DMT\Import\Reader\Handlers\CsvReaderHandler;
 use DMT\Import\Reader\Handlers\JsonReaderHandler;
 use DMT\Import\Reader\Handlers\Sanitizers\SanitizerInterface;
 use DMT\Import\Reader\Handlers\XmlReaderHandler;
@@ -12,8 +14,10 @@ use ReflectionProperty;
 
 class ReaderBuilderTest extends TestCase
 {
-    public function testAddExtensionToHandler(): void
+    public static function setUpBeforeClass(): void
     {
+        parent::setUpBeforeClass();
+
         $protocol = new class() {
             private $mapping = [
                 'stream_open' => true,
@@ -26,16 +30,22 @@ class ReaderBuilderTest extends TestCase
         };
 
         stream_wrapper_register('dummy', get_class($protocol));
+    }
 
+    public function testAddExtensionToHandler(): void
+    {
         $builder = new ReaderBuilder();
         $builder->addExtensionToHandler('cxml', XmlReaderHandler::class);
 
-        $this->assertInstanceOf(
-            XmlReaderHandler::class,
-            $builder->createHandler('dummy://cars.cxml', [])
-        );
+        $this->assertInstanceOf(XmlReaderHandler::class, $builder->createHandler('dummy://cars.cxml', []));
+    }
 
-        stream_wrapper_unregister('dummy');
+    public function testCreateHandlerFailure()
+    {
+        $this->expectExceptionObject(UnreadableException::unreadable('dummy://cars.cxml'));
+
+        $builder = new ReaderBuilder();
+        $builder->createHandler('dummy://cars.cxml', []);
     }
 
     public function testAddSanitizer(): void
@@ -49,6 +59,31 @@ class ReaderBuilderTest extends TestCase
 
         $handler = $builder->createHandler(__DIR__ . '/files/programming.json', ['mock' => '']);
         $this->assertContainsOnlyInstancesOf('MockSanitizer', $this->getPropertyValue($handler, 'sanitizers'));
+    }
+
+    /**
+     * @dataProvider provideHandlerDetectionFile
+     *
+     * @param string $file
+     * @param string $handlerClass
+     *
+     * @return void
+     */
+    public function testHandlerDetection(string $file, string $handlerClass)
+    {
+        $builder = new ReaderBuilder();
+        $builder->addExtensionToHandler('XML', XmlReaderHandler::class);
+
+        $this->assertInstanceOf($handlerClass, $builder->createHandler('dummy://' . $file, []));
+    }
+
+    public function provideHandlerDetectionFile(): iterable
+    {
+        return [
+            'default lookup' => ['Foo.json', JsonReaderHandler::class],
+            'custom registered extension' => ['Foo.XML', XmlReaderHandler::class],
+            'fallback to lower case' => ['Foo.Csv', CsvReaderHandler::class],
+        ];
     }
 
     /**
@@ -76,6 +111,13 @@ class ReaderBuilderTest extends TestCase
                 JsonReaderHandler::class
             ]
         ];
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        stream_wrapper_unregister('dummy');
+
+        parent::tearDownAfterClass();
     }
 
     private function getPropertyValue(object $object, $property)
