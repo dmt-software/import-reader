@@ -8,6 +8,7 @@ use DMT\Import\Reader\Handlers\FilePointers\XmlPathFilePointer;
 use DMT\Import\Reader\Handlers\HandlerFactory;
 use DMT\Import\Reader\Handlers\JsonReaderHandler;
 use DMT\Import\Reader\Handlers\XmlReaderHandler;
+use DMT\XmlParser\Parser;
 use pcrov\JsonReader\JsonReader;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
@@ -42,7 +43,7 @@ class HandlerFactoryTest extends TestCase
         $pointer = $this->getPropertyValue($handler, 'pointer');
 
         $this->assertInstanceOf(XmlReaderHandler::class, $handler);
-        $this->assertInstanceOf(XMLReader::class, $this->getPropertyValue($handler, 'reader'));
+        $this->assertInstanceOf(Parser::class, $this->getPropertyValue($handler, 'reader'));
         $this->assertInstanceOf(XmlPathFilePointer::class, $pointer);
         $this->assertSame($path, $this->getPropertyValue($pointer, 'path'));
     }

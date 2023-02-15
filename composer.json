@@ -17,7 +17,8 @@
     "ext-libxml": "*",
     "ext-simplexml": "*",
     "ext-xmlreader": "*",
-    "pcrov/jsonreader": "^1.0"
+    "pcrov/jsonreader": "^1.0",
+    "dmt-software/xml-parser": "^0.3"
   },
   "autoload": {
     "psr-4": {
