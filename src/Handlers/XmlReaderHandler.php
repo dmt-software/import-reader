@@ -5,7 +5,7 @@ namespace DMT\Import\Reader\Handlers;
 use DMT\Import\Reader\Exceptions\UnreadableException;
 use DMT\Import\Reader\Handlers\FilePointers\FilePointerInterface;
 use DMT\Import\Reader\Handlers\Sanitizers\SanitizerInterface;
-use XMLReader;
+use DMT\XmlParser\Parser;
 
 /**
  * Xml reader handler.
@@ -14,18 +14,18 @@ use XMLReader;
  */
 final class XmlReaderHandler implements HandlerInterface
 {
-    private XMLReader $reader;
+    private Parser $reader;
     private FilePointerInterface $pointer;
     /** @var SanitizerInterface[] */
     private array $sanitizers = [];
 
     /**
-     * @param XMLReader $reader
+     * @param Parser $reader
      * @param FilePointerInterface $pointer
      * @param SanitizerInterface ...$sanitizers
      */
     public function __construct(
-        XMLReader            $reader,
+        Parser               $reader,
         FilePointerInterface $pointer,
         SanitizerInterface   ...$sanitizers
     ) {
@@ -59,10 +59,9 @@ final class XmlReaderHandler implements HandlerInterface
      */
     public function read(): iterable
     {
-
         $processed = 0;
         do {
-            if (!$xml = $this->reader->readOuterXml()) {
+            if (!$xml = $this->reader->parseXml()) {
                 throw UnreadableException::unreadable('xml');
             }
 
@@ -72,11 +71,9 @@ final class XmlReaderHandler implements HandlerInterface
 
             yield ++$processed => $xml;
 
-            if ($this->reader->next($this->reader->localName) === false) {
+            if (!$this->reader->parse()) {
                 break;
             }
         } while (true);
-
-        $this->reader->close();
     }
 }

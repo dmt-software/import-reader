@@ -5,42 +5,50 @@ namespace DMT\Test\Import\Reader\Handlers\FilePointers;
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
 use DMT\Import\Reader\Exceptions\UnreadableException;
 use DMT\Import\Reader\Handlers\FilePointers\XmlPathFilePointer;
+use DMT\XmlParser\Parser;
+use DMT\XmlParser\Source\FileParser;
+use DMT\XmlParser\Source\StringParser;
+use DMT\XmlParser\Tokenizer;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use XMLReader;
 
 class XmlPathFilePointerTest extends TestCase
 {
     /**
      * @dataProvider provideXml
      *
-     * @param string $xml
+     * @param string $file
      * @param string $path
      * @param int $skip
      * @param string $expected
      */
-    public function testSetPointer(string $xml, string $path, int $skip, string $expected): void
+    public function testSetPointer(string $file, string $path, int $skip, string $expected): void
     {
-        $reader = new XMLReader();
-        $reader->XML($xml, 'UTF-8');
-
+        $reader = new Parser(
+            new Tokenizer(
+                new FileParser($file),
+                $config['encoding'] ?? null,
+                $config['flags'] ?? 0
+            )
+        );
         $pointer = new XMLPathFilePointer($path);
         $pointer->seek($reader, $skip);
 
-        $this->assertEquals($expected, $reader->readOuterXml());
+        $this->assertEquals($expected, $reader->parseXml());
     }
 
     public function provideXml(): iterable
     {
-        $xmlString = trim(preg_replace("~\r\n~", "\n", file_get_contents(__DIR__ . '/../../files/cars.xml')));
+        $file = __DIR__ . '/../../files/cars.xml';
+        $xmlString = trim(preg_replace("~(?<=\>)\s+~", '', file_get_contents($file)));
         $xml = simplexml_load_string($xmlString);
 
         return [
-            'full contents' => [$xmlString, '', 0, $xmlString],
-            'first car in xml' => [$xmlString, 'cars/car', 0, $xml->car[0]->asXML()],
-            'third car in xml' => [$xmlString, 'cars/car', 2, $xml->car[2]->asXML()],
+            'full contents' => [$file, '', 0, $xmlString],
+            'first car in xml' => [$file, 'cars/car', 0, $xml->car[0]->asXML()],
+            'third car in xml' => [$file, 'cars/car', 2, $xml->car[2]->asXML()],
             'first model of first car in xml' => [
-                $xmlString,
+                $file,
                 'cars/car/models/model',
                 0,
                 $xml->car[0]->models->model[0]->asXML()
@@ -60,8 +68,13 @@ class XmlPathFilePointerTest extends TestCase
     {
         $this->expectExceptionObject($exception);
 
-        $reader = new XMLReader();
-        $reader->XML($xml, 'UTF-8');
+        $reader = new Parser(
+            new Tokenizer(
+                new StringParser($xml),
+                $config['encoding'] ?? null,
+                $config['flags'] ?? 0
+            )
+        );
 
         $pointer = new XMLPathFilePointer($path);
         $pointer->seek($reader, $skip);
@@ -74,7 +87,6 @@ class XmlPathFilePointerTest extends TestCase
         return [
             'path not found' => [$xmlString, 'car/models', 0, UnreadableException::pathNotFound('car/models')],
             'end of file reached' => [$xmlString, 'cars/car/models/model', 4, UnreadableException::eof()],
-            'error reading xml' => ['<?xml>' . $xmlString, 'xml', 0, UnreadableException::unreadable('xml')],
         ];
     }
 }

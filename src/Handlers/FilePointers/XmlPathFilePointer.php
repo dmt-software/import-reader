@@ -3,8 +3,9 @@
 namespace DMT\Import\Reader\Handlers\FilePointers;
 
 use DMT\Import\Reader\Exceptions\UnreadableException;
+use DMT\XmlParser\Node\Text;
+use DMT\XmlParser\Parser;
 use Throwable;
-use XMLReader;
 
 /**
  * Helper to determine the elements to iterate over.
@@ -43,14 +44,13 @@ final class XmlPathFilePointer implements FilePointerInterface
     /**
      * Set the pointer to the first element in the xml according the given path.
      *
-     * @param XMLReader $reader The file reader to use.
+     * @param Parser $reader The file reader to use.
      * @param int $skip
      * @throws UnreadableException
      */
     public function seek($reader, int $skip): void
     {
         if ($this->path == '') {
-            $reader->read();
             return;
         }
 
@@ -58,17 +58,15 @@ final class XmlPathFilePointer implements FilePointerInterface
         $stack = [];
 
         try {
-            do {
-                if ($reader->nodeType === XMLReader::END_ELEMENT) {
-                    array_pop($stack);
-                } elseif ($reader->nodeType === XMLReader::ELEMENT && !$reader->isEmptyElement) {
-                    $stack[] = $reader->localName;
+            while ($node = $reader->parse()) {
+                if ($node instanceof Text) {
+                    continue;
                 }
-
+                $stack[$node->depth() - 1] = $node->localName;
                 if ($paths == $stack) {
                     break;
                 }
-            } while ($reader->read() !== false);
+            }
         } catch (Throwable $exception) {
             throw UnreadableException::unreadable('xml', $exception);
         }
@@ -79,10 +77,12 @@ final class XmlPathFilePointer implements FilePointerInterface
 
         $position = 0;
         while ($position++ < $skip) {
-            if (!$reader->readOuterXml()) {
+            if (!$reader->parseXml()) {
                 throw UnreadableException::eof();
             }
-            $reader->next($reader->localName);
+            if ($node->localName !== $reader->parse()->localName) {
+                throw UnreadableException::eof();
+            }
         }
     }
 }

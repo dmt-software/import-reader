@@ -6,9 +6,11 @@ use Closure;
 use DMT\Import\Reader\Handlers\FilePointers\JsonPathFilePointer;
 use DMT\Import\Reader\Handlers\FilePointers\XmlPathFilePointer;
 use DMT\Import\Reader\Handlers\Sanitizers\SanitizerInterface;
+use DMT\XmlParser\Parser;
+use DMT\XmlParser\Source\FileParser;
+use DMT\XmlParser\Tokenizer;
 use pcrov\JsonReader\JsonReader;
 use SplFileObject;
-use XMLReader;
 
 final class HandlerFactory
 {
@@ -97,8 +99,13 @@ final class HandlerFactory
             XmlReaderHandler::class => function (string $file, array $config, array $sanitizers): HandlerInterface {
                 $pointer = new XmlPathFilePointer($config['path'] ?? '');
 
-                $fileHandler = new XMLReader();
-                $fileHandler->open($file, $config['encoding'] ?? null, $config['flags'] ?? 0);
+                $fileHandler = new Parser(
+                    new Tokenizer(
+                        new FileParser($file),
+                        $config['encoding'] ?? null,
+                        $config['flags'] ?? 0
+                    )
+                );
 
                 return new XmlReaderHandler($fileHandler, $pointer, ...$sanitizers);
             },
