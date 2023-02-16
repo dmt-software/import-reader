@@ -55,6 +55,7 @@ final class XmlPathFilePointer implements FilePointerInterface
         }
 
         $paths = preg_split('~/~', $this->path, -1, PREG_SPLIT_NO_EMPTY);
+        $depth = 0;
         $stack = [];
 
         try {
@@ -62,7 +63,15 @@ final class XmlPathFilePointer implements FilePointerInterface
                 if ($node instanceof Text) {
                     continue;
                 }
-                $stack[$node->depth() - 1] = $node->localName;
+
+                if ($depth >= $node->depth()) {
+                    array_pop($stack);
+                }
+
+                $depth = $node->depth() - 1;
+                if ($depth <= count($paths)) {
+                    $stack[$depth] = $node->localName;
+                }
                 if ($paths == $stack) {
                     break;
                 }
