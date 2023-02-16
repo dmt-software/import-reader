@@ -97,12 +97,14 @@ final class HandlerFactory
                 return new CsvReaderHandler($fileHandler, ...$sanitizers);
             },
             XmlReaderHandler::class => function (string $file, array $config, array $sanitizers): HandlerInterface {
-                $pointer = new XmlPathFilePointer($config['path'] ?? '');
+                $encoding = $config['encoding'] ?? 'UTF-8';
+                settype($encoding, 'array');
 
+                $pointer = new XmlPathFilePointer($config['path'] ?? '');
                 $fileHandler = new Parser(
                     new Tokenizer(
                         new FileParser($file),
-                        $config['encoding'] ?? null,
+                        current($encoding),
                         $config['flags'] ?? 0
                     )
                 );

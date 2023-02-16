@@ -141,7 +141,10 @@ final class ReaderBuilder
      *      path      : the path (from root) of the objects or elements to read
      *                   - xml  -> a xpath like structure of local element names (root/child/element)
      *                   - json -> a dotted path to the objects (root.elements)
-     *      flags     : a bitmask of (xml or json) options
+     *      flags     : a bitmask of (xml or json) options, possible options:
+     *                   - Reader::JSON_FLOATS_AS_STRINGS
+     *                   - Reader::XML_DROP_NAMESPACES
+     *                   - Reader::XML_USE_CDATA
      *
      *      trim      : array with chars and direction
      *      encoding  : the encoding of the file (when not utf-8)
@@ -162,7 +165,7 @@ final class ReaderBuilder
                 $sanitizers = $this->getSanitizersFromOptions($options, ['encoding']);
                 break;
             case XmlReaderHandler::class:
-                $sanitizers = $this->getSanitizersFromOptions($options, ['encoding', 'trim']);
+                $sanitizers = $this->getSanitizersFromOptions($options, ['trim']);
                 break;
             default:
                 $sanitizers = $this->getSanitizersFromOptions($options);
