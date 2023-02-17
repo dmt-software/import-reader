@@ -6,8 +6,8 @@ returned by these internal reader. All internal readers (should) support both a 
 
 ## CsvReaderHandler
 
-The csv reader handler internally uses _SplFileObject_ with the READ_CSV flag to read through a file line by line. It 
-can be configured to use the right csv control characters: "delimiter, enclosure and escape".
+The csv reader handler internally uses fgetcsv to read through a file line by line. It can be configured to use the 
+right csv control characters: "delimiter, enclosure and escape".
 
 The sanitizers this handler receives are applied on each of the array values that is returned by the inner reader.
 
@@ -15,16 +15,13 @@ The sanitizers this handler receives are applied on each of the array values tha
 use DMT\Import\Reader\Handlers\CsvReaderHandler;
 use DMT\Import\Reader\Handlers\Sanitizers\TrimSanitizer;
 
-$innerReader = new SplFileObject($csvFile);
-$innerReader->setCsvControl(';');
-
-$csvReaderHandler = new CsvReaderHandler($innerReader, new TrimSanitizer()); 
+$csvReaderHandler = new CsvReaderHandler($innerReader, ['delimiter' => ';'], new TrimSanitizer()); 
 ```
 
 ## JsonReaderHandler
 
 The reader handler to read json files uses a _[JsonReader](https://github.com/pcrov/JsonReader)_ as inner reader. It 
-expects a _FilePointer_ with a "dotted path" to point to the right elements to iterate from.
+expects a _Pointer_ with a "dotted path" to point to the right elements to iterate from.
 
  * **.** (a single dot) - points to first object in an array of objects.
  * **root.elements** - points to the elements object array of the root.
@@ -47,7 +44,7 @@ object(s)
 
 ## XmlReaderHandler
 
-This handler to read through XML uses the build-in _XMLReader_. It requires a _FilePointer_ to determine which elements 
+This handler to read through XML uses the build-in _XMLReader_. It requires a _Pointer_ to determine which elements 
 to return during reading. This pointer is configured with  an xpath-like structure of node names starting from the root 
 of the xml.
 

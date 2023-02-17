@@ -11,7 +11,6 @@ use DMT\XmlParser\Source\FileParser;
 use DMT\XmlParser\Tokenizer;
 use pcrov\JsonReader\JsonReader;
 use RuntimeException;
-use SplFileObject;
 
 final class HandlerFactory
 {
@@ -86,14 +85,9 @@ final class HandlerFactory
     {
         return [
             CsvReaderHandler::class => function (string $file, array $config, array $sanitizers): HandlerInterface {
-                $fileHandler = new SplFileObject($file);
-                $fileHandler->setCsvControl(
-                    $config['delimiter'] ?? ',',
-                    $config['enclosure'] ?? '"',
-                    $config['escape'] ?? '\\'
-                );
+                $fileHandler = fopen($file, 'r');
 
-                return new CsvReaderHandler($fileHandler, ...$sanitizers);
+                return new CsvReaderHandler($fileHandler, $config, ...$sanitizers);
             },
             XmlReaderHandler::class => function (string $file, array $config, array $sanitizers): HandlerInterface {
                 $encoding = $config['encoding'] ?? 'UTF-8';

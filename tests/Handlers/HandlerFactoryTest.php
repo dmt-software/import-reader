@@ -13,7 +13,6 @@ use pcrov\JsonReader\JsonReader;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 use RuntimeException;
-use SplFileObject;
 
 class HandlerFactoryTest extends TestCase
 {
@@ -26,13 +25,11 @@ class HandlerFactoryTest extends TestCase
 
         $handler = (new HandlerFactory())->createReaderHandler(CsvReaderHandler::class, 'php://memory', $csvControl);
 
-        /** @var SplFileObject $innerReader */
-        $innerReader = $this->getPropertyValue($handler, 'reader');
+        $property = $this->getPropertyValue($handler, 'csvControl');
 
         $this->assertInstanceOf(CsvReaderHandler::class, $handler);
-        $this->assertSame(SplFileObject::READ_CSV, $innerReader->getFlags());
-        $this->assertContains($csvControl['delimiter'], $innerReader->getCsvControl());
-        $this->assertContains($csvControl['enclosure'], $innerReader->getCsvControl());
+        $this->assertContains($csvControl['delimiter'], $property);
+        $this->assertContains($csvControl['enclosure'], $property);
     }
 
     public function testCreateXmlReaderHandler(): void
