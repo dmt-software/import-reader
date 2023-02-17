@@ -12,8 +12,8 @@ use DMT\XmlParser\Parser;
 use pcrov\JsonReader\JsonReader;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
+use RuntimeException;
 use SplFileObject;
-use XMLReader;
 
 class HandlerFactoryTest extends TestCase
 {
@@ -61,17 +61,12 @@ class HandlerFactoryTest extends TestCase
         $this->assertSame($path, $this->getPropertyValue($pointer, 'path'));
     }
 
-    public function testCreateCustomReaderHandler(): void
+    public function testNotRegisteredHandler(): void
     {
-        $this->getMockBuilder(CustomReaderHandlerStub::class)
-            ->setMockClassName('CustomHandler')
-            ->disableOriginalConstructor()
-            ->getMockForAbstractClass();
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Can not initiate Some\\CustomHandler');
 
-        $handler = (new HandlerFactory())
-            ->createReaderHandler('CustomHandler', 'php://memory');
-
-        $this->assertInstanceOf(SplFileObject::class, $handler->reader);
+        (new HandlerFactory())->createReaderHandler("Some\\CustomHandler", 'php://memory');
     }
 
     public function testCreateCustomReaderHandlerWithCallback(): void

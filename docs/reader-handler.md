@@ -78,9 +78,7 @@ $factory->createReaderHandler(CsvReaderHandler::class, $file, $options = ['delim
 
 ### Custom handlers
 
-By default, any custom handler will use a _SplFileObject_ as inner reader if they are created by the handler factory. If
-for some reason a different inner reader is needed the handler builder can be configured with a callback to initialize 
-the handler with a different inner reader.
+To enable creating a custom handler via the handler factory an instantiator it must be registered.   
 
 ```php
 $handlerInitializeCallback = function (string $file) {

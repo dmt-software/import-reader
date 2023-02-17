@@ -10,6 +10,7 @@ use DMT\XmlParser\Parser;
 use DMT\XmlParser\Source\FileParser;
 use DMT\XmlParser\Tokenizer;
 use pcrov\JsonReader\JsonReader;
+use RuntimeException;
 use SplFileObject;
 
 final class HandlerFactory
@@ -70,9 +71,7 @@ final class HandlerFactory
     private function getInstantiatorForHandler(string $handlerClassName): Closure
     {
         if (!array_key_exists($handlerClassName, $this->handlerInstantiators)) {
-            return function (string $fileOrUri, array $config, array $sanitizers) use ($handlerClassName) {
-                return new $handlerClassName(new SplFileObject($fileOrUri), ...$sanitizers);
-            };
+            throw new RuntimeException('Can not initiate ' . $handlerClassName);
         }
 
         return $this->handlerInstantiators[$handlerClassName];
