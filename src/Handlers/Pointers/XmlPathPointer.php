@@ -1,6 +1,6 @@
 <?php
 
-namespace DMT\Import\Reader\Handlers\FilePointers;
+namespace DMT\Import\Reader\Handlers\Pointers;
 
 use DMT\Import\Reader\Exceptions\UnreadableException;
 use DMT\XmlParser\Node\Text;
@@ -24,7 +24,7 @@ use Throwable;
  *
  * Path /Blog/Post/Comments will set the pointer for the reader to the first Comments element.
  */
-final class XmlPathFilePointer implements FilePointerInterface
+final class XmlPathPointer implements PointerInterface
 {
     /**
      * The path to iterate from.

@@ -1,10 +1,10 @@
 <?php
 
-namespace DMT\Import\Reader\Handlers\FilePointers;
+namespace DMT\Import\Reader\Handlers\Pointers;
 
 use DMT\Import\Reader\Exceptions\UnreadableException;
 
-interface FilePointerInterface
+interface PointerInterface
 {
     /**
      * Set the file pointer to the first possible chunk to read.

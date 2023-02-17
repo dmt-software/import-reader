@@ -3,7 +3,7 @@
 namespace DMT\Import\Reader\Handlers;
 
 use DMT\Import\Reader\Exceptions\UnreadableException;
-use DMT\Import\Reader\Handlers\FilePointers\FilePointerInterface;
+use DMT\Import\Reader\Handlers\Pointers\PointerInterface;
 use DMT\Import\Reader\Handlers\Sanitizers\SanitizerInterface;
 use DMT\XmlParser\Parser;
 
@@ -15,18 +15,18 @@ use DMT\XmlParser\Parser;
 final class XmlReaderHandler implements HandlerInterface
 {
     private Parser $reader;
-    private FilePointerInterface $pointer;
+    private PointerInterface $pointer;
     /** @var SanitizerInterface[] */
     private array $sanitizers = [];
 
     /**
      * @param Parser $reader
-     * @param FilePointerInterface $pointer
+     * @param PointerInterface $pointer
      * @param SanitizerInterface ...$sanitizers
      */
     public function __construct(
         Parser               $reader,
-        FilePointerInterface $pointer,
+        PointerInterface     $pointer,
         SanitizerInterface   ...$sanitizers
     ) {
         $this->reader = $reader;

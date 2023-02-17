@@ -1,10 +1,10 @@
 <?php
 
-namespace DMT\Test\Import\Reader\Handlers\FilePointers;
+namespace DMT\Test\Import\Reader\Handlers\Pointers;
 
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
 use DMT\Import\Reader\Exceptions\UnreadableException;
-use DMT\Import\Reader\Handlers\FilePointers\XmlPathFilePointer;
+use DMT\Import\Reader\Handlers\Pointers\XmlPathPointer;
 use DMT\XmlParser\Parser;
 use DMT\XmlParser\Source\FileParser;
 use DMT\XmlParser\Source\StringParser;
@@ -12,7 +12,7 @@ use DMT\XmlParser\Tokenizer;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
-class XmlPathFilePointerTest extends TestCase
+class XmlPathPointerTest extends TestCase
 {
     /**
      * @dataProvider provideXml
@@ -31,7 +31,7 @@ class XmlPathFilePointerTest extends TestCase
                 $config['flags'] ?? 0
             )
         );
-        $pointer = new XMLPathFilePointer($path);
+        $pointer = new XmlPathPointer($path);
         $pointer->seek($reader, $skip);
 
         $this->assertEquals($expected, $reader->parseXml());
@@ -76,7 +76,7 @@ class XmlPathFilePointerTest extends TestCase
             )
         );
 
-        $pointer = new XMLPathFilePointer($path);
+        $pointer = new XmlPathPointer($path);
         $pointer->seek($reader, $skip);
     }
 

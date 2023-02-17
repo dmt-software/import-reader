@@ -3,8 +3,8 @@
 namespace DMT\Test\Import\Reader\Handlers;
 
 use DMT\Import\Reader\Handlers\CsvReaderHandler;
-use DMT\Import\Reader\Handlers\FilePointers\JsonPathFilePointer;
-use DMT\Import\Reader\Handlers\FilePointers\XmlPathFilePointer;
+use DMT\Import\Reader\Handlers\Pointers\JsonPathPointer;
+use DMT\Import\Reader\Handlers\Pointers\XmlPathPointer;
 use DMT\Import\Reader\Handlers\HandlerFactory;
 use DMT\Import\Reader\Handlers\JsonReaderHandler;
 use DMT\Import\Reader\Handlers\XmlReaderHandler;
@@ -44,7 +44,7 @@ class HandlerFactoryTest extends TestCase
 
         $this->assertInstanceOf(XmlReaderHandler::class, $handler);
         $this->assertInstanceOf(Parser::class, $this->getPropertyValue($handler, 'reader'));
-        $this->assertInstanceOf(XmlPathFilePointer::class, $pointer);
+        $this->assertInstanceOf(XmlPathPointer::class, $pointer);
         $this->assertSame($path, $this->getPropertyValue($pointer, 'path'));
     }
 
@@ -57,7 +57,7 @@ class HandlerFactoryTest extends TestCase
 
         $this->assertInstanceOf(JsonReaderHandler::class, $handler);
         $this->assertInstanceOf(JsonReader::class, $this->getPropertyValue($handler, 'reader'));
-        $this->assertInstanceOf(JsonPathFilePointer::class, $pointer);
+        $this->assertInstanceOf(JsonPathPointer::class, $pointer);
         $this->assertSame($path, $this->getPropertyValue($pointer, 'path'));
     }
 

@@ -3,8 +3,8 @@
 namespace DMT\Import\Reader\Handlers;
 
 use Closure;
-use DMT\Import\Reader\Handlers\FilePointers\JsonPathFilePointer;
-use DMT\Import\Reader\Handlers\FilePointers\XmlPathFilePointer;
+use DMT\Import\Reader\Handlers\Pointers\JsonPathPointer;
+use DMT\Import\Reader\Handlers\Pointers\XmlPathPointer;
 use DMT\Import\Reader\Handlers\Sanitizers\SanitizerInterface;
 use DMT\XmlParser\Parser;
 use DMT\XmlParser\Source\FileParser;
@@ -100,7 +100,7 @@ final class HandlerFactory
                 $encoding = $config['encoding'] ?? 'UTF-8';
                 settype($encoding, 'array');
 
-                $pointer = new XmlPathFilePointer($config['path'] ?? '');
+                $pointer = new XmlPathPointer($config['path'] ?? '');
                 $fileHandler = new Parser(
                     new Tokenizer(
                         new FileParser($file),
@@ -112,7 +112,7 @@ final class HandlerFactory
                 return new XmlReaderHandler($fileHandler, $pointer, ...$sanitizers);
             },
             JsonReaderHandler::class => function (string $file, array $config, array $sanitizers): HandlerInterface {
-                $pointer = new JsonPathFilePointer($config['path'] ?? '');
+                $pointer = new JsonPathPointer($config['path'] ?? '');
 
                 $fileHandler = new JsonReader($config['flags'] ?? 0);
                 $fileHandler->open($file);

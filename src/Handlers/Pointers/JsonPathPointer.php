@@ -1,6 +1,6 @@
 <?php
 
-namespace DMT\Import\Reader\Handlers\FilePointers;
+namespace DMT\Import\Reader\Handlers\Pointers;
 
 use DMT\Import\Reader\Exceptions\UnreadableException;
 use pcrov\JsonReader\Exception;
@@ -12,7 +12,7 @@ use pcrov\JsonReader\JsonReader;
  * This class resolves a dotted separated path within the json file.
  * The given path should point to an object or a list of objects to iterate over.
  */
-final class JsonPathFilePointer implements FilePointerInterface
+final class JsonPathPointer implements PointerInterface
 {
     private string $path;
 

@@ -2,7 +2,7 @@
 
 namespace DMT\Test\Import\Reader\Handlers;
 
-use DMT\Import\Reader\Handlers\FilePointers\XmlPathFilePointer;
+use DMT\Import\Reader\Handlers\Pointers\XmlPathPointer;
 use DMT\Import\Reader\Handlers\XmlReaderHandler;
 use DMT\XmlParser\Parser;
 use DMT\XmlParser\Source\StringParser;
@@ -23,7 +23,7 @@ class XmlReaderHandlerTest extends TestCase
             )
         );
 
-        $handler = new XmlReaderHandler($parser, new XmlPathFilePointer('import/type'));
+        $handler = new XmlReaderHandler($parser, new XmlPathPointer('import/type'));
         $handler->setPointer(0);
 
         foreach ($handler->read() as $row => $values) {

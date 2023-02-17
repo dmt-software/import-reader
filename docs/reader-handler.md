@@ -27,17 +27,17 @@ The reader handler to read json files uses a _[JsonReader](https://github.com/pc
 expects a _FilePointer_ with a "dotted path" to point to the right elements to iterate from.
 
  * **.** (a single dot) - points to first object in an array of objects.
- * **root.elements** - points to the elements object array of the root.  
+ * **root.elements** - points to the elements object array of the root.
 
 ```php
-use DMT\Import\Reader\Handlers\FilePointers\JsonPathFilePointer;
+use DMT\Import\Reader\Handlers\Pointers\JsonPathPointer;
 use DMT\Import\Reader\Handlers\JsonReaderHandler;
 use pcrov\JsonReader\JsonReader;
 
 $innerReader = new JsonReader();
 $innerReader->open($jsonFile);
 
-$jsonReaderHandler = new JsonReaderHandler($innerReader, new JsonPathFilePointer($path));
+$jsonReaderHandler = new JsonReaderHandler($innerReader, new JsonPathPointer($path));
 ```
 
 When the path is left empty the complete contents of the file is returned whilst reading.
@@ -54,13 +54,13 @@ of the xml.
  * **/root/element** - points to the first element in root.
 
 ```php
-use DMT\Import\Reader\Handlers\FilePointers\XmlPathFilePointer;
+use DMT\Import\Reader\Handlers\Pointers\XmlPathPointer;
 use DMT\Import\Reader\Handlers\XmlReaderHandler;
 
 $innerReader = new XMLReader();
 $innerReader->open($xmlFile, $fileEncoding, $libxmlOptions);
 
-$jsonReaderHandler = new XmlReaderHandler($innerReader, new XmlPathFilePointer($path));
+$jsonReaderHandler = new XmlReaderHandler($innerReader, new XmlPathPointer($path));
 ```
 
 ## HandlerFactory
