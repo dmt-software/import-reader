@@ -3,7 +3,7 @@
 namespace DMT\Import\Reader\Handlers;
 
 use DMT\Import\Reader\Exceptions\UnreadableException;
-use DMT\Import\Reader\Handlers\FilePointers\FilePointerInterface;
+use DMT\Import\Reader\Handlers\Pointers\PointerInterface;
 use DMT\Import\Reader\Handlers\Sanitizers\SanitizerInterface;
 use pcrov\JsonReader\Exception;
 use pcrov\JsonReader\JsonReader;
@@ -11,18 +11,18 @@ use pcrov\JsonReader\JsonReader;
 final class JsonReaderHandler implements HandlerInterface
 {
     private JsonReader $reader;
-    private FilePointerInterface $pointer;
+    private PointerInterface $pointer;
     /** @var SanitizerInterface[] */
     private array $sanitizers = [];
 
     /**
      * @param JsonReader $reader
-     * @param FilePointerInterface $pointer
+     * @param PointerInterface $pointer
      * @param SanitizerInterface[] $sanitizers
      */
     public function __construct(
-        JsonReader           $reader,
-        FilePointerInterface $pointer,
+        JsonReader         $reader,
+        PointerInterface   $pointer,
         SanitizerInterface ...$sanitizers
     ) {
         $this->reader = $reader;

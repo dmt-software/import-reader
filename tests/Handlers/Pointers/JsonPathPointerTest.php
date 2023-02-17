@@ -1,16 +1,16 @@
 <?php
 
-namespace DMT\Test\Import\Reader\Handlers\FilePointers;
+namespace DMT\Test\Import\Reader\Handlers\Pointers;
 
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
 use DMT\Import\Reader\Exceptions\UnreadableException;
-use DMT\Import\Reader\Handlers\FilePointers\JsonPathFilePointer;
+use DMT\Import\Reader\Handlers\Pointers\JsonPathPointer;
 use pcrov\JsonReader\Exception;
 use pcrov\JsonReader\JsonReader;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
-class JsonPathFilePointerTest extends TestCase
+class JsonPathPointerTest extends TestCase
 {
     /**
      * @dataProvider provideJson
@@ -26,7 +26,7 @@ class JsonPathFilePointerTest extends TestCase
         $reader = new JsonReader();
         $reader->json($json);
 
-        $pointer = new JsonPathFilePointer($path);
+        $pointer = new JsonPathPointer($path);
         $pointer->seek($reader, $skip);
 
         $this->assertSame($expected, $reader->value());
@@ -61,7 +61,7 @@ class JsonPathFilePointerTest extends TestCase
         $reader = new JsonReader();
         $reader->json($json);
 
-        $pointer = new JsonPathFilePointer($path);
+        $pointer = new JsonPathPointer($path);
         $pointer->seek($reader, $skip);
     }
 

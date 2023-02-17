@@ -3,14 +3,14 @@
 namespace DMT\Import\Reader\Handlers;
 
 use Closure;
-use DMT\Import\Reader\Handlers\FilePointers\JsonPathFilePointer;
-use DMT\Import\Reader\Handlers\FilePointers\XmlPathFilePointer;
+use DMT\Import\Reader\Handlers\Pointers\JsonPathPointer;
+use DMT\Import\Reader\Handlers\Pointers\XmlPathPointer;
 use DMT\Import\Reader\Handlers\Sanitizers\SanitizerInterface;
 use DMT\XmlParser\Parser;
 use DMT\XmlParser\Source\FileParser;
 use DMT\XmlParser\Tokenizer;
 use pcrov\JsonReader\JsonReader;
-use SplFileObject;
+use RuntimeException;
 
 final class HandlerFactory
 {
@@ -70,9 +70,7 @@ final class HandlerFactory
     private function getInstantiatorForHandler(string $handlerClassName): Closure
     {
         if (!array_key_exists($handlerClassName, $this->handlerInstantiators)) {
-            return function (string $fileOrUri, array $config, array $sanitizers) use ($handlerClassName) {
-                return new $handlerClassName(new SplFileObject($fileOrUri), ...$sanitizers);
-            };
+            throw new RuntimeException('Can not initiate ' . $handlerClassName);
         }
 
         return $this->handlerInstantiators[$handlerClassName];
@@ -87,20 +85,15 @@ final class HandlerFactory
     {
         return [
             CsvReaderHandler::class => function (string $file, array $config, array $sanitizers): HandlerInterface {
-                $fileHandler = new SplFileObject($file);
-                $fileHandler->setCsvControl(
-                    $config['delimiter'] ?? ',',
-                    $config['enclosure'] ?? '"',
-                    $config['escape'] ?? '\\'
-                );
+                $fileHandler = fopen($file, 'r');
 
-                return new CsvReaderHandler($fileHandler, ...$sanitizers);
+                return new CsvReaderHandler($fileHandler, $config, ...$sanitizers);
             },
             XmlReaderHandler::class => function (string $file, array $config, array $sanitizers): HandlerInterface {
                 $encoding = $config['encoding'] ?? 'UTF-8';
                 settype($encoding, 'array');
 
-                $pointer = new XmlPathFilePointer($config['path'] ?? '');
+                $pointer = new XmlPathPointer($config['path'] ?? '');
                 $fileHandler = new Parser(
                     new Tokenizer(
                         new FileParser($file),
@@ -112,7 +105,7 @@ final class HandlerFactory
                 return new XmlReaderHandler($fileHandler, $pointer, ...$sanitizers);
             },
             JsonReaderHandler::class => function (string $file, array $config, array $sanitizers): HandlerInterface {
-                $pointer = new JsonPathFilePointer($config['path'] ?? '');
+                $pointer = new JsonPathPointer($config['path'] ?? '');
 
                 $fileHandler = new JsonReader($config['flags'] ?? 0);
                 $fileHandler->open($file);

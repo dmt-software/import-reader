@@ -4,7 +4,6 @@ namespace DMT\Import\Reader\Handlers;
 
 use DMT\Import\Reader\Exceptions\UnreadableException;
 use DMT\Import\Reader\Handlers\Sanitizers\SanitizerInterface;
-use SplFileObject;
 
 /**
  * Csv reader handler.
@@ -13,20 +12,26 @@ use SplFileObject;
  */
 final class CsvReaderHandler implements HandlerInterface
 {
-    private ?SplFileObject $reader;
+    /** @var resource */
+    private $reader;
+    private array $csvControl;
     /** @var SanitizerInterface[] */
     private array $sanitizers = [];
+    private ?array $currentRow = null;
 
     /**
-     * @param SplFileObject $reader
+     * @param resource $reader
      * @param SanitizerInterface ...$sanitizers
      */
-    public function __construct(SplFileObject $reader, SanitizerInterface ...$sanitizers)
+    public function __construct($reader, array $csvControl = [], SanitizerInterface ...$sanitizers)
     {
-        $reader->setFlags(SplFileObject::READ_CSV);
-
         $this->reader = $reader;
         $this->sanitizers = $sanitizers;
+        $this->csvControl = [
+            $csvControl['delimiter'] ?? ',',
+            $csvControl['enclosure'] ?? '"',
+            $csvControl['escape'] ?? '\\'
+        ];
     }
 
     /**
@@ -40,10 +45,12 @@ final class CsvReaderHandler implements HandlerInterface
      */
     public function setPointer(int $skip = 0): void
     {
-        $this->reader->seek($skip);
+        for ($i = 0; $i <= $skip; $i++) {
+            $this->currentRow = fgetcsv($this->reader, null, ...$this->csvControl) ?: null;
 
-        if ($this->reader->eof()) {
-            throw UnreadableException::eof();
+            if (feof($this->reader)) {
+                throw UnreadableException::eof();
+            }
         }
     }
 
@@ -61,18 +68,17 @@ final class CsvReaderHandler implements HandlerInterface
     {
         $processed = 0;
         do {
-            $currentRow = $this->reader->current();
-
-            if (array_filter($currentRow)) {
+            $currentRow = $this->currentRow;
+            if ($currentRow && array_filter($currentRow)) {
                 foreach ($this->sanitizers as $sanitizer) {
                     $currentRow = $sanitizer->sanitize($currentRow);
                 }
                 yield ++$processed => $currentRow;
             }
 
-            $this->reader->next();
-        } while (!$this->reader->eof());
+            $this->currentRow = fgetcsv($this->reader, null, ...$this->csvControl) ?: null;
+        } while (!feof($this->reader));
 
-        $this->reader = null;
+        fclose($this->reader);
     }
 }
