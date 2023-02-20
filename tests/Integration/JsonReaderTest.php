@@ -22,10 +22,10 @@ class JsonReaderTest extends TestCase
     /**
      * @dataProvider provideJsonFile
      *
-     * @param string $file
+     * @param string|resource $file
      * @return void
      */
-    public function testImportJson(string $file)
+    public function testImportJson($file)
     {
         $reader = new Reader(
             $this->handlerFactory->createReaderHandler(
@@ -52,7 +52,9 @@ class JsonReaderTest extends TestCase
 
         return [
             'local file' => [$file],
-            'stream' => ['file://' . realpath($file)],
+            'file wrapper' => ['file://' . realpath($file)],
+            'stream' => [fopen($file, 'r')],
+            'contents' => [file_get_contents($file)],
         ];
     }
 

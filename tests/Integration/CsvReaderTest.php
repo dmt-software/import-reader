@@ -24,10 +24,10 @@ class CsvReaderTest extends TestCase
     /**
      * @dataProvider provideCsvFile
      *
-     * @param string $file
+     * @param string|resource $file
      * @return void
      */
-    public function testImportCsv(string $file): void
+    public function testImportCsv($file): void
     {
         $reader = new Reader(
             $this->handlerFactory->createReaderHandler(
@@ -60,17 +60,12 @@ class CsvReaderTest extends TestCase
     public function provideCsvFile(): iterable
     {
         $file = __DIR__ . '/../files/planes.csv';
-        $temp = tempnam(sys_get_temp_dir(), 'php');
-        $data = file_get_contents($file);
-        $data .= PHP_EOL;
-        $handle = fopen($temp, 'w');
-        fwrite($handle, $data);
-        fclose($handle);
 
         return [
             'local file' => [$file],
-            'stream' => ['file://' . realpath($file)],
-            'file with new line' => [$temp],
+            'file uri' => ['file://' . realpath($file)],
+            'stream' => [fopen($file, 'r')],
+            'contents' => [file_get_contents($file)],
         ];
     }
 

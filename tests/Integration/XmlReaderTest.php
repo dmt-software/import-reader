@@ -20,10 +20,10 @@ class XmlReaderTest extends TestCase
     /**
      * @dataProvider provideXmlFile
      *
-     * @param string $file
+     * @param string|resource $file
      * @return void
      */
-    public function testImportXml(string $file): void
+    public function testImportXml($file): void
     {
         $reader = new Reader(
             $this->handlerFactory->createReaderHandler(
@@ -50,7 +50,9 @@ class XmlReaderTest extends TestCase
 
         return [
             'local file' => [$file],
-            'stream' => ['file://' . realpath($file)],
+            'file uri' => ['file://' . realpath($file)],
+            'stream' => [fopen($file, 'r')],
+            'contents' => [file_get_contents($file)],
         ];
     }
 }
