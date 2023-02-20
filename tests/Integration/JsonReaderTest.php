@@ -39,7 +39,7 @@ class JsonReaderTest extends TestCase
         );
 
         foreach ($reader->read() as $row => $programming) {
-            $this->assertObjectHasAttribute('languages', $programming);
+            $this->assertNotNull($programming->languages ?? null);
             $this->assertContainsOnlyInstancesOf(stdClass::class, $programming->languages);
         }
 

@@ -114,8 +114,8 @@ class CsvReaderTest extends TestCase
 
         foreach ($reader->read(1) as $plane) {
             $this->assertInstanceOf(ArrayObject::class, $plane);
-            $this->assertObjectHasAttribute('type', $plane);
-            $this->assertObjectHasAttribute('year', $plane);
+            $this->assertArrayHasKey('type', $plane->getArrayCopy());
+            $this->assertArrayHasKey('year', $plane->getArrayCopy());
         }
     }
 }
