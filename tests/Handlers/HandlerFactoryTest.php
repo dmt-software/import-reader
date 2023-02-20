@@ -3,11 +3,13 @@
 namespace DMT\Test\Import\Reader\Handlers;
 
 use DMT\Import\Reader\Handlers\CsvReaderHandler;
+use DMT\Import\Reader\Handlers\Factories\CallbackHandlerFactory;
 use DMT\Import\Reader\Handlers\Pointers\JsonPathPointer;
 use DMT\Import\Reader\Handlers\Pointers\XmlPathPointer;
 use DMT\Import\Reader\Handlers\HandlerFactory;
 use DMT\Import\Reader\Handlers\JsonReaderHandler;
 use DMT\Import\Reader\Handlers\XmlReaderHandler;
+use DMT\Import\Reader\Helpers\SourceHelper;
 use DMT\XmlParser\Parser;
 use pcrov\JsonReader\JsonReader;
 use PHPUnit\Framework\TestCase;
@@ -23,7 +25,8 @@ class HandlerFactoryTest extends TestCase
             'enclosure' => "'"
         ];
 
-        $handler = (new HandlerFactory())->createReaderHandler(CsvReaderHandler::class, 'php://memory', $csvControl);
+        $handler = (new HandlerFactory())
+            ->createReaderHandler(CsvReaderHandler::class, '', SourceHelper::SOURCE_TYPE_STRING, $csvControl);
 
         $property = $this->getPropertyValue($handler, 'csvControl');
 
@@ -36,7 +39,7 @@ class HandlerFactoryTest extends TestCase
     {
         $path = 'some/element';
         $handler = (new HandlerFactory())
-            ->createReaderHandler(XmlReaderHandler::class, 'php://memory', compact('path'));
+            ->createReaderHandler(XmlReaderHandler::class, 'php://memory', SourceHelper::SOURCE_TYPE_FILE, compact('path'));
         $pointer = $this->getPropertyValue($handler, 'pointer');
 
         $this->assertInstanceOf(XmlReaderHandler::class, $handler);
@@ -49,7 +52,7 @@ class HandlerFactoryTest extends TestCase
     {
         $path = 'some.object';
         $handler = (new HandlerFactory())
-            ->createReaderHandler(JsonReaderHandler::class, 'php://memory', compact('path'));
+            ->createReaderHandler(JsonReaderHandler::class, 'php://memory', SourceHelper::SOURCE_TYPE_FILE, compact('path'));
         $pointer = $this->getPropertyValue($handler, 'pointer');
 
         $this->assertInstanceOf(JsonReaderHandler::class, $handler);
@@ -63,21 +66,24 @@ class HandlerFactoryTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Can not initiate Some\\CustomHandler');
 
-        (new HandlerFactory())->createReaderHandler("Some\\CustomHandler", 'php://memory');
+        (new HandlerFactory())->createReaderHandler("Some\\CustomHandler", '', SourceHelper::SOURCE_TYPE_STRING);
     }
 
     public function testCreateCustomReaderHandlerWithCallback(): void
     {
-        $handlerFactory = new HandlerFactory();
-        $handlerFactory->addInitializeHandlerCallback('CustomHandler', function (string $file) {
+        $callback = function (string $file) {
             $reader = (object)compact('file');
 
             return $this->getMockBuilder(CustomReaderHandlerStub::class)
                 ->setMockClassName('CustomHandler')
                 ->setConstructorArgs([$reader])
                 ->getMockForAbstractClass();
-        });
-        $handler = $handlerFactory->createReaderHandler('CustomHandler', 'php://memory');
+        };
+
+        $handlerFactory = new HandlerFactory();
+        $handlerFactory->addInitializeHandlerFactory('CustomHandler', new CallbackHandlerFactory($callback));
+        $handler = $handlerFactory
+            ->createReaderHandler('CustomHandler', 'php://memory', SourceHelper::SOURCE_TYPE_FILE);
 
         $this->assertEquals((object)['file' => 'php://memory'], $handler->reader);
     }

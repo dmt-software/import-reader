@@ -6,6 +6,7 @@ use DMT\Import\Reader\Decorators\Json\JsonToObjectDecorator;
 use DMT\Import\Reader\Decorators\Handler\GenericHandlerDecorator;
 use DMT\Import\Reader\Handlers\JsonReaderHandler;
 use DMT\Import\Reader\Handlers\Sanitizers\TrimSanitizer;
+use DMT\Import\Reader\Helpers\SourceHelper;
 use DMT\Import\Reader\Reader;
 use DMT\Test\Import\Reader\Fixtures\Language;
 use PHPUnit\Framework\TestCase;
@@ -30,6 +31,7 @@ class JsonReaderTest extends TestCase
             $this->handlerFactory->createReaderHandler(
                 JsonReaderHandler::class,
                 $file,
+                SourceHelper::detect($file),
                 ['path' => '.'],
                 [new TrimSanitizer()]
             ),
@@ -60,6 +62,7 @@ class JsonReaderTest extends TestCase
             $this->handlerFactory->createReaderHandler(
                 JsonReaderHandler::class,
                 __DIR__ . '/../files/programming.json',
+                SourceHelper::SOURCE_TYPE_FILE,
                 ['path' => '.languages']
             ),
             new GenericHandlerDecorator(),

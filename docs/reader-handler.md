@@ -77,14 +77,12 @@ $factory->createReaderHandler(CsvReaderHandler::class, $file, $options = ['delim
 
 ### Custom handlers
 
-To enable creating a custom handler via the handler factory an instantiator it must be registered.   
+To enable creating a custom handler via the handler factory a handler factory must be registered for it.   
 
 ```php
-$handlerInitializeCallback = function (string $file) {
-    $customReader = new CustomInnerReader($file)
-    
-    return new CustomReaderHandler($customReader);
-};
+use DMT\Import\Reader\Handlers\Factories\HandlerFactoryInterface;
 
-$factory->addInitializeHandlerCallback(CustomReaderHandler::class, $handlerInitializeCallback);
+class CustomHandlerFactory implements HandlerFactoryInterface {}
+
+$factory->addInitializeHandlerFactory(CustomReaderHandler::class, new CustomHandlerFactory());
 ```

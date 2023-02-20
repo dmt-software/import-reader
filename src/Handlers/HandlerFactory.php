@@ -2,48 +2,50 @@
 
 namespace DMT\Import\Reader\Handlers;
 
-use Closure;
-use DMT\Import\Reader\Handlers\Pointers\JsonPathPointer;
-use DMT\Import\Reader\Handlers\Pointers\XmlPathPointer;
+use DMT\Import\Reader\Handlers\Factories\CsvHandlerFactory;
+use DMT\Import\Reader\Handlers\Factories\HandlerFactoryInterface;
+use DMT\Import\Reader\Handlers\Factories\JsonHandlerFactory;
+use DMT\Import\Reader\Handlers\Factories\XmlHandlerFactory;
 use DMT\Import\Reader\Handlers\Sanitizers\SanitizerInterface;
-use DMT\XmlParser\Parser;
-use DMT\XmlParser\Source\FileParser;
-use DMT\XmlParser\Tokenizer;
-use pcrov\JsonReader\JsonReader;
+use DMT\Import\Reader\Helpers\SourceHelper;
 use RuntimeException;
+use TypeError;
 
 final class HandlerFactory
 {
     /**
-     * @var array <string, Closure>
+     * @var array <string, HandlerFactoryInterface>
      */
-    private array $handlerInstantiators = [];
+    private array $handlerFactories = [];
 
     public function __construct()
     {
-        foreach ($this->getDefaultInitializeHandlerCallbacks() as $handlerClassName => $instantiator) {
-            $this->addInitializeHandlerCallback($handlerClassName, $instantiator);
-        }
+        $this->handlerFactories = [
+            CsvReaderHandler::class => new CsvHandlerFactory(),
+            XmlReaderHandler::class => new XmlHandlerFactory(),
+            JsonReaderHandler::class => new JsonHandlerFactory(),
+        ];
     }
 
     /**
      * Add handler instantiator callback.
      *
      * @param string $handlerClassName
-     * @param Closure(string $fileOrUri, array $config, SanitizerInterface[] $sanitizers): HandlerInterface $instantiator
+     * @param HandlerFactoryInterface $factory
      *
      * @return void
      */
-    public function addInitializeHandlerCallback(string $handlerClassName, Closure $instantiator): void
+    public function addInitializeHandlerFactory(string $handlerClassName, HandlerFactoryInterface $factory): void
     {
-        $this->handlerInstantiators[$handlerClassName] = $instantiator;
+        $this->handlerFactories[$handlerClassName] = $factory;
     }
 
     /**
      * Create reader handler.
      *
      * @param string $handlerClassName
-     * @param string $fileOrUri
+     * @param string|resource $source
+     * @param string $sourceType
      * @param array $config
      * @param SanitizerInterface[] $sanitizers
      *
@@ -51,67 +53,32 @@ final class HandlerFactory
      */
     public function createReaderHandler(
         string $handlerClassName,
-        string $fileOrUri,
-        array $config = [],
-        array $sanitizers = []
+               $source,
+        string $sourceType,
+        array  $config = [],
+        array  $sanitizers = []
     ): HandlerInterface {
-        $instantiator = $this->getInstantiatorForHandler($handlerClassName);
+        try {
+            $instantiator = $this->getInstantiatorForHandler($handlerClassName, $sourceType);
 
-        return $instantiator($fileOrUri, $config, $sanitizers);
+            return call_user_func($instantiator, $source, $config, $sanitizers);
+        } catch (TypeError $error) {
+            throw new RuntimeException('Source type is not supported for instantiator');
+        }
     }
 
-    /**
-     * Get instantiator for a handler.
-     *
-     * @param string $handlerClassName
-     *
-     * @return Closure
-     */
-    private function getInstantiatorForHandler(string $handlerClassName): Closure
+    private function getInstantiatorForHandler(string $handlerClassName, string $sourceType = null): callable
     {
-        if (!array_key_exists($handlerClassName, $this->handlerInstantiators)) {
+        if (!array_key_exists($handlerClassName, $this->handlerFactories)) {
             throw new RuntimeException('Can not initiate ' . $handlerClassName);
         }
 
-        return $this->handlerInstantiators[$handlerClassName];
-    }
-
-    /**
-     * Get the default handler callbacks.
-     *
-     * @return array <string, Closure>
-     */
-    private function getDefaultInitializeHandlerCallbacks(): array
-    {
-        return [
-            CsvReaderHandler::class => function (string $file, array $config, array $sanitizers): HandlerInterface {
-                $fileHandler = fopen($file, 'r');
-
-                return new CsvReaderHandler($fileHandler, $config, ...$sanitizers);
-            },
-            XmlReaderHandler::class => function (string $file, array $config, array $sanitizers): HandlerInterface {
-                $encoding = $config['encoding'] ?? 'UTF-8';
-                settype($encoding, 'array');
-
-                $pointer = new XmlPathPointer($config['path'] ?? '');
-                $fileHandler = new Parser(
-                    new Tokenizer(
-                        new FileParser($file),
-                        current($encoding),
-                        $config['flags'] ?? 0
-                    )
-                );
-
-                return new XmlReaderHandler($fileHandler, $pointer, ...$sanitizers);
-            },
-            JsonReaderHandler::class => function (string $file, array $config, array $sanitizers): HandlerInterface {
-                $pointer = new JsonPathPointer($config['path'] ?? '');
-
-                $fileHandler = new JsonReader($config['flags'] ?? 0);
-                $fileHandler->open($file);
-
-                return new JsonReaderHandler($fileHandler, $pointer, ...$sanitizers);
-            }
+        $methods = [
+            'file' => 'createFromFile',
+            'stream' => 'createFromStream',
+            'contents' => 'createFromString',
         ];
+
+        return [$this->handlerFactories[$handlerClassName], $methods[$sourceType ?? SourceHelper::SOURCE_TYPE_FILE]];
     }
 }

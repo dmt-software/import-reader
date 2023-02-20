@@ -8,6 +8,7 @@ use DMT\Import\Reader\Decorators\Csv\CsvToObjectDecorator;
 use DMT\Import\Reader\Decorators\Handler\GenericHandlerDecorator;
 use DMT\Import\Reader\Handlers\CsvReaderHandler;
 use DMT\Import\Reader\Handlers\Sanitizers\TrimSanitizer;
+use DMT\Import\Reader\Helpers\SourceHelper;
 use DMT\Import\Reader\Reader;
 use DMT\Import\Reader\ReaderBuilder;
 use DMT\Test\Import\Reader\Fixtures\Plane;
@@ -32,6 +33,7 @@ class CsvReaderTest extends TestCase
             $this->handlerFactory->createReaderHandler(
                 CsvReaderHandler::class,
                 $file,
+                SourceHelper::detect($file),
                 [],
                 [new TrimSanitizer('.', TrimSanitizer::TRIM_RIGHT)]
             ),
@@ -78,6 +80,7 @@ class CsvReaderTest extends TestCase
             $this->handlerFactory->createReaderHandler(
                 CsvReaderHandler::class,
                 __DIR__ . '/../files/planes.csv',
+                SourceHelper::SOURCE_TYPE_FILE,
                 [],
                 [new TrimSanitizer('.', TrimSanitizer::TRIM_RIGHT)]
             ),

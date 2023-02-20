@@ -107,23 +107,6 @@ Depending on the type of reader requested the following options are available:
 | trim       | sanitizer to trim characters from raw data | \<array\> containing the chars and direction       |
 | \<custom\> | a custom sanitizer added to the builder    | \<mixed\> should match the constructor arguments   |
 
-### adding extension to autodetect handler
-
-If no handler is given within the configuration options, a handler is detected by the file extension. By default, the 
-file extensions csv, json and xml are mapped to the right handler. This can be extended by calling the 
-_addExtensionToHandler_ method.
-
-```php
-use DMT\Import\Reader\Handlers\XmlReaderHandler;
-
-$builder->addExtensionToHandler('cxml', XmlReaderHandler::class);
-
-$reader = $builder->build('orders.cxml');
-
-/** @var SimpleXMLElement $order */
-foreach ($reader->read() as $order) { /* import order */ }
-```
-
 ### adding a custom sanitizer
 
 The config options can be extended by added by your own custom sanitizers. To add (or override) a sanitizer the 

@@ -14,6 +14,8 @@ use DMT\Import\Reader\Handlers\Sanitizers\EncodingSanitizer;
 use DMT\Import\Reader\Handlers\Sanitizers\SanitizerInterface;
 use DMT\Import\Reader\Handlers\Sanitizers\TrimSanitizer;
 use DMT\Import\Reader\Handlers\XmlReaderHandler;
+use DMT\Import\Reader\Helpers\MimeTypeHelper;
+use DMT\Import\Reader\Helpers\SourceHelper;
 use JMS\Serializer\SerializerInterface;
 use RuntimeException;
 
@@ -24,12 +26,6 @@ final class ReaderBuilder
 {
     private HandlerFactory $handlerFactory;
 
-    private array $extensionToHandler = [
-        'csv' => CsvReaderHandler::class,
-        'json' => JsonReaderHandler::class,
-        'xml' => XmlReaderHandler::class,
-    ];
-
     private array $sanitizers = [
         'trim' => TrimSanitizer::class,
         'encoding' => EncodingSanitizer::class,
@@ -38,17 +34,6 @@ final class ReaderBuilder
     public function __construct(HandlerFactory $handlerFactory = null)
     {
         $this->handlerFactory = $handlerFactory ?? new HandlerFactory();
-    }
-
-    /**
-     * Add a extension to handler mapping.
-     *
-     * @param string $extension The file extension for the handler.
-     * @param string $handlerClassName The class name of the handler.
-     */
-    public function addExtensionToHandler(string $extension, string $handlerClassName): void
-    {
-        $this->extensionToHandler[$extension] = $handlerClassName;
     }
 
     /**
@@ -132,7 +117,7 @@ final class ReaderBuilder
     /**
      * Get the reader handler.
      *
-     * @param string $file The file or protocol wrapper to read.
+     * @param string $source The file or protocol wrapper to read.
      * @param array $options The configuration options:
      *      handler   : the type of handler to use
      *      delimiter : the delimiter for csv files
@@ -156,9 +141,14 @@ final class ReaderBuilder
      *
      * @return HandlerInterface
      */
-    public function createHandler(string $file, array $options): HandlerInterface
+    public function createHandler($source, array $options): HandlerInterface
     {
-        $handler = $options['handler'] ?? $this->getHandlerTypeForFile($file);
+        try {
+            $sourceType = SourceHelper::detect($source);
+        } catch (RuntimeException $exception) {
+            throw UnreadableException::unreadable('from ' . gettype($source), $exception);
+        }
+        $handler = $options['handler'] ?? $this->getHandlerType($source, $sourceType);
 
         switch ($handler) {
             case JsonReaderHandler::class:
@@ -172,7 +162,7 @@ final class ReaderBuilder
                 break;
         }
 
-        return $this->handlerFactory->createReaderHandler($handler, $file, $options, $sanitizers);
+        return $this->handlerFactory->createReaderHandler($handler, $source, $sourceType, $options, $sanitizers);
     }
 
     /**
@@ -181,7 +171,7 @@ final class ReaderBuilder
      * @param array $options The configuration options.
      * @param array $exclude The sanitizers to ignore
      *
-     * @return SanitizerInterface
+     * @return SanitizerInterface[]
      */
     private function getSanitizersFromOptions(array $options, array $exclude = []): array
     {
@@ -208,24 +198,37 @@ final class ReaderBuilder
     }
 
     /**
-     * Get handler for file.
+     * Get the right handler for the source.
      *
-     * @param string $file The file or protocol wrapper to read
+     * @param resource|string $source
+     * @param string $sourceType
+     *
      * @return string
+     * @throws UnreadableException
      */
-    private function getHandlerTypeForFile(string $file): string
+    private function getHandlerType($source, string $sourceType): string
     {
-        $extension = pathinfo($file, PATHINFO_EXTENSION);
-
-        if (array_key_exists($extension, $this->extensionToHandler)) {
-            return $this->extensionToHandler[$extension];
+        try {
+            $mimeType = MimeTypeHelper::detect($source, $sourceType);
+        } catch (UnreadableException $exception) {
+            throw $exception;
+        } catch (RuntimeException $exception) {
+            throw UnreadableException::unreadable($source, $exception);
         }
 
-        $extension = strtolower($extension);
-        if (array_key_exists($extension, $this->extensionToHandler)) {
-            return $this->extensionToHandler[$extension];
+        switch ($mimeType) {
+            case MimeTypeHelper::MIME_TYPE_CSV:
+                return CsvReaderHandler::class;
+            case MimeTypeHelper::MIME_TYPE_JSON:
+                return JsonReaderHandler::class;
+            case MimeTypeHelper::MIME_TYPE_XML:
+                return XmlReaderHandler::class;
         }
 
-        throw UnreadableException::unreadable($file, new RuntimeException('no handler found for file type'));
+        if ($sourceType !== SourceHelper::SOURCE_TYPE_FILE) {
+            $source = 'from ' . $sourceType;
+        }
+
+        throw UnreadableException::unreadable($source, new RuntimeException('no handler found'));
     }
 }
