@@ -48,7 +48,7 @@ final class CsvReaderHandler implements HandlerInterface
         for ($i = 0; $i <= $skip; $i++) {
             $this->currentRow = fgetcsv($this->reader, null, ...$this->csvControl) ?: null;
 
-            if (feof($this->reader)) {
+            if (feof($this->reader) && $this->currentRow === null) {
                 throw UnreadableException::eof();
             }
         }
@@ -67,7 +67,7 @@ final class CsvReaderHandler implements HandlerInterface
     public function read(): iterable
     {
         $processed = 0;
-        do {
+        while (true) {
             $currentRow = $this->currentRow;
             if ($currentRow && array_filter($currentRow)) {
                 foreach ($this->sanitizers as $sanitizer) {
@@ -76,9 +76,11 @@ final class CsvReaderHandler implements HandlerInterface
                 yield ++$processed => $currentRow;
             }
 
-            $this->currentRow = fgetcsv($this->reader, null, ...$this->csvControl) ?: null;
-        } while (!feof($this->reader));
+            if (feof($this->reader)) {
+                break;
+            }
 
-        fclose($this->reader);
+            $this->currentRow = fgetcsv($this->reader, null, ...$this->csvControl) ?: null;
+        }
     }
 }

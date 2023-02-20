@@ -6,6 +6,7 @@ use DMT\Import\Reader\Decorators\Json\JsonToObjectDecorator;
 use DMT\Import\Reader\Decorators\Handler\GenericHandlerDecorator;
 use DMT\Import\Reader\Handlers\JsonReaderHandler;
 use DMT\Import\Reader\Handlers\Sanitizers\TrimSanitizer;
+use DMT\Import\Reader\Helpers\SourceHelper;
 use DMT\Import\Reader\Reader;
 use DMT\Test\Import\Reader\Fixtures\Language;
 use PHPUnit\Framework\TestCase;
@@ -21,15 +22,16 @@ class JsonReaderTest extends TestCase
     /**
      * @dataProvider provideJsonFile
      *
-     * @param string $file
+     * @param string|resource $file
      * @return void
      */
-    public function testImportJson(string $file)
+    public function testImportJson($file)
     {
         $reader = new Reader(
             $this->handlerFactory->createReaderHandler(
                 JsonReaderHandler::class,
                 $file,
+                SourceHelper::detect($file),
                 ['path' => '.'],
                 [new TrimSanitizer()]
             ),
@@ -37,7 +39,7 @@ class JsonReaderTest extends TestCase
         );
 
         foreach ($reader->read() as $row => $programming) {
-            $this->assertObjectHasAttribute('languages', $programming);
+            $this->assertNotNull($programming->languages ?? null);
             $this->assertContainsOnlyInstancesOf(stdClass::class, $programming->languages);
         }
 
@@ -50,7 +52,9 @@ class JsonReaderTest extends TestCase
 
         return [
             'local file' => [$file],
-            'stream' => ['file://' . realpath($file)],
+            'file wrapper' => ['file://' . realpath($file)],
+            'stream' => [fopen($file, 'r')],
+            'contents' => [file_get_contents($file)],
         ];
     }
 
@@ -60,6 +64,7 @@ class JsonReaderTest extends TestCase
             $this->handlerFactory->createReaderHandler(
                 JsonReaderHandler::class,
                 __DIR__ . '/../files/programming.json',
+                SourceHelper::SOURCE_TYPE_FILE,
                 ['path' => '.languages']
             ),
             new GenericHandlerDecorator(),

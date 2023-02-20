@@ -8,6 +8,7 @@ use DMT\Import\Reader\Decorators\Csv\CsvToObjectDecorator;
 use DMT\Import\Reader\Decorators\Handler\GenericHandlerDecorator;
 use DMT\Import\Reader\Handlers\CsvReaderHandler;
 use DMT\Import\Reader\Handlers\Sanitizers\TrimSanitizer;
+use DMT\Import\Reader\Helpers\SourceHelper;
 use DMT\Import\Reader\Reader;
 use DMT\Import\Reader\ReaderBuilder;
 use DMT\Test\Import\Reader\Fixtures\Plane;
@@ -23,15 +24,16 @@ class CsvReaderTest extends TestCase
     /**
      * @dataProvider provideCsvFile
      *
-     * @param string $file
+     * @param string|resource $file
      * @return void
      */
-    public function testImportCsv(string $file): void
+    public function testImportCsv($file): void
     {
         $reader = new Reader(
             $this->handlerFactory->createReaderHandler(
                 CsvReaderHandler::class,
                 $file,
+                SourceHelper::detect($file),
                 [],
                 [new TrimSanitizer('.', TrimSanitizer::TRIM_RIGHT)]
             ),
@@ -58,17 +60,12 @@ class CsvReaderTest extends TestCase
     public function provideCsvFile(): iterable
     {
         $file = __DIR__ . '/../files/planes.csv';
-        $temp = tempnam(sys_get_temp_dir(), 'php');
-        $data = file_get_contents($file);
-        $data .= PHP_EOL;
-        $handle = fopen($temp, 'w');
-        fwrite($handle, $data);
-        fclose($handle);
 
         return [
             'local file' => [$file],
-            'stream' => ['file://' . realpath($file)],
-            'file with new line' => [$temp],
+            'file uri' => ['file://' . realpath($file)],
+            'stream' => [fopen($file, 'r')],
+            'contents' => [file_get_contents($file)],
         ];
     }
 
@@ -78,6 +75,7 @@ class CsvReaderTest extends TestCase
             $this->handlerFactory->createReaderHandler(
                 CsvReaderHandler::class,
                 __DIR__ . '/../files/planes.csv',
+                SourceHelper::SOURCE_TYPE_FILE,
                 [],
                 [new TrimSanitizer('.', TrimSanitizer::TRIM_RIGHT)]
             ),
@@ -111,8 +109,8 @@ class CsvReaderTest extends TestCase
 
         foreach ($reader->read(1) as $plane) {
             $this->assertInstanceOf(ArrayObject::class, $plane);
-            $this->assertObjectHasAttribute('type', $plane);
-            $this->assertObjectHasAttribute('year', $plane);
+            $this->assertArrayHasKey('type', $plane->getArrayCopy());
+            $this->assertArrayHasKey('year', $plane->getArrayCopy());
         }
     }
 }
