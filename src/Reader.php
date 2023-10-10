@@ -90,7 +90,7 @@ final class Reader implements ReaderInterface
                             foreach ($currentRow as $value) {
                                 $currentRows[] = $decorator->decorate($value);
                             }
-                            $currentRow = yield from $currentRows;
+                            $currentRow = call_user_func(fn() => yield from $currentRows);
                             continue;
                         }
 
