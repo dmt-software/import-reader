@@ -88,7 +88,7 @@ final class Reader implements ReaderInterface
                         if ($currentRow instanceof Generator) {
                             $currentRows = [];
                             foreach ($currentRow as $value) {
-                                $currentRows = $decorator->decorate($value);
+                                $currentRows[] = $decorator->decorate($value);
                             }
                             $currentRow = yield from $currentRows;
                             continue;
