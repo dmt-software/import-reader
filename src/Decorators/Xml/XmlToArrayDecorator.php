@@ -22,7 +22,7 @@ final class XmlToArrayDecorator implements DecoratorInterface
      * Transform the rows into ArrayObject instances.
      *
      * @param object|SimpleXMLElement $currentRow The current row.
-     * @return object|ArrayObject
+     * @return ArrayObject
      */
     public function decorate(object $currentRow): ArrayObject
     {

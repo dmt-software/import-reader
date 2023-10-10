@@ -8,6 +8,7 @@ use DMT\Import\Reader\Exceptions\ExceptionInterface;
 use DMT\Test\Import\Reader\Fixtures\Language;
 use DMT\Test\Import\Reader\Fixtures\Program;
 use PHPUnit\Framework\TestCase;
+use ReflectionException;
 use RuntimeException;
 use SimpleXMLElement;
 
@@ -19,6 +20,7 @@ class XmlToObjectDecoratorTest extends TestCase
      * @param SimpleXMLElement $currentRow
      * @param array $mapping
      * @param object $expected
+     * @throws ReflectionException
      */
     public function testDecorate(SimpleXMLElement $currentRow, array $mapping, object $expected): void
     {
@@ -42,6 +44,7 @@ class XmlToObjectDecoratorTest extends TestCase
      *
      * @param SimpleXMLElement $currentRow
      * @param ExceptionInterface|RuntimeException $exception
+     * @throws ReflectionException
      */
     public function testFailure(SimpleXMLElement $currentRow, ExceptionInterface $exception): void
     {

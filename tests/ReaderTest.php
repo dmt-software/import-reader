@@ -3,10 +3,17 @@
 namespace DMT\Test\Import\Reader;
 
 use ArrayObject;
+use DMT\Import\Reader\Decorators\Handler\ToSimpleXmlElementDecorator;
+use DMT\Import\Reader\Decorators\Xml\XmlElementListDecorator;
 use DMT\Import\Reader\Exceptions\ReaderReadException;
 use DMT\Import\Reader\Exceptions\UnreadableException;
 use DMT\Import\Reader\Handlers\HandlerInterface;
+use DMT\Import\Reader\Handlers\Pointers\XmlPathPointer;
+use DMT\Import\Reader\Handlers\XmlReaderHandler;
 use DMT\Import\Reader\Reader;
+use DMT\XmlParser\Parser;
+use DMT\XmlParser\Source\StringParser;
+use DMT\XmlParser\Tokenizer;
 use PHPUnit\Framework\TestCase;
 use SimpleXMLElement;
 use stdClass;
@@ -29,6 +36,37 @@ class ReaderTest extends TestCase
         }
 
         $this->assertSame(count($rows), $row);
+    }
+
+    public function testReadWithIterableList(): void
+    {
+        $xml = '<import>
+            <types>
+                <type>json</type>
+                <type>xml</type>
+            </types>
+            <types>
+                <type>csv</type>
+            </types>
+        </import>';
+
+        $parser = new Parser(
+            new Tokenizer(
+                new StringParser($xml),
+                $config['encoding'] ?? null,
+                $config['flags'] ?? 0
+            )
+        );
+
+        $reader = new Reader(
+            new XmlReaderHandler($parser, new XmlPathPointer('import/types')),
+            new ToSimpleXmlElementDecorator('import/types'),
+            new XmlElementListDecorator('type')
+        );
+
+        foreach ($reader->read() as $xmlElement) {
+            $this->assertInstanceOf(SimpleXMLElement::class, $xmlElement);
+        }
     }
 
     /**

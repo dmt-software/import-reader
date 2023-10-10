@@ -10,6 +10,7 @@ use DMT\Import\Reader\Exceptions\DecoratorException;
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
 use DMT\Import\Reader\Exceptions\ReaderReadException;
 use DMT\Import\Reader\Handlers\HandlerInterface;
+use Generator;
 use InvalidArgumentException;
 use Iterator;
 
@@ -84,10 +85,28 @@ final class Reader implements ReaderInterface
             foreach ($this->handler->read() as $position => $currentRow) {
                 try {
                     foreach ($this->decorators as $decorator) {
+                        if ($currentRow instanceof Generator) {
+                            $currentRows = [];
+                            foreach ($currentRow as $value) {
+                                $currentRows[] = $decorator->decorate($value);
+                            }
+                            $currentRow = call_user_func(fn() => yield from $currentRows);
+                            continue;
+                        }
+
                         $currentRow = $decorator->decorate($currentRow);
                     }
 
                     $key = $position + $skip;
+                    if ($currentRow instanceof Generator) {
+                        foreach ($currentRow as $value) {
+                            if ($filter($value, $key)) {
+                                yield $key => $value;
+                            }
+                        }
+                        continue;
+                    }
+
                     if ($filter($currentRow, $key)) {
                         yield $key => $currentRow;
                     }
