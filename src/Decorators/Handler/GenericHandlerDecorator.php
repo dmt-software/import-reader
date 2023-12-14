@@ -36,7 +36,7 @@ final class GenericHandlerDecorator implements HandlerDecoratorInterface
         } elseif ($type === self::TYPE_JSON) {
             $currentRow = json_decode($currentRow) ?? false;
         } elseif ($type === self::TYPE_CSV) {
-            $currentKeys = array_map('sprintf', array_fill_keys($currentRow, 'col%d'), range(1, count($currentRow)));
+            $currentKeys = array_map('sprintf', array_fill_keys(array_keys($currentRow), 'col%d'), range(1, count($currentRow)));
             $currentRow = new ArrayObject(array_combine($currentKeys, $currentRow), ArrayObject::ARRAY_AS_PROPS);
         }
 
