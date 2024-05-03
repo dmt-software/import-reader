@@ -28,23 +28,11 @@ class MergeColumnsDecoratorTest extends TestCase
     public function provideRow(): iterable
     {
         return [
-            'indexed array without naming column' => [
-                new ArrayObject(['a', 'b', 'c']),
-                [0, 2],
-                null,
-                new ArrayObject(['a', 'b', 'c', ['a', 'c']])
-            ],
-            'indexed array with new column name' => [
-                new ArrayObject(['d', 'e', 'f']),
+            'indexed columns' => [
+                new ArrayObject(['col1' => 'd', 'col2' => 'e', 'col3' => 'f']),
                 [1, 2],
-                'd',
-                new ArrayObject(['d', 'e', 'f', 'd' => ['e', 'f']])
-            ],
-            'associative array without name' => [
-                new ArrayObject(['a' => 1, 'b' => 'foo', 'c' => 4]),
-                ['a', 'c'],
-                null,
-                new ArrayObject(['a' => 1, 'b' => 'foo', 'c' => 4, [1, 4]])
+                'col4',
+                new ArrayObject(['col1' => 'd', 'col2' => 'e', 'col3' => 'f', 'col4' => ['e', 'f']])
             ],
             'associative array override existing column' => [
                 new ArrayObject(['d' => 2, 'e' => 'foo', 'f' => 4]),
@@ -61,20 +49,20 @@ class MergeColumnsDecoratorTest extends TestCase
             'result inherit column order from mapping' => [
                 new ArrayObject(['h' => 3, 'i' => 'bar', 'j' => 6]),
                 ['j', 'i'],
-                null,
-                new ArrayObject(['h' => 3, 'i' => 'bar', 'j' => 6, [6, 'bar']])
+                'k',
+                new ArrayObject(['h' => 3, 'i' => 'bar', 'j' => 6, 'k' => [6, 'bar']])
             ],
             'array with none existing column mapping' => [
-                new ArrayObject([1, 2, 4]),
-                [3, 4, 5],
-                null,
-                new ArrayObject([1, 2, 4, [null, null, null]])
+                new ArrayObject(['col1' => 1, 'col2' => 2, 'col3' => 4]),
+                ['col4', 'col5'],
+                'col4',
+                new ArrayObject(['col1' => 1, 'col2' => 2, 'col3' => 4, 'col4' => []])
             ],
             'array with partial existing columns' => [
                 new ArrayObject(['2^0' => 1, '2^1' => 2, '2^2' => 4, '2^3' => 8]),
                 ['2^0', '2^2', '2^4'],
                 '2',
-                new ArrayObject(['2^0' => 1, '2^1' => 2, '2^2' => 4, '2^3' => 8, '2' => [1, 4, null]])
+                new ArrayObject(['2^0' => 1, '2^1' => 2, '2^2' => 4, '2^3' => 8, '2' => [1, 4]])
             ],
         ];
     }
