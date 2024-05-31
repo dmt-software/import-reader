@@ -29,7 +29,7 @@ final class XmlToObjectDecorator implements DecoratorInterface
      *
      * This tries to initiate and populate a DataTransferObject.
      *
-     * @param SimpleXMLElement|object $currentRow The current csv row.
+     * @param SimpleXMLElement|object $currentRow The current xml row.
      *
      * @return object Instance of an object according to type stored in fqcn.
      * @throws DecoratorException When the initialization of the object failed.
