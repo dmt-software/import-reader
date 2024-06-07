@@ -68,7 +68,7 @@ final class CsvReaderHandler implements HandlerInterface
     {
         $processed = 0;
         while (true) {
-            $currentRow = $this->currentRow;
+            $currentRow = array_map(fn ($value) => $value === '' ? null : $value, $this->currentRow);
             if ($currentRow && array_filter($currentRow)) {
                 foreach ($this->sanitizers as $sanitizer) {
                     $currentRow = $sanitizer->sanitize($currentRow);
