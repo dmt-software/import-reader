@@ -32,7 +32,7 @@ final class ToSimpleXmlElementDecorator implements HandlerDecoratorInterface
     public function decorate($currentRow): object
     {
         try {
-            return new SimpleXMLElement($currentRow, $this->options, false, $this->namespace);
+            return new SimpleXMLElement($currentRow, $this->options, false, $this->namespace ?? '');
         } catch (Throwable $exception) {
             throw new DecoratorException('Invalid xml', 0, $exception);
         }
