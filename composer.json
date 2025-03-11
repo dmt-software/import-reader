@@ -27,7 +27,8 @@
   "require-dev": {
     "phpunit/phpunit": "^9.5",
     "psr/log": "^1.1",
-    "jms/serializer": "^3.18"
+    "jms/serializer": "^3.18",
+    "doctrine/annotations": "^2.0"
   },
   "autoload-dev": {
     "psr-4": {
