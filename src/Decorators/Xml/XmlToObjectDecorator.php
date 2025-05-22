@@ -48,7 +48,7 @@ final class XmlToObjectDecorator implements DecoratorInterface
                     if ($object->getProperty($property)->getType()->getName() == 'array') {
                         $value = $this->normalizeNodeList($value);
                     } else {
-                        $value = $value ? strval($value[0]) : null;
+                        $value = $value && strval($value[0]) !== "" ? strval($value[0]) : null;
                     }
 
                     $entity->$property = $value;
