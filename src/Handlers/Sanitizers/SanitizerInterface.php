@@ -12,5 +12,5 @@ interface SanitizerInterface
      * @param string|array $currentRow The row to sanitize.
      * @return string|array
      */
-    public function sanitize($currentRow);
+    public function sanitize(string|array $currentRow): string|array;
 }

@@ -14,28 +14,26 @@ use stdClass;
  * To object decorator.
  *
  * This decorator will detect which decorator to use to transform the received row into an object.
+ *
+ * @template T
  */
 final class ToObjectDecorator implements DecoratorInterface
 {
-    private string $className;
-    private array $mapping;
     private ?DecoratorInterface $typeDecorator = null;
 
     /**
-     * @param string $className The fully qualified class name to initiate.
+     * @param class-string<T> $className The fully qualified class name to initiate.
      * @param array $mapping The row keys to object property mapping.
      */
-    public function __construct(string $className, array $mapping)
+    public function __construct(private readonly string $className, private readonly array $mapping)
     {
-        $this->className = $className;
-        $this->mapping = $mapping;
     }
 
     /**
      * Transform the row into a value object or DTO.
      *
      * @param object $currentRow The current row to decorate
-     * @return object An instance of class <$this->className>
+     * @return T
      */
     public function decorate(object $currentRow): object
     {

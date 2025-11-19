@@ -13,13 +13,14 @@ class CallbackHandlerFactoryTest extends TestCase
     {
         $factory = new CallbackHandlerFactory(
             function (string $source, array $config, array $sanitizers): HandlerInterface {
-                $handler = $this->getMockBuilder(HandlerInterface::class)
-                    ->onlyMethods(['read'])
-                    ->getMockForAbstractClass();
+                $handler = $this->getMockBuilder(HandlerInterface::class)->getMock();
                 $handler
                     ->expects($this->once())
                     ->method('read')
                     ->willReturnCallback(fn() => yield from explode(PHP_EOL, $source, 2));
+                $handler
+                    ->expects($this->any())
+                    ->method('setPointer');
 
                 return $handler;
             }
@@ -34,13 +35,14 @@ class CallbackHandlerFactoryTest extends TestCase
     {
         $factory = new CallbackHandlerFactory(
             function ($resource, array $config, array $sanitizers): HandlerInterface {
-                $handler = $this->getMockBuilder(HandlerInterface::class)
-                    ->onlyMethods(['read'])
-                    ->getMockForAbstractClass();
+                $handler = $this->getMockBuilder(HandlerInterface::class)->getMock();
                 $handler
                     ->expects($this->once())
                     ->method('read')
                     ->willReturnCallback(fn() => yield trim(fgets($resource)));
+                $handler
+                    ->expects($this->any())
+                    ->method('setPointer');
 
                 return $handler;
             }
@@ -59,13 +61,14 @@ class CallbackHandlerFactoryTest extends TestCase
     {
         $factory = new CallbackHandlerFactory(
             function (string $file, array $config, array $sanitizers): HandlerInterface {
-                $handler = $this->getMockBuilder(HandlerInterface::class)
-                    ->onlyMethods(['read'])
-                    ->getMockForAbstractClass();
+                $handler = $this->getMockBuilder(HandlerInterface::class)->getMock();
                 $handler
                     ->expects($this->once())
                     ->method('read')
                     ->willReturnCallback(fn() => yield from array_map('trim', file($file)));
+                $handler
+                    ->expects($this->any())
+                    ->method('setPointer');
 
                 return $handler;
             }

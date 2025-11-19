@@ -9,19 +9,17 @@ use ReflectionClass;
 use ReflectionException;
 use SimpleXMLElement;
 
-final class XmlToObjectDecorator implements DecoratorInterface
+/**
+ * @template T
+ */
+final readonly class XmlToObjectDecorator implements DecoratorInterface
 {
-    private string $fqcn;
-    private array $mapping;
-
     /**
-     * @param string $fqcn The fully qualified class name.
+     * @param class-string<T> $fqcn The fully qualified class name.
      * @param array $mapping The element xpath to property mapping.
      */
-    public function __construct(string $fqcn, array $mapping)
+    public function __construct(private string $fqcn, private array $mapping)
     {
-        $this->fqcn = $fqcn;
-        $this->mapping = $mapping;
     }
 
     /**
@@ -31,9 +29,8 @@ final class XmlToObjectDecorator implements DecoratorInterface
      *
      * @param SimpleXMLElement|object $currentRow The current xml row.
      *
-     * @return object Instance of an object according to type stored in fqcn.
-     * @throws DecoratorException When the initialization of the object failed.
-     * @throws ReflectionException
+     * @return T
+     * @throws DecoratorException|ReflectionException
      */
     public function decorate(object $currentRow): object
     {
@@ -53,7 +50,7 @@ final class XmlToObjectDecorator implements DecoratorInterface
 
                     $entity->$property = $value;
                 }
-            } catch (Error $e) {
+            } catch (Error) {
                 throw DecoratorException::create('Can not set %s on %s', $property, $this->fqcn);
             }
         }
@@ -69,10 +66,10 @@ final class XmlToObjectDecorator implements DecoratorInterface
 
         if (count($value[0]->children() ?? []) > 0) {
             foreach ($value as &$elem) {
-                $elem = array_map('strval', $elem->xpath('*'));
+                $elem = array_map(strval(...), $elem->xpath('*'));
             }
         } else {
-            $value = array_map('strval', $value);
+            $value = array_map(strval(...), $value);
         }
 
         return $value;

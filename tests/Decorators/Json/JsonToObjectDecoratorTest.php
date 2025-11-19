@@ -7,19 +7,14 @@ use DMT\Import\Reader\Exceptions\DecoratorException;
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
 use DMT\Test\Import\Reader\Fixtures\Language;
 use DMT\Test\Import\Reader\Fixtures\Program;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use stdClass;
 
 class JsonToObjectDecoratorTest extends TestCase
 {
-    /**
-     * @dataProvider provideRow
-     *
-     * @param stdClass $currentRow
-     * @param array $mapping
-     * @param Language $expected
-     */
+    #[DataProvider('provideRow')]
     public function testDecorate(stdClass $currentRow, array $mapping, Language $expected): void
     {
         $decorator = new JsonToObjectDecorator(Language::class, $mapping);
@@ -27,15 +22,15 @@ class JsonToObjectDecoratorTest extends TestCase
         $this->assertEquals($expected, $decorator->decorate($currentRow));
     }
 
-    public function provideRow(): iterable
+    public static function provideRow(): iterable
     {
         return [
-            'simple object' => [
+            [
                 (object)['name' => 'php', 'since' => '1995', 'by' => 'Rasmus Lerdorf'],
                 ['name' => 'name', 'since' => 'since', 'by' => 'author'],
                 new Language('php', 1995, 'Rasmus Lerdorf'),
             ],
-            'nested objects mapping' => [
+            [
                 (object)[
                     'language' => 'php',
                     'by' => (object)['author' => 'Rasmus Lerdorf', 'year' => 1995]
@@ -69,13 +64,7 @@ class JsonToObjectDecoratorTest extends TestCase
         $this->assertIsArray($program->languages);
     }
 
-    /**
-     * @dataProvider provideFailure
-     *
-     * @param stdClass $currentRow
-     * @param ExceptionInterface|RuntimeException $exception
-     * @return void
-     */
+    #[DataProvider('provideFailure')]
     public function testFailure(stdClass $currentRow, ExceptionInterface $exception)
     {
         $this->expectExceptionObject($exception);
@@ -88,16 +77,16 @@ class JsonToObjectDecoratorTest extends TestCase
         $decorator->decorate($currentRow);
     }
 
-    public function provideFailure(): iterable
+    public static function provideFailure(): iterable
     {
         $message = 'Can not set %s on %s';
 
         return [
-            'set null on property type string' => [
+            [
                 (object)['name' => '', 'year' => 1970, 'by' => null],
                 DecoratorException::create($message, 'author', Language::class),
             ],
-            'set null on property type int' => [
+            [
                 (object)['name' => '', 'year' => null, 'by' => ''],
                 DecoratorException::create($message, 'since', Language::class),
             ],

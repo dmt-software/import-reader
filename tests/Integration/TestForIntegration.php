@@ -4,6 +4,7 @@ namespace DMT\Test\Import\Reader\Integration;
 
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
 use DMT\Import\Reader\Handlers\HandlerFactory;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Psr\Log\Test\TestLogger;
 
@@ -22,7 +23,7 @@ trait TestForIntegration
         set_error_handler(
             function ($code, $message, $file, $line, $context) {
                 /** @var ExceptionInterface $exception */
-                $exception = $context['exception'] ?? new \Exception();
+                $exception = $context['exception'] ?? new Exception();
 
                 $this->logger->warning(sprintf('%s: %s', $message, $exception->getMessage()));
 

@@ -9,22 +9,22 @@ use DMT\Import\Reader\Handlers\Sanitizers\TrimSanitizer;
 use DMT\Import\Reader\Helpers\SourceHelper;
 use DMT\Import\Reader\Reader;
 use DMT\Test\Import\Reader\Fixtures\Language;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
-/**
- * @group integration
- */
+#[Group('integration')]
 class JsonReaderTest extends TestCase
 {
     use TestForIntegration;
 
     /**
-     * @dataProvider provideJsonFile
      *
      * @param string|resource $file
      * @return void
      */
+    #[DataProvider('provideJsonFile')]
     public function testImportJson($file)
     {
         $reader = new Reader(
@@ -46,15 +46,15 @@ class JsonReaderTest extends TestCase
         $this->assertSame(2, $row);
     }
 
-    public function provideJsonFile(): iterable
+    public static function provideJsonFile(): iterable
     {
         $file = __DIR__ . '/../files/programming.json';
 
         return [
-            'local file' => [$file],
-            'file wrapper' => ['file://' . realpath($file)],
-            'stream' => [fopen($file, 'r')],
-            'contents' => [file_get_contents($file)],
+            [$file],
+            ['file://' . realpath($file)],
+            [fopen($file, 'r')],
+            [file_get_contents($file)],
         ];
     }
 

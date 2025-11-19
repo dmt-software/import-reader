@@ -14,9 +14,9 @@ use DMT\XmlParser\Parser;
  */
 final class XmlReaderHandler implements HandlerInterface
 {
-    private Parser $reader;
-    private PointerInterface $pointer;
-    /** @var SanitizerInterface[] */
+    /**
+     * @var array<SanitizerInterface>
+     */
     private array $sanitizers = [];
 
     /**
@@ -25,12 +25,10 @@ final class XmlReaderHandler implements HandlerInterface
      * @param SanitizerInterface ...$sanitizers
      */
     public function __construct(
-        Parser               $reader,
-        PointerInterface     $pointer,
+        private readonly Parser               $reader,
+        private readonly PointerInterface     $pointer,
         SanitizerInterface   ...$sanitizers
     ) {
-        $this->reader = $reader;
-        $this->pointer = $pointer;
         $this->sanitizers = $sanitizers;
     }
 

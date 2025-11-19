@@ -6,7 +6,7 @@ use ArrayObject;
 use DMT\Import\Reader\Decorators\DecoratorInterface;
 use stdClass;
 
-final class JsonToArrayDecorator implements DecoratorInterface
+final readonly class JsonToArrayDecorator implements DecoratorInterface
 {
     private ?array $mapping;
 
@@ -32,7 +32,7 @@ final class JsonToArrayDecorator implements DecoratorInterface
             $result = [];
             foreach ($this->mapping as $paths => $key) {
                 $value = $currentRow;
-                $paths = explode('.', $paths);
+                $paths = explode('.', (string) $paths);
                 foreach ($paths as $path) {
                     $value = $value[$path] ?? null;
                 }

@@ -24,21 +24,10 @@ use Throwable;
  *
  * Path /Blog/Post/Comments will set the pointer for the reader to the first Comments element.
  */
-final class XmlPathPointer implements PointerInterface
+final readonly class XmlPathPointer implements PointerInterface
 {
-    /**
-     * The path to iterate from.
-     *
-     * @var string
-     */
-    private string $path;
-
-    /**
-     * @param string $path
-     */
-    public function __construct(string $path = '')
+    public function __construct(private string $path = '')
     {
-        $this->path = $path;
     }
 
     /**

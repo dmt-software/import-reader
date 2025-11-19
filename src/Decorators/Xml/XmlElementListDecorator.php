@@ -11,11 +11,8 @@ use Throwable;
 
 class XmlElementListDecorator implements DecoratorInterface
 {
-    private string $path;
-
-    public function __construct(string $path)
+    public function __construct(private readonly string $path)
     {
-        $this->path = $path;
     }
 
     /**
@@ -31,7 +28,7 @@ class XmlElementListDecorator implements DecoratorInterface
             if ($currentRows === false) {
                 throw new RuntimeException();
             }
-        } catch (Throwable $error) {
+        } catch (Throwable) {
             throw new RuntimeException('Invalid xpath expression');
         }
 

@@ -6,7 +6,7 @@ use ArrayObject;
 use DMT\Import\Reader\Decorators\DecoratorInterface;
 use SimpleXMLElement;
 
-final class XmlToArrayDecorator implements DecoratorInterface
+final readonly class XmlToArrayDecorator implements DecoratorInterface
 {
     private ?array $mapping;
 

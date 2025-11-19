@@ -7,22 +7,22 @@ use DMT\Import\Reader\Handlers\Sanitizers\EncodingSanitizer;
 use DMT\Import\Reader\Handlers\XmlReaderHandler;
 use DMT\Import\Reader\Helpers\SourceHelper;
 use DMT\Import\Reader\Reader;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 use SimpleXMLElement;
 
-/**
- * @group integration
- */
+#[Group('integration')]
 class XmlReaderTest extends TestCase
 {
     use TestForIntegration;
 
     /**
-     * @dataProvider provideXmlFile
      *
      * @param string|resource $file
      * @return void
      */
+    #[DataProvider('provideXmlFile')]
     public function testImportXml($file): void
     {
         $reader = new Reader(
@@ -44,15 +44,15 @@ class XmlReaderTest extends TestCase
         $this->assertSame(3, $row);
     }
 
-    public function provideXmlFile(): iterable
+    public static function provideXmlFile(): iterable
     {
         $file = __DIR__ . '/../files/cars.xml';
 
         return [
-            'local file' => [$file],
-            'file uri' => ['file://' . realpath($file)],
-            'stream' => [fopen($file, 'r')],
-            'contents' => [file_get_contents($file)],
+            [$file],
+            ['file://' . realpath($file)],
+            [fopen($file, 'r')],
+            [file_get_contents($file)],
         ];
     }
 }

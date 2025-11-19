@@ -10,9 +10,9 @@ use pcrov\JsonReader\JsonReader;
 
 final class JsonReaderHandler implements HandlerInterface
 {
-    private JsonReader $reader;
-    private PointerInterface $pointer;
-    /** @var SanitizerInterface[] */
+    /**
+     * @var array<SanitizerInterface>
+     */
     private array $sanitizers = [];
 
     /**
@@ -21,12 +21,10 @@ final class JsonReaderHandler implements HandlerInterface
      * @param SanitizerInterface[] $sanitizers
      */
     public function __construct(
-        JsonReader         $reader,
-        PointerInterface   $pointer,
+        private readonly JsonReader         $reader,
+        private readonly PointerInterface   $pointer,
         SanitizerInterface ...$sanitizers
     ) {
-        $this->reader = $reader;
-        $this->pointer = $pointer;
         $this->sanitizers = $sanitizers;
     }
 

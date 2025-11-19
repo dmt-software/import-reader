@@ -38,7 +38,7 @@ class MimeTypeHelper
 
     private static function detectFromContents(string $source): string
     {
-        if (strpos(strtolower($source), '<?xml') !== false) {
+        if (str_contains(strtolower($source), '<?xml')) {
             return self::MIME_TYPE_XML;
         }
         if (preg_match('~^[\[\s{]+(\s?")~ms', $source)) {
@@ -59,7 +59,7 @@ class MimeTypeHelper
         $extension = strtolower(pathinfo($source, PATHINFO_EXTENSION));
         $mimeType = array_reduce(
             [self::MIME_TYPE_XML, self::MIME_TYPE_JSON, self::MIME_TYPE_CSV],
-            fn (?string $mimeType, ?string $current) => strpos($current, $extension) ? $current : $mimeType
+            fn (?string $mimeType, ?string $current) => strpos((string) $current, $extension) ? $current : $mimeType
         );
 
         return $mimeType ?? self::MIME_TYPE_PLAINTEXT;

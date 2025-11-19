@@ -17,7 +17,7 @@ use DMT\Import\Reader\Handlers\Sanitizers\SanitizerInterface;
 
 class MyCustomSanitizer implements SanitizerInterface
 {
-    public function sanitize($currentRow)
+    public function sanitize(string|array $currentRow): string|array
     {
         if (is_array($currentRow)) {
             // apply to all array values in current row 

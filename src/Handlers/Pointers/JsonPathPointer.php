@@ -12,16 +12,10 @@ use pcrov\JsonReader\JsonReader;
  * This class resolves a dotted separated path within the json file.
  * The given path should point to an object or a list of objects to iterate over.
  */
-final class JsonPathPointer implements PointerInterface
+final readonly class JsonPathPointer implements PointerInterface
 {
-    private string $path;
-
-    /**
-     * @param string $path
-     */
-    public function __construct(string $path = '')
+    public function __construct(private string $path = '')
     {
-        $this->path = $path;
     }
 
     /**
@@ -49,7 +43,7 @@ final class JsonPathPointer implements PointerInterface
             throw UnreadableException::unreadable('json', $exception);
         }
 
-        if ($reader->type() == JsonReader::ARRAY && $this->path && substr($this->path, -1) != '.') {
+        if ($reader->type() == JsonReader::ARRAY && $this->path && !str_ends_with($this->path, '.')) {
             $reader->read();
         }
 

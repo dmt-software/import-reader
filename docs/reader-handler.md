@@ -55,9 +55,9 @@ use DMT\Import\Reader\Handlers\Pointers\XmlPathPointer;
 use DMT\Import\Reader\Handlers\XmlReaderHandler;
 use DMT\XmlParser\Parser;
 use DMT\XmlParser\Source\FileParser;
-use DMT\XmlParser\Tokenizer;
+use DMT\XmlParser\Tokenizer\XmlParserTokenizer;
 
-$innerReader = new Parser(new Tokenizer(new FileParser($xmlFile), $fileEncoding, $tokenizerOptions));
+$innerReader = new Parser(new XmlParserTokenizer(new FileParser($xmlFile), $fileEncoding, $tokenizerOptions));
 
 $jsonReaderHandler = new XmlReaderHandler($innerReader, new XmlPathPointer($path));
 ```
