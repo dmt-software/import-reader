@@ -68,7 +68,7 @@ class XmlToObjectDecoratorTest extends TestCase
                 DecoratorException::create($message, 'license', Program::class),
             ],
             'set null on property type array' => [
-                simplexml_load_string('<program><license/></program>'),
+                simplexml_load_string('<program><license>12-BDL-7</license></program>'),
                 DecoratorException::create($message, 'languages', Program::class),
             ],
         ];

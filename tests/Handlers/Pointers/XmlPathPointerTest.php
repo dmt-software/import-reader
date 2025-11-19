@@ -25,7 +25,7 @@ class XmlPathPointerTest extends TestCase
     public function testSetPointer(string $file, string $path, int $skip, string $expected): void
     {
         $reader = new Parser(
-            new Tokenizer(
+            new Tokenizer\XmlReaderTokenizer(
                 new FileParser($file),
                 $config['encoding'] ?? null,
                 $config['flags'] ?? 0
@@ -40,7 +40,7 @@ class XmlPathPointerTest extends TestCase
     public function provideXml(): iterable
     {
         $file = __DIR__ . '/../../files/cars.xml';
-        $xmlString = trim(preg_replace("~(?<=\>)\s+~", '', file_get_contents($file)));
+        $xmlString = trim(preg_replace("~(?<=>)\s+~", '', file_get_contents($file)));
         $xml = simplexml_load_string($xmlString);
 
         return [
@@ -69,7 +69,7 @@ class XmlPathPointerTest extends TestCase
         $this->expectExceptionObject($exception);
 
         $reader = new Parser(
-            new Tokenizer(
+            new Tokenizer\XmlReaderTokenizer(
                 new StringParser($xml),
                 $config['encoding'] ?? null,
                 $config['flags'] ?? 0
