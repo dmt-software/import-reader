@@ -51,7 +51,7 @@ class ReaderTest extends TestCase
         </import>';
 
         $parser = new Parser(
-            new Tokenizer(
+            new Tokenizer\XmlParserTokenizer(
                 new StringParser($xml),
                 $config['encoding'] ?? null,
                 $config['flags'] ?? 0

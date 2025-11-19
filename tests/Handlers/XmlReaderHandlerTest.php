@@ -16,7 +16,7 @@ class XmlReaderHandlerTest extends TestCase
         $xml = '<import><type>json</type><type>xml</type><type>csv</type></import>';
 
         $parser = new Parser(
-            new Tokenizer(
+            new Tokenizer\XmlParserTokenizer(
                 new StringParser($xml),
                 $config['encoding'] ?? null,
                 $config['flags'] ?? 0

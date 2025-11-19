@@ -42,8 +42,14 @@ class XmlHandlerFactory implements HandlerFactoryInterface
         $encoding = $config['encoding'] ?? 'UTF-8';
         settype($encoding, 'array');
 
+        if ($parser instanceof StringParser) {
+            $tokenizer = new Tokenizer\XmlParserTokenizer($parser, current($encoding), $config['flags'] ?? 0);
+        } else {
+            $tokenizer = new Tokenizer\XmlReaderTokenizer($parser, current($encoding), $config['flags'] ?? 0);
+        }
+
         $pointer = new XmlPathPointer($config['path'] ?? '');
-        $fileHandler = new Parser(new Tokenizer($parser, current($encoding), $config['flags'] ?? 0));
+        $fileHandler = new Parser($tokenizer);
 
         return new XmlReaderHandler($fileHandler, $pointer, ...$sanitizers);
     }

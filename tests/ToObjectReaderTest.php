@@ -34,7 +34,7 @@ class ToObjectReaderTest extends TestCase
                 __DIR__ . '/files/cars.xml', [
                     'path' => '/cars/car',
                     'class' => Car::class,
-                    'mapping' => ['make' => 'make', 'models' => 'model']
+                    'mapping' => ['make' => 'make', 'models/model' => 'model']
                 ]
             ],
             'json' => [
