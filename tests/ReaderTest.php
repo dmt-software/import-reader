@@ -14,6 +14,7 @@ use DMT\Import\Reader\Reader;
 use DMT\XmlParser\Parser;
 use DMT\XmlParser\Source\StringParser;
 use DMT\XmlParser\Tokenizer;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use SimpleXMLElement;
 use stdClass;
@@ -22,11 +23,11 @@ use Throwable;
 class ReaderTest extends TestCase
 {
     /**
-     * @dataProvider provideRows
      *
      * @param array $rows
      * @param string $expected
      */
+    #[DataProvider('provideRows')]
     public function testRead(array $rows, string $expected): void
     {
         $reader = new Reader($this->getReaderHandler($rows));
@@ -70,11 +71,11 @@ class ReaderTest extends TestCase
     }
 
     /**
-     * @dataProvider provideRows
      *
      * @param array $rows
      * @param string $expected
      */
+    #[DataProvider('provideRows')]
     public function testReadWithFilter(array $rows, string $expected): void
     {
         $noCsvFilter = function($row) {
@@ -90,11 +91,11 @@ class ReaderTest extends TestCase
     }
 
     /**
-     * @dataProvider provideRows
      *
      * @param array $rows
      * @param string $expected
      */
+    #[DataProvider('provideRows')]
     public function testReaderSkipRows(array $rows, string $expected): void
     {
         $reader = new Reader($this->getReaderHandler($rows));
@@ -105,12 +106,12 @@ class ReaderTest extends TestCase
         }
     }
 
-    public function provideRows(): iterable
+    public static function provideRows(): iterable
     {
         return [
-            'csv' => [[['id', 'type'], ['1', 'csv'],['2', 'json'],['3', 'xml']], ArrayObject::class],
-            'xml' => [['<type>json</type>','<type>xml</type>','<type>csv</type>'], SimpleXMLElement::class],
-            'json' => [['{"type": "json"}','{"type": "xml"}','{"type": "csv"}'], stdClass::class],
+            [[['id', 'type'], ['1', 'csv'],['2', 'json'],['3', 'xml']], ArrayObject::class],
+            [['<type>json</type>','<type>xml</type>','<type>csv</type>'], SimpleXMLElement::class],
+            [['{"type": "json"}','{"type": "xml"}','{"type": "csv"}'], stdClass::class],
         ];
     }
 
@@ -129,7 +130,7 @@ class ReaderTest extends TestCase
     {
         $handler = $this->getMockBuilder(HandlerInterface::class)
             ->onlyMethods(['setPointer', 'read'])
-            ->getMockForAbstractClass();
+            ->getMock();
 
         $handler
             ->expects($this->once())

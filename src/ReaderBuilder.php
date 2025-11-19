@@ -24,7 +24,7 @@ use RuntimeException;
  */
 final class ReaderBuilder
 {
-    private HandlerFactory $handlerFactory;
+    private readonly HandlerFactory $handlerFactory;
 
     private array $sanitizers = [
         'trim' => TrimSanitizer::class,

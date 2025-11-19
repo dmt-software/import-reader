@@ -9,6 +9,7 @@ use DMT\Import\Reader\Handlers\Sanitizers\SanitizerInterface;
 use DMT\Import\Reader\Handlers\XmlReaderHandler;
 use DMT\Import\Reader\Reader;
 use DMT\Import\Reader\ReaderBuilder;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 
@@ -44,7 +45,7 @@ class ReaderBuilderTest extends TestCase
     {
         $this->getMockBuilder(SanitizerInterface::class)
             ->setMockClassName('MockSanitizer')
-            ->getMockForAbstractClass();
+            ->getMock();
 
         $builder = new ReaderBuilder();
         $builder->addSanitizer('mock', 'MockSanitizer');
@@ -54,12 +55,12 @@ class ReaderBuilderTest extends TestCase
     }
 
     /**
-     * @dataProvider provideOptions
      *
      * @param string $file
      * @param array $options
      * @param string $expected
      */
+    #[DataProvider('provideOptions')]
     public function testBuild(string $file, array $options, string $expected): void
     {
         $reader = (new ReaderBuilder())->build($file, $options);
@@ -68,11 +69,11 @@ class ReaderBuilderTest extends TestCase
         $this->assertInstanceOf($expected, $this->getPropertyValue($reader, 'handler'));
     }
 
-    public function provideOptions(): iterable
+    public static function provideOptions(): iterable
     {
         return [
-            'defaults' => [__DIR__ . '/files/cars.xml', [], XmlReaderHandler::class],
-            'handler override' => [
+            [__DIR__ . '/files/cars.xml', [], XmlReaderHandler::class],
+            [
                 __DIR__ . '/files/cars.xml',
                 ['handler' => JsonReaderHandler::class],
                 JsonReaderHandler::class
@@ -90,7 +91,6 @@ class ReaderBuilderTest extends TestCase
     private function getPropertyValue(object $object, $property)
     {
         $reader = new ReflectionProperty($object, $property);
-        $reader->setAccessible(true);
 
         return $reader->getValue($object);
     }

@@ -7,28 +7,25 @@ namespace DMT\Import\Reader\Handlers\Sanitizers;
  *
  * This fixes encoding problems by using iconv to transliterate between character sets.
  */
-final class EncodingSanitizer implements SanitizerInterface
+final readonly class EncodingSanitizer implements SanitizerInterface
 {
-    private string $from;
-    private string $to;
-
     /**
      * @param string $from The encoding of the file.
      * @param string $to The encoding to transform into.
      */
-    public function __construct(string $from, string $to = 'UTF-8//TRANSLIT')
+    public function __construct(private string $from, private string $to = 'UTF-8//TRANSLIT')
     {
-        $this->from = $from;
-        $this->to = $to;
     }
 
-    /** @inheritDoc */
-    public function sanitize($currentRow)
+    /**
+     * @inheritDoc
+     */
+    public function sanitize(string|array $currentRow): string|array
     {
         if (is_string($currentRow)) {
             $currentRow = iconv($this->from, $this->to, $currentRow);
         } elseif (is_array($currentRow)) {
-            $currentRow = array_map(fn($col) => iconv($this->from, $this->to, $col), $currentRow);
+            $currentRow = array_map(fn($col) => iconv($this->from, $this->to, (string) $col), $currentRow);
         }
 
         return $currentRow;

@@ -4,6 +4,7 @@ namespace DMT\Test\Import\Reader\Decorators\Xml;
 
 use DMT\Import\Reader\Decorators\Xml\XmlElementListDecorator;
 use Generator;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
@@ -45,6 +46,7 @@ class XmlElementListDecoratorTest extends TestCase
         $this->assertCount(0, iterator_to_array($currentRow));
     }
 
+    #[WithoutErrorHandler]
     public function testDecoratorFailure(): void
     {
         $currentRow = simplexml_load_string('
@@ -58,8 +60,9 @@ class XmlElementListDecoratorTest extends TestCase
 
         $this->expectExceptionObject(new RuntimeException('Invalid xpath expression'));
 
+        set_error_handler(static fn() => null);
+
         $decorator = new XmlElementListDecorator('[error()="');
         $decorator->decorate($currentRow)->current();
-
     }
 }

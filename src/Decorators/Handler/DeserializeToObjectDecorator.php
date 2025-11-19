@@ -15,23 +15,19 @@ use JMS\Serializer\SerializerInterface;
  */
 final class DeserializeToObjectDecorator implements HandlerDecoratorInterface
 {
-    public const TYPE_XML = 'xml';
-    public const TYPE_JSON = 'json';
-
-    private SerializerInterface $serializer;
-    private string $fqcn;
-    private ?string $type;
+    public const string TYPE_XML = 'xml';
+    public const string TYPE_JSON = 'json';
 
     /**
      * @param SerializerInterface $serializer
      * @param string $fqcn
-     * @param string|null $format
+     * @param string|null $type
      */
-    public function __construct(SerializerInterface $serializer, string $fqcn, string $format = null)
-    {
-        $this->serializer = $serializer;
-        $this->fqcn = $fqcn;
-        $this->type = $format;
+    public function __construct(
+        private readonly SerializerInterface $serializer,
+        private readonly string $fqcn,
+        private ?string $type = null
+    ) {
     }
 
     /**

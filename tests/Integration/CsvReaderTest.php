@@ -12,21 +12,21 @@ use DMT\Import\Reader\Helpers\SourceHelper;
 use DMT\Import\Reader\Reader;
 use DMT\Import\Reader\ReaderBuilder;
 use DMT\Test\Import\Reader\Fixtures\Plane;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @group integration
- */
+#[Group('integration')]
 class CsvReaderTest extends TestCase
 {
     use TestForIntegration;
 
     /**
-     * @dataProvider provideCsvFile
      *
      * @param string|resource $file
      * @return void
      */
+    #[DataProvider('provideCsvFile')]
     public function testImportCsv($file): void
     {
         $reader = new Reader(
@@ -57,15 +57,15 @@ class CsvReaderTest extends TestCase
         $this->assertSame(4, $row);
     }
 
-    public function provideCsvFile(): iterable
+    public static function provideCsvFile(): iterable
     {
         $file = __DIR__ . '/../files/planes.csv';
 
         return [
-            'local file' => [$file],
-            'file uri' => ['file://' . realpath($file)],
-            'stream' => [fopen($file, 'r')],
-            'contents' => [file_get_contents($file)],
+            [$file],
+            ['file://' . realpath($file)],
+            [fopen($file, 'r')],
+            [file_get_contents($file)],
         ];
     }
 

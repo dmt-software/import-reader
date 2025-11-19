@@ -56,7 +56,7 @@ final class ToObjectReader implements ReaderInterface
      *
      * @param int $skip The number of lines or items to skip.
      * @param Closure|null $filter A callback filter to apply.
-     * @return Iterator|object[] A list of objects retrieved from a file.
+     * @return Iterator<object> A list of objects retrieved from a file.
      * @throws ReaderReadException When the reader can not continue to read from file.
      */
     public function read(int $skip = 0, Closure $filter = null): Iterator

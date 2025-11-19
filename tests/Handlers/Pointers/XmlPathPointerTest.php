@@ -9,19 +9,20 @@ use DMT\XmlParser\Parser;
 use DMT\XmlParser\Source\FileParser;
 use DMT\XmlParser\Source\StringParser;
 use DMT\XmlParser\Tokenizer;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 class XmlPathPointerTest extends TestCase
 {
     /**
-     * @dataProvider provideXml
      *
      * @param string $file
      * @param string $path
      * @param int $skip
      * @param string $expected
      */
+    #[DataProvider('provideXml')]
     public function testSetPointer(string $file, string $path, int $skip, string $expected): void
     {
         $reader = new Parser(
@@ -37,17 +38,17 @@ class XmlPathPointerTest extends TestCase
         $this->assertEquals($expected, $reader->parseXml());
     }
 
-    public function provideXml(): iterable
+    public static function provideXml(): iterable
     {
         $file = __DIR__ . '/../../files/cars.xml';
         $xmlString = trim(preg_replace("~(?<=>)\s+~", '', file_get_contents($file)));
         $xml = simplexml_load_string($xmlString);
 
         return [
-            'full contents' => [$file, '', 0, $xmlString],
-            'first car in xml' => [$file, 'cars/car', 0, $xml->car[0]->asXML()],
-            'third car in xml' => [$file, 'cars/car', 2, $xml->car[2]->asXML()],
-            'first model of first car in xml' => [
+            [$file, '', 0, $xmlString],
+            [$file, 'cars/car', 0, $xml->car[0]->asXML()],
+            [$file, 'cars/car', 2, $xml->car[2]->asXML()],
+            [
                 $file,
                 'cars/car/models/model',
                 0,
@@ -57,13 +58,13 @@ class XmlPathPointerTest extends TestCase
     }
 
     /**
-     * @dataProvider provideFailure
      *
      * @param string $xml
      * @param string $path
      * @param int $skip
      * @param ExceptionInterface|RuntimeException $exception
      */
+    #[DataProvider('provideFailure')]
     public function testFailures(string $xml, string $path, int $skip, ExceptionInterface $exception): void
     {
         $this->expectExceptionObject($exception);
@@ -80,13 +81,13 @@ class XmlPathPointerTest extends TestCase
         $pointer->seek($reader, $skip);
     }
 
-    public function provideFailure(): iterable
+    public static function provideFailure(): iterable
     {
         $xmlString = trim(preg_replace("~\r\n~", "\n", file_get_contents(__DIR__ . '/../../files/cars.xml')));
 
         return [
-            'path not found' => [$xmlString, 'car/models', 0, UnreadableException::pathNotFound('car/models')],
-            'end of file reached' => [$xmlString, 'cars/car/models/model', 4, UnreadableException::eof()],
+            [$xmlString, 'car/models', 0, UnreadableException::pathNotFound('car/models')],
+            [$xmlString, 'cars/car/models/model', 4, UnreadableException::eof()],
         ];
     }
 }

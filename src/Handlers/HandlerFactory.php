@@ -47,13 +47,13 @@ final class HandlerFactory
      * @param string|resource $source
      * @param string $sourceType
      * @param array $config
-     * @param SanitizerInterface[] $sanitizers
+     * @param array<SanitizerInterface> $sanitizers
      *
      * @return HandlerInterface
      */
     public function createReaderHandler(
         string $handlerClassName,
-               $source,
+        mixed  $source,
         string $sourceType,
         array  $config = [],
         array  $sanitizers = []
@@ -62,7 +62,7 @@ final class HandlerFactory
             $instantiator = $this->getInstantiatorForHandler($handlerClassName, $sourceType);
 
             return call_user_func($instantiator, $source, $config, $sanitizers);
-        } catch (TypeError $error) {
+        } catch (TypeError) {
             throw new RuntimeException('Source type is not supported for instantiator');
         }
     }

@@ -77,7 +77,7 @@ class HandlerFactoryTest extends TestCase
             return $this->getMockBuilder(CustomReaderHandlerStub::class)
                 ->setMockClassName('CustomHandler')
                 ->setConstructorArgs([$reader])
-                ->getMockForAbstractClass();
+                ->getMock();
         };
 
         $handlerFactory = new HandlerFactory();
@@ -91,7 +91,6 @@ class HandlerFactoryTest extends TestCase
     private function getPropertyValue(object $object, $property)
     {
         $reader = new ReflectionProperty($object, $property);
-        $reader->setAccessible(true);
 
         return $reader->getValue($object);
     }

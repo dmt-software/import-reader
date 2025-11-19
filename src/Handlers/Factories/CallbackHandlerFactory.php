@@ -7,14 +7,11 @@ use DMT\Import\Reader\Handlers\HandlerInterface;
 
 class CallbackHandlerFactory implements HandlerFactoryInterface
 {
-    private Closure $callback;
-
     /**
-     * @param \Closure $callback
+     * @param Closure $callback
      */
-    public function __construct(Closure $callback)
+    public function __construct(private readonly Closure $callback)
     {
-        $this->callback = $callback;
     }
 
     /**

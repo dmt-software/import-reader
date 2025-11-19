@@ -6,15 +6,11 @@ use RuntimeException;
 
 class SourceHelper
 {
-    public const SOURCE_TYPE_FILE = 'file';
-    public const SOURCE_TYPE_STREAM = 'stream';
-    public const SOURCE_TYPE_STRING = 'contents';
+    public const string SOURCE_TYPE_FILE = 'file';
+    public const string SOURCE_TYPE_STREAM = 'stream';
+    public const string SOURCE_TYPE_STRING = 'contents';
 
-    /**
-     * @param resource|string $source
-     * @return string
-     */
-    public static function detect($source): string
+    public static function detect(mixed $source): string
     {
         if (is_resource($source)) {
             return self::SOURCE_TYPE_STREAM;
@@ -25,7 +21,7 @@ class SourceHelper
         }
 
         $m = [];
-        if (is_file($source) || preg_match('~^(\S+)://~', $source, $m) && in_array($m[1], stream_get_wrappers())) {
+        if (preg_match('~^(\S+)://~', $source, $m) && in_array($m[1], stream_get_wrappers()) || is_file($source)) {
             return self::SOURCE_TYPE_FILE;
         }
 

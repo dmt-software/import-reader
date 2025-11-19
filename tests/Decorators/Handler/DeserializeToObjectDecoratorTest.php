@@ -6,15 +6,12 @@ use DMT\Import\Reader\Decorators\Handler\DeserializeToObjectDecorator;
 use DMT\Test\Import\Reader\Fixtures\Language;
 use DMT\Test\Import\Reader\Fixtures\Program;
 use JMS\Serializer\SerializerBuilder;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class DeserializeToObjectDecoratorTest extends TestCase
 {
-    /**
-     * @dataProvider provideRow
-     *
-     * @param $currentRow
-     */
+    #[DataProvider('provideRow')]
     public function testDecorate($currentRow): void
     {
         $decorator = new DeserializeToObjectDecorator(SerializerBuilder::create()->build(), Program::class);
@@ -27,10 +24,10 @@ class DeserializeToObjectDecoratorTest extends TestCase
         $this->assertNotEmpty($program->languages[0]->author);
     }
 
-    public function provideRow(): iterable
+    public static function provideRow(): iterable
     {
         return [
-            'xml' => [
+            [
                 '<program>
                     <license>open source</license>
                     <languages>
@@ -39,7 +36,7 @@ class DeserializeToObjectDecoratorTest extends TestCase
                     </languages>
                 </program>'
             ],
-            'json' => [
+            [
                 '{
                     "license": "closed source",
                     "languages": [

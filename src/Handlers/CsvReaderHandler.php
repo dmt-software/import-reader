@@ -12,10 +12,8 @@ use DMT\Import\Reader\Handlers\Sanitizers\SanitizerInterface;
  */
 final class CsvReaderHandler implements HandlerInterface
 {
-    /** @var resource */
-    private $reader;
-    private array $csvControl;
-    /** @var SanitizerInterface[] */
+    private readonly array $csvControl;
+    /** @var array<SanitizerInterface> */
     private array $sanitizers = [];
     private ?array $currentRow = null;
 
@@ -23,9 +21,8 @@ final class CsvReaderHandler implements HandlerInterface
      * @param resource $reader
      * @param SanitizerInterface ...$sanitizers
      */
-    public function __construct($reader, array $csvControl = [], SanitizerInterface ...$sanitizers)
+    public function __construct(private $reader, array $csvControl = [], SanitizerInterface ...$sanitizers)
     {
-        $this->reader = $reader;
         $this->sanitizers = $sanitizers;
         $this->csvControl = [
             $csvControl['delimiter'] ?? ',',

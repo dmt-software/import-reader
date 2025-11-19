@@ -28,8 +28,9 @@ use Iterator;
  */
 final class Reader implements ReaderInterface
 {
-    private HandlerInterface $handler;
-    /** @var DecoratorInterface[] */
+    /**
+     * @var array<DecoratorInterface>
+     */
     private array $decorators = [];
 
     /**
@@ -40,13 +41,11 @@ final class Reader implements ReaderInterface
      * @param DecoratorInterface ...$decorators
      */
     public function __construct(
-        HandlerInterface $handler,
+        private readonly HandlerInterface $handler,
         HandlerDecoratorInterface $decorator = null,
         DecoratorInterface ...$decorators
     ) {
         array_unshift($decorators, $decorator ?? new GenericHandlerDecorator());
-
-        $this->handler = $handler;
         $this->decorators = $decorators;
     }
 
@@ -110,11 +109,11 @@ final class Reader implements ReaderInterface
                     if ($filter($currentRow, $key)) {
                         yield $key => $currentRow;
                     }
-                } catch (DecoratorException $exception) {
+                } catch (DecoratorException) {
                     trigger_error('Skipped row ' . ($position + $skip), E_USER_WARNING);
                 }
             }
-        } catch (ExceptionInterface $exception) {
+        } catch (ExceptionInterface) {
             throw ReaderReadException::readError(++$position + $skip);
         }
     }

@@ -1,21 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          backupGlobals="false"
-         backupStaticAttributes="false"
          bootstrap="vendor/autoload.php"
          colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
->
-    <coverage>
-        <include>
-            <directory>src/</directory>
-        </include>
-    </coverage>
+         cacheDirectory=".phpunit.result"
+         backupStaticProperties="false"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd">
     <testsuites>
         <testsuite name="Test Suite">
             <directory>tests/</directory>
@@ -26,4 +18,9 @@
             <group>integration</group>
         </exclude>
     </groups>
+    <source>
+        <include>
+            <directory>src/</directory>
+        </include>
+    </source>
 </phpunit>

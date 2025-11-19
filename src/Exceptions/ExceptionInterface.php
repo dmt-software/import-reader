@@ -2,7 +2,9 @@
 
 namespace DMT\Import\Reader\Exceptions;
 
-interface ExceptionInterface
+use Throwable;
+
+interface ExceptionInterface extends Throwable
 {
     public static function create(string $message, ...$args): self;
 }

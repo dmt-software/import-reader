@@ -8,16 +8,12 @@ use DMT\Import\Reader\ToObjectReader;
 use DMT\Test\Import\Reader\Fixtures\Car;
 use DMT\Test\Import\Reader\Fixtures\Language;
 use DMT\Test\Import\Reader\Fixtures\Plane;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ToObjectReaderTest extends TestCase
 {
-    /**
-     * @dataProvider provideFile
-     *
-     * @param string $file
-     * @param array $options
-     */
+    #[DataProvider('provideFile')]
     public function testReadToObject(string $file, array $options): void
     {
         $reader = new ToObjectReader((new ReaderBuilder())->createHandler($file, $options), $options);
@@ -27,24 +23,24 @@ class ToObjectReaderTest extends TestCase
         }
     }
 
-    public function provideFile(): iterable
+    public static function provideFile(): iterable
     {
         return [
-            'xml' => [
+            [
                 __DIR__ . '/files/cars.xml', [
                     'path' => '/cars/car',
                     'class' => Car::class,
                     'mapping' => ['make' => 'make', 'models/model' => 'model']
                 ]
             ],
-            'json' => [
+            [
                 __DIR__ . '/files/programming.json', [
                     'path' => '.languages',
                     'class' => Language::class,
                     'mapping' => ['name' => 'name', 'since' => 'since', 'by' => 'author']
                 ]
             ],
-            'csv' => [
+            [
                 __DIR__ . '/files/planes.csv', [
                     'class' => Plane::class,
                     'mapping' => ['col1' => 'type', 'col2' => 'speed', 'col3' => 'seats'],
@@ -53,14 +49,7 @@ class ToObjectReaderTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider provideFileWithFilter
-     *
-     * @param string $file
-     * @param array $options
-     * @param Closure $filter
-     * @param int $unExpectedKey
-     */
+    #[DataProvider('provideFileWithFilter')]
     public function testReadToArrayWithFilter(string $file, array $options, Closure $filter, int $unExpectedKey): void
     {
         $reader = new ToObjectReader((new ReaderBuilder())->createHandler($file, $options), $options);
@@ -74,20 +63,20 @@ class ToObjectReaderTest extends TestCase
         $this->assertNotContains($unExpectedKey, $keys);
     }
 
-    public function provideFileWithFilter(): iterable
+    public static function provideFileWithFilter(): iterable
     {
-        $files = $this->provideFile();
+        $files = self::provideFile();
 
         return [
-            'xml skip one' => array_merge(
-                $files['xml'], [
+            array_merge(
+                $files[0], [
                 function (Car $car, int $key) {
                     return $key <> 2;
                 },
                 2,
             ]),
-            'csv skip header' => array_merge(
-                $files['csv'], [
+            array_merge(
+                $files[2], [
                 function (Plane $plane) {
                     $headers = array_keys(get_object_vars($plane));
                     $headers[0] = 'make&model';
@@ -96,8 +85,8 @@ class ToObjectReaderTest extends TestCase
                 },
                 1,
             ]),
-            'json skip one' => array_merge(
-                $files['json'], [
+            array_merge(
+                $files[1], [
                 function (Language $language) {
                     return $language->name !== 'javascript';
                 },

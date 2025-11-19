@@ -9,19 +9,17 @@ use ReflectionClass;
 use ReflectionException;
 use stdClass;
 
-final class JsonToObjectDecorator implements DecoratorInterface
+/**
+ * @template T
+ */
+final readonly class JsonToObjectDecorator implements DecoratorInterface
 {
-    private string $className;
-    private array $mapping;
-
     /**
-     * @param string $className The fully qualified class name.
+     * @param class-string<T> $className The fully qualified class name.
      * @param array $mapping The property in json object (using dotted path) to property mapping.
      */
-    public function __construct(string $className, array $mapping)
+    public function __construct(private string $className, private array $mapping)
     {
-        $this->className = $className;
-        $this->mapping = $mapping;
     }
 
     /**
@@ -29,11 +27,12 @@ final class JsonToObjectDecorator implements DecoratorInterface
      *
      * This tries to initiate and populate a DataTransferObject.
      *
+     * {@inheritDoc}
+     *
      * @param stdClass|object $currentRow The current json object.
      *
-     * @return object Instance of an object according to type stored in className property.
-     * @throws DecoratorException When the initialization of the object failed.
-     * @throws ReflectionException
+     * @return T
+     * @throws DecoratorException|ReflectionException
      */
     public function decorate(object $currentRow): object
     {
@@ -46,7 +45,7 @@ final class JsonToObjectDecorator implements DecoratorInterface
                     continue;
                 }
                 $value = $currentRow;
-                $paths = explode('.', $key);
+                $paths = explode('.', (string) $key);
                 foreach ($paths as $path) {
                     $value = $value->$path ?? null;
                 }
@@ -59,7 +58,7 @@ final class JsonToObjectDecorator implements DecoratorInterface
                 }
 
                 $entity->$property = $value;
-            } catch (Error $e) {
+            } catch (Error) {
                 throw DecoratorException::create('Can not set %s on %s', $property, $this->className);
             }
         }

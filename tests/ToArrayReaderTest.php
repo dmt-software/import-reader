@@ -5,16 +5,12 @@ namespace DMT\Test\Import\Reader;
 use Closure;
 use DMT\Import\Reader\ReaderBuilder;
 use DMT\Import\Reader\ToArrayReader;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ToArrayReaderTest extends TestCase
 {
-    /**
-     * @dataProvider provideFile
-     *
-     * @param string $file
-     * @param array $options
-     */
+    #[DataProvider('provideFile')]
     public function testReadToArray(string $file, array $options): void
     {
         $reader = new ToArrayReader((new ReaderBuilder())->createHandler($file, $options), $options);
@@ -24,23 +20,16 @@ class ToArrayReaderTest extends TestCase
         }
     }
 
-    public function provideFile(): iterable
+    public static function provideFile(): iterable
     {
         return [
-            'xml' => [__DIR__ . '/files/cars.xml', ['path' => '/cars/car']],
-            'json' => [__DIR__ . '/files/programming.json', ['path' => '.']],
-            'csv' => [__DIR__ . '/files/planes.csv', ['mapping' => ['make&model', 'speed', 'seats']]],
+            [__DIR__ . '/files/cars.xml', ['path' => '/cars/car']],
+            [__DIR__ . '/files/programming.json', ['path' => '.']],
+            [__DIR__ . '/files/planes.csv', ['mapping' => ['make&model', 'speed', 'seats']]],
         ];
     }
 
-    /**
-     * @dataProvider provideFileWithFilter
-     *
-     * @param string $file
-     * @param array $options
-     * @param Closure $filter
-     * @param int $unExpectedKey
-     */
+    #[DataProvider('provideFileWithFilter')]
     public function testReadToArrayWithFilter(string $file, array $options, Closure $filter, int $unExpectedKey): void
     {
         $reader = new ToArrayReader((new ReaderBuilder())->createHandler($file, $options), $options);
@@ -54,27 +43,27 @@ class ToArrayReaderTest extends TestCase
         $this->assertNotContains($unExpectedKey, $keys);
     }
 
-    public function provideFileWithFilter(): iterable
+    public static function provideFileWithFilter(): iterable
     {
-        $files = $this->provideFile();
+        $files = self::provideFile();
 
         return [
-            'xml skip one' => array_merge(
-                $files['xml'], [
+            array_merge(
+                $files[0], [
                 function (array $car) {
                     return $car['make'] !== 'Fiat';
                 },
                 2,
             ]),
-            'csv skip header' => array_merge(
-                $files['csv'], [
+            array_merge(
+                $files[1], [
                 function (array $plane) {
                     return !array_keys($plane) == array_values($plane);
                 },
                 1,
             ]),
-            'json skip one' => array_merge(
-                $files['json'], [
+            array_merge(
+                $files[2], [
                 function (array $language, int $key) {
                     return $key <> 2;
                 },

@@ -5,16 +5,12 @@ namespace DMT\Test\Import\Reader\Decorators\Csv;
 use ArrayObject;
 use DMT\Import\Reader\Decorators\Csv\ColumnMappingDecorator;
 use DMT\Import\Reader\Exceptions\DecoratorException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ColumnMappingDecoratorTest extends TestCase
 {
-    /**
-     * @dataProvider provideMapping
-     *
-     * @param array $mapping
-     * @param ArrayObject $expected
-     */
+    #[DataProvider('provideMapping')]
     public function testApply(array $mapping, ArrayObject $expected): void
     {
         $decorator = new ColumnMappingDecorator($mapping);
@@ -30,12 +26,7 @@ class ColumnMappingDecoratorTest extends TestCase
         $this->assertEquals($expected, $decorator->decorate($row));
     }
 
-    /**
-     * @dataProvider provideMapping
-     *
-     * @param array $mapping
-     * @return void
-     */
+    #[DataProvider('provideMapping')]
     public function testFailure(array $mapping): void
     {
         $this->expectException(DecoratorException::class);
@@ -48,18 +39,18 @@ class ColumnMappingDecoratorTest extends TestCase
         (new ColumnMappingDecorator($mapping))->decorate($row);
     }
 
-    public function provideMapping(): iterable
+    public static function provideMapping(): iterable
     {
         return [
-            'default mapping' => [
+            [
                 ['col1' => 'name', 'col4' => 'address'],
                 new ArrayObject(['name' => 'John', 'address' => 'Main Street 12015'])
             ],
-            'array mapping' => [
+            [
                 ['name', null, 'sex'],
                 new ArrayObject(['name' => 'John', 'sex' => 'male'])
             ],
-            'indexed mapping' => [
+            [
                 [1 => 'lastName', 4 => 'city'],
                 new ArrayObject(['lastName' => 'Do', 'city' => 'New York'])
             ],

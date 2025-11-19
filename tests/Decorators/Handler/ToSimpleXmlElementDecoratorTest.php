@@ -5,17 +5,15 @@ namespace DMT\Test\Import\Reader\Decorators\Handler;
 use DMT\Import\Reader\Decorators\Handler\ToSimpleXmlElementDecorator;
 use DMT\Import\Reader\Exceptions\DecoratorException;
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
+use Exception;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use PHPUnit\Framework\TestCase;
 use SimpleXMLElement;
 
 class ToSimpleXmlElementDecoratorTest extends TestCase
 {
-    /**
-     * @dataProvider provideXml
-     *
-     * @param string $currentRow
-     * @param string|null $namespace
-     */
+    #[DataProvider('provideXml')]
     public function testDecorate(string $currentRow, string $namespace = null)
     {
         $bookXml = (new ToSimpleXmlElementDecorator($namespace))->decorate($currentRow);
@@ -25,39 +23,37 @@ class ToSimpleXmlElementDecoratorTest extends TestCase
         $this->assertInstanceOf(SimpleXMLElement::class, $bookXml->author);
     }
 
-    public function provideXml(): iterable
+    public static function provideXml(): iterable
     {
         return [
-            'xml' => [
+            [
                 '<book><title>Some title</title><author/></book>',
             ],
-            'xml with namespace' => [
+            [
                 '<ns1:book xmlns:ns1="example-ns"><ns1:title>Some title</ns1:title><ns1:author/></ns1:book>',
                 'example-ns'
             ],
         ];
     }
 
-    /**
-     * @dataProvider provideFailure
-     *
-     * @param string $currentRow
-     * @param ExceptionInterface $exception
-     */
-    public function testFailure($currentRow, ExceptionInterface $exception): void
+    #[DataProvider('provideFailure')]
+    #[WithoutErrorHandler]
+    public function testFailure(mixed $currentRow, ExceptionInterface|Exception $exception): void
     {
         $this->expectExceptionObject($exception);
+
+        set_error_handler(static fn() => null);
 
         $decorator = new ToSimpleXmlElementDecorator();
         $decorator->decorate($currentRow);
     }
 
-    public function provideFailure(): iterable
+    public static function provideFailure(): iterable
     {
         return [
-            'empty xml' => ['', DecoratorException::create('Invalid xml')],
-            'json' => ['{"book":{}}', DecoratorException::create('Invalid xml')],
-            'csv' => [['col1' => 'title'], DecoratorException::create('Invalid xml')],
+            ['', DecoratorException::create('Invalid xml')],
+            ['{"book":{}}', DecoratorException::create('Invalid xml')],
+            [['col1' => 'title'], DecoratorException::create('Invalid xml')],
         ];
     }
 }

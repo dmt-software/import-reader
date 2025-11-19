@@ -12,7 +12,7 @@ use stdClass;
 final class ToArrayDecorator implements DecoratorInterface
 {
     private ?DecoratorInterface $typeDecorator = null;
-    private ?array $mapping;
+    private readonly ?array $mapping;
 
     /**
      * @param array|null $mapping

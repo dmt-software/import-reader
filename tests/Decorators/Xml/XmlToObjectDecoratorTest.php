@@ -7,6 +7,7 @@ use DMT\Import\Reader\Exceptions\DecoratorException;
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
 use DMT\Test\Import\Reader\Fixtures\Language;
 use DMT\Test\Import\Reader\Fixtures\Program;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
 use RuntimeException;
@@ -14,14 +15,7 @@ use SimpleXMLElement;
 
 class XmlToObjectDecoratorTest extends TestCase
 {
-    /**
-     * @dataProvider provideRow
-     *
-     * @param SimpleXMLElement $currentRow
-     * @param array $mapping
-     * @param object $expected
-     * @throws ReflectionException
-     */
+    #[DataProvider('provideRow')]
     public function testDecorate(SimpleXMLElement $currentRow, array $mapping, object $expected): void
     {
         $decorator = new XmlToObjectDecorator(get_class($expected), $mapping);
@@ -29,23 +23,17 @@ class XmlToObjectDecoratorTest extends TestCase
         $this->assertEquals($expected, $decorator->decorate($currentRow));
     }
 
-    public function provideRow(): iterable
+    public static function provideRow(): iterable
     {
         return [
-            'simple xml to object' => $this->getXmlRow(),
-            'xml with namespace to object' => $this->getXmlWithNamespaceRow(),
-            'xml to object with simple list' => $this->getXmlWithSimpleListRow(),
-            'xml to object with complex list' => $this->getXmlWithComplexListRow()
+            self::getXmlRow(),
+            self::getXmlWithNamespaceRow(),
+            self::getXmlWithSimpleListRow(),
+            self::getXmlWithComplexListRow()
         ];
     }
 
-    /**
-     * @dataProvider provideFailure
-     *
-     * @param SimpleXMLElement $currentRow
-     * @param ExceptionInterface|RuntimeException $exception
-     * @throws ReflectionException
-     */
+    #[DataProvider('provideFailure')]
     public function testFailure(SimpleXMLElement $currentRow, ExceptionInterface $exception): void
     {
         $this->expectExceptionObject($exception);
@@ -58,28 +46,23 @@ class XmlToObjectDecoratorTest extends TestCase
         $decorator->decorate($currentRow);
     }
 
-    public function provideFailure(): iterable
+    public static function provideFailure(): iterable
     {
         $message = 'Can not set %s on %s';
 
         return [
-            'set null on property type string' => [
+            [
                 simplexml_load_string('<program/>'),
                 DecoratorException::create($message, 'license', Program::class),
             ],
-            'set null on property type array' => [
+            [
                 simplexml_load_string('<program><license>12-BDL-7</license></program>'),
                 DecoratorException::create($message, 'languages', Program::class),
             ],
         ];
     }
 
-    /**
-     * Maps element name to object property.
-     *
-     * @return array
-     */
-    private function getXmlRow(): array
+    private static function getXmlRow(): array
     {
         $xml = simplexml_load_string('
             <language>
@@ -94,12 +77,7 @@ class XmlToObjectDecoratorTest extends TestCase
         return [$xml, $mapping, $expected];
     }
 
-    /**
-     * Maps ns:element to object property.
-     *
-     * @return array
-     */
-    private function getXmlWithNamespaceRow(): array
+    private static function getXmlWithNamespaceRow(): array
     {
         $xml = simplexml_load_string('
             <language xmlns:ns1="http://example.dev">
@@ -117,12 +95,7 @@ class XmlToObjectDecoratorTest extends TestCase
         return [$xml, $mapping, $expected];
     }
 
-    /**
-     * Maps a list of xml elements to an array for object property.
-     *
-     * @return array
-     */
-    private function getXmlWithSimpleListRow(): array
+    private static function getXmlWithSimpleListRow(): array
     {
         $xml = simplexml_load_string('
             <program>
@@ -136,12 +109,7 @@ class XmlToObjectDecoratorTest extends TestCase
         return [$xml, $mapping, $expected];
     }
 
-    /**
-     * Maps a list of xml elements with child nodes to a list of arrays for object property.
-     *
-     * @return array
-     */
-    private function getXmlWithComplexListRow(): array
+    private static function getXmlWithComplexListRow(): array
     {
         $xml = simplexml_load_string('
             <program>
