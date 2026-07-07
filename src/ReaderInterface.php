@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DMT\Import\Reader;
 
 use Closure;
@@ -12,7 +14,9 @@ use pcrov\JsonReader\JsonReader;
 interface ReaderInterface
 {
     public const JSON_FLOATS_AS_STRINGS = JsonReader::FLOATS_AS_STRINGS;
+
     public const XML_DROP_NAMESPACES = Tokenizer::XML_DROP_NAMESPACES;
+
     public const XML_USE_CDATA = Tokenizer::XML_USE_CDATA;
 
     /**
@@ -23,5 +27,5 @@ interface ReaderInterface
      * @return Iterator A list of items retrieved from a file.
      * @throws ReaderReadException When the reader can not continue to read from file.
      */
-    public function read(int $skip = 0, Closure $filter = null): Iterator;
+    public function read(int $skip = 0, ?Closure $filter = null): Iterator;
 }

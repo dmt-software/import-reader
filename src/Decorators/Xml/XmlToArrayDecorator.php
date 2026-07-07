@@ -10,10 +10,7 @@ final readonly class XmlToArrayDecorator implements DecoratorInterface
 {
     private ?array $mapping;
 
-    /**
-     * @param array|null $mapping
-     */
-    public function __construct(array $mapping = null)
+    public function __construct(?array $mapping = null)
     {
         $this->mapping = $mapping ?: null;
     }
@@ -22,7 +19,6 @@ final readonly class XmlToArrayDecorator implements DecoratorInterface
      * Transform the rows into ArrayObject instances.
      *
      * @param object|SimpleXMLElement $currentRow The current row.
-     * @return ArrayObject
      */
     public function decorate(object $currentRow): ArrayObject
     {
@@ -52,11 +48,7 @@ final readonly class XmlToArrayDecorator implements DecoratorInterface
 
         foreach ($result as $key => $value) {
             if ($value instanceof SimpleXMLElement) {
-                if (count($value->children()) == 0) {
-                    $result[$key] =  strval($value);
-                } else {
-                    $result[$key] = $this->simpleXmlElementToArray($value);
-                }
+                $result[$key] = count($value->children()) === 0 ? strval($value) : $this->simpleXmlElementToArray($value);
             } elseif (is_array($value)) {
                 $result[$key] = $this->simpleXmlElementToArray($value);
             }

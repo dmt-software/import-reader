@@ -15,13 +15,6 @@ use RuntimeException;
 
 class XmlPathPointerTest extends TestCase
 {
-    /**
-     *
-     * @param string $file
-     * @param string $path
-     * @param int $skip
-     * @param string $expected
-     */
     #[DataProvider('provideXml')]
     public function testSetPointer(string $file, string $path, int $skip, string $expected): void
     {
@@ -41,7 +34,7 @@ class XmlPathPointerTest extends TestCase
     public static function provideXml(): iterable
     {
         $file = __DIR__ . '/../../files/cars.xml';
-        $xmlString = trim(preg_replace("~(?<=>)\s+~", '', file_get_contents($file)));
+        $xmlString = trim((string) preg_replace("~(?<=>)\s+~", '', file_get_contents($file)));
         $xml = simplexml_load_string($xmlString);
 
         return [
@@ -59,9 +52,6 @@ class XmlPathPointerTest extends TestCase
 
     /**
      *
-     * @param string $xml
-     * @param string $path
-     * @param int $skip
      * @param ExceptionInterface|RuntimeException $exception
      */
     #[DataProvider('provideFailure')]
@@ -83,7 +73,7 @@ class XmlPathPointerTest extends TestCase
 
     public static function provideFailure(): iterable
     {
-        $xmlString = trim(preg_replace("~\r\n~", "\n", file_get_contents(__DIR__ . '/../../files/cars.xml')));
+        $xmlString = trim((string) preg_replace("~\r\n~", "\n", file_get_contents(__DIR__ . '/../../files/cars.xml')));
 
         return [
             [$xmlString, 'car/models', 0, UnreadableException::pathNotFound('car/models')],

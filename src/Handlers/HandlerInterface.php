@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DMT\Import\Reader\Handlers;
 
 use DMT\Import\Reader\Exceptions\ExceptionInterface;
@@ -11,7 +13,6 @@ interface HandlerInterface
      * Set the pointer to the right part of the file.
      *
      * @param int $skip The amount ot items to skip.
-     * @return void
      * @throws UnreadableException
      */
     public function setPointer(int $skip = 0): void;

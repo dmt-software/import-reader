@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DMT\Test\Import\Reader\Decorators\Json;
 
 use DMT\Import\Reader\Decorators\Json\JsonToObjectDecorator;

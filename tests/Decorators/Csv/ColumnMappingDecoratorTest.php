@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DMT\Test\Import\Reader\Decorators\Csv;
 
 use ArrayObject;
@@ -27,7 +29,7 @@ class ColumnMappingDecoratorTest extends TestCase
     }
 
     #[DataProvider('provideMapping')]
-    public function testFailure(array $mapping): void
+    public function testFailure(array $mapping, ArrayObject $row): void
     {
         $this->expectException(DecoratorException::class);
 
@@ -36,7 +38,7 @@ class ColumnMappingDecoratorTest extends TestCase
             'col2' => 'Do',
         ], ArrayObject::ARRAY_AS_PROPS);
 
-        (new ColumnMappingDecorator($mapping))->decorate($row);
+        new ColumnMappingDecorator($mapping)->decorate($row);
     }
 
     public static function provideMapping(): iterable

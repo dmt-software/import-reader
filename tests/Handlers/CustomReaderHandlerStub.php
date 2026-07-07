@@ -1,15 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DMT\Test\Import\Reader\Handlers;
 
 use DMT\Import\Reader\Handlers\HandlerInterface;
 
 abstract class CustomReaderHandlerStub implements HandlerInterface
 {
-    public object $reader;
-
-    public function __construct(object $innerReader)
+    public function __construct(public object $reader)
     {
-        $this->reader = $innerReader;
     }
 }

@@ -60,8 +60,6 @@ class XmlElementListDecoratorTest extends TestCase
 
         $this->expectExceptionObject(new RuntimeException('Invalid xpath expression'));
 
-        set_error_handler(static fn() => null);
-
         $decorator = new XmlElementListDecorator('[error()="');
         $decorator->decorate($currentRow)->current();
     }

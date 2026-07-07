@@ -9,6 +9,7 @@ use DMT\Import\Reader\Handlers\Sanitizers\SanitizerInterface;
 use DMT\Import\Reader\Handlers\XmlReaderHandler;
 use DMT\Import\Reader\Reader;
 use DMT\Import\Reader\ReaderBuilder;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
@@ -25,12 +26,13 @@ class ReaderBuilderTest extends TestCase
                 'stream_eof' => false,
                 'url_stat' => [],
             ];
+
             public function __call(string $func, array $args) {
                 return $this->mapping[$func] ?? null;
             }
         };
 
-        stream_wrapper_register('dummy', get_class($protocol));
+        stream_wrapper_register('dummy', $protocol::class);
     }
 
     public function testCreateHandlerFailure()
@@ -41,6 +43,7 @@ class ReaderBuilderTest extends TestCase
         $builder->createHandler('dummy://cars.cxml', []);
     }
 
+    #[AllowMockObjectsWithoutExpectations]
     public function testAddSanitizer(): void
     {
         $this->getMockBuilder(SanitizerInterface::class)
@@ -54,16 +57,10 @@ class ReaderBuilderTest extends TestCase
         $this->assertContainsOnlyInstancesOf('MockSanitizer', $this->getPropertyValue($handler, 'sanitizers'));
     }
 
-    /**
-     *
-     * @param string $file
-     * @param array $options
-     * @param string $expected
-     */
     #[DataProvider('provideOptions')]
     public function testBuild(string $file, array $options, string $expected): void
     {
-        $reader = (new ReaderBuilder())->build($file, $options);
+        $reader = new ReaderBuilder()->build($file, $options);
 
         $this->assertInstanceOf(Reader::class, $reader);
         $this->assertInstanceOf($expected, $this->getPropertyValue($reader, 'handler'));

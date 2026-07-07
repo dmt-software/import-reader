@@ -65,7 +65,7 @@ class CallbackHandlerFactoryTest extends TestCase
                 $handler
                     ->expects($this->once())
                     ->method('read')
-                    ->willReturnCallback(fn() => yield from array_map('trim', file($file)));
+                    ->willReturnCallback(fn() => yield from array_map(trim(...), file($file)));
                 $handler
                     ->expects($this->any())
                     ->method('setPointer');

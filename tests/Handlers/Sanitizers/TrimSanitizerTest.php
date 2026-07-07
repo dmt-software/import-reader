@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DMT\Test\Import\Reader\Handlers\Sanitizers;
 
 use DMT\Import\Reader\Handlers\Sanitizers\TrimSanitizer;
@@ -8,12 +10,6 @@ use PHPUnit\Framework\TestCase;
 
 class TrimSanitizerTest extends TestCase
 {
-    /**
-     *
-     * @param string|null $chars
-     * @param int|null $direction
-     * @param string $expected
-     */
     #[DataProvider('provideValue')]
     public function testSanitize(?string $chars, ?int $direction, string $expected): void
     {

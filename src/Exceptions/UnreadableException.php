@@ -7,7 +7,7 @@ use Throwable;
 
 class UnreadableException extends RuntimeException implements ExceptionInterface
 {
-    public static function unreadable(string $typeOrFile, Throwable $throwable = null): self
+    public static function unreadable(string $typeOrFile, ?Throwable $throwable = null): self
     {
         return self::create('Unable to read %s', $typeOrFile, $throwable);
     }
@@ -34,6 +34,7 @@ class UnreadableException extends RuntimeException implements ExceptionInterface
         if (end($args) instanceof Throwable) {
             $previous = array_pop($args);
         }
+
         $args = array_merge($args);
 
         return new self(vsprintf($message, $args), $code, $previous);

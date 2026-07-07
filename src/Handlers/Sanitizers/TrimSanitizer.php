@@ -10,12 +10,14 @@ namespace DMT\Import\Reader\Handlers\Sanitizers;
 final readonly class TrimSanitizer implements SanitizerInterface
 {
     public const int TRIM_LEFT = 1;
+
     public const int TRIM_RIGHT = 2;
 
     private string $chars;
+
     private int $direction;
 
-    public function __construct(string $chars = null, int $direction = null)
+    public function __construct(?string $chars = null, ?int $direction = null)
     {
         $this->chars = $chars ?? " \t\n\r\0\x0B";
         $this->direction = $direction ?? self::TRIM_LEFT | self::TRIM_RIGHT;
@@ -24,10 +26,11 @@ final readonly class TrimSanitizer implements SanitizerInterface
     public function sanitize(string|array $currentRow): string|array
     {
         $method = null;
-        if ($this->direction & self::TRIM_LEFT) {
+        if (($this->direction & self::TRIM_LEFT) !== 0) {
             $method = 'ltrim';
         }
-        if ($this->direction & self::TRIM_RIGHT) {
+
+        if (($this->direction & self::TRIM_RIGHT) !== 0) {
             $method = $method ? 'trim' : 'rtrim';
         }
 

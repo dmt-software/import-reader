@@ -30,10 +30,7 @@ final class HandlerFactory
     /**
      * Add handler instantiator callback.
      *
-     * @param string $handlerClassName
-     * @param HandlerFactoryInterface $factory
      *
-     * @return void
      */
     public function addInitializeHandlerFactory(string $handlerClassName, HandlerFactoryInterface $factory): void
     {
@@ -43,13 +40,9 @@ final class HandlerFactory
     /**
      * Create reader handler.
      *
-     * @param string $handlerClassName
      * @param string|resource $source
-     * @param string $sourceType
-     * @param array $config
      * @param array<SanitizerInterface> $sanitizers
      *
-     * @return HandlerInterface
      */
     public function createReaderHandler(
         string $handlerClassName,
@@ -67,7 +60,7 @@ final class HandlerFactory
         }
     }
 
-    private function getInstantiatorForHandler(string $handlerClassName, string $sourceType = null): callable
+    private function getInstantiatorForHandler(string $handlerClassName, ?string $sourceType = null): callable
     {
         if (!array_key_exists($handlerClassName, $this->handlerFactories)) {
             throw new RuntimeException('Can not initiate ' . $handlerClassName);

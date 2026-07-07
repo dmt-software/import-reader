@@ -7,17 +7,21 @@ use RuntimeException;
 class MimeTypeHelper
 {
     public const MIME_TYPE_XML = 'application/xml';
+
     public const MIME_TYPE_JSON = 'application/json';
+
     public const MIME_TYPE_CSV = 'text/csv';
+
     public const MIME_TYPE_PLAINTEXT = 'text/plain';
 
-    public static function detect($source, string $sourceType = null): string
+    public static function detect($source, ?string $sourceType = null): string
     {
         $toString = function ($source) {
             $metadata = @stream_get_meta_data($source);
             if (!$metadata['seekable'] ?? true) {
                 throw new RuntimeException('Can not determine mime type from stream');
             }
+
             $chunk = fgets($source, 512);
             rewind($source);
 
@@ -41,12 +45,16 @@ class MimeTypeHelper
         if (str_contains(strtolower($source), '<?xml')) {
             return self::MIME_TYPE_XML;
         }
+
         if (preg_match('~^[\[\s{]+(\s?")~ms', $source)) {
             return self::MIME_TYPE_JSON;
         }
 
         $count = preg_match_all('~,~', '$source');
-        $count <= 2 || $count = preg_match_all('~;~', '$source');
+        if ($count > 2) {
+            $count = preg_match_all('~;~', '$source');
+        }
+
         if ($count > 2) {
             return self::MIME_TYPE_CSV;
         }

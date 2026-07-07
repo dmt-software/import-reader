@@ -21,8 +21,11 @@ use DMT\Import\Reader\Exceptions\DecoratorException;
 final class GenericHandlerDecorator implements HandlerDecoratorInterface
 {
     public const string TYPE_XML = 'xml';
+
     public const string TYPE_CSV = 'csv';
+
     public const string TYPE_JSON = 'json';
+
     public const null UNDEFINED_TYPE = null;
 
     private ?string $type = self::UNDEFINED_TYPE;
@@ -51,7 +54,6 @@ final class GenericHandlerDecorator implements HandlerDecoratorInterface
      * This type is determined once based on the content of the current row.
      *
      * @param mixed $currentRow the current row.
-     * @return string|null
      */
     private function getType($currentRow): ?string
     {

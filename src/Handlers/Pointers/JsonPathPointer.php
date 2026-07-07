@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DMT\Import\Reader\Handlers\Pointers;
 
 use DMT\Import\Reader\Exceptions\UnreadableException;
@@ -20,21 +22,21 @@ final readonly class JsonPathPointer implements PointerInterface
 
     /**
      * @param JsonReader $reader
-     * @param int $skip
      * @throws Exception
      */
     public function seek($reader, int $skip): void
     {
         $paths = explode('.', $this->path);
-        $depth = $this->path ? count($paths) : 0;
+        $depth = $this->path !== '' && $this->path !== '0' ? count($paths) : 0;
 
         try {
             foreach ($paths as $path) {
                 while ($reader->read()) {
                     if ($reader->name() == $path) {
-                        if ($depth == $reader->depth() || $depth == 0) {
+                        if ($depth == $reader->depth() || $depth === 0) {
                             break 2;
                         }
+
                         break;
                     }
                 }
@@ -48,9 +50,10 @@ final readonly class JsonPathPointer implements PointerInterface
         }
 
         if ($reader->type() != JsonReader::OBJECT) {
-            if (!empty($path) && $reader->name() == $path) {
+            if ($path !== '' && $path !== '0' && $reader->name() == $path) {
                 throw UnreadableException::illegalValue($reader->value());
             }
+
             throw UnreadableException::pathNotFound($this->path);
         }
 

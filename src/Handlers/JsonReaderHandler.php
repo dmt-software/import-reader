@@ -16,8 +16,6 @@ final class JsonReaderHandler implements HandlerInterface
     private array $sanitizers = [];
 
     /**
-     * @param JsonReader $reader
-     * @param PointerInterface $pointer
      * @param SanitizerInterface[] $sanitizers
      */
     public function __construct(

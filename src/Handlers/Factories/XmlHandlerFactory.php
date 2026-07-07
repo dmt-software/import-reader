@@ -40,7 +40,7 @@ class XmlHandlerFactory implements HandlerFactoryInterface
     private function create(SourceParser $parser, array $config, array $sanitizers): XmlReaderHandler
     {
         $encoding = $config['encoding'] ?? 'UTF-8';
-        settype($encoding, 'array');
+        $encoding = (array) $encoding;
 
         if ($parser instanceof StringParser) {
             $tokenizer = new Tokenizer\XmlParserTokenizer($parser, current($encoding), $config['flags'] ?? 0);

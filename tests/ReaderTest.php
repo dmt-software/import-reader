@@ -22,11 +22,6 @@ use Throwable;
 
 class ReaderTest extends TestCase
 {
-    /**
-     *
-     * @param array $rows
-     * @param string $expected
-     */
     #[DataProvider('provideRows')]
     public function testRead(array $rows, string $expected): void
     {
@@ -70,17 +65,10 @@ class ReaderTest extends TestCase
         }
     }
 
-    /**
-     *
-     * @param array $rows
-     * @param string $expected
-     */
     #[DataProvider('provideRows')]
     public function testReadWithFilter(array $rows, string $expected): void
     {
-        $noCsvFilter = function($row) {
-            return !in_array('csv', (array)$row);
-        };
+        $noCsvFilter = (fn($row) => !in_array('csv', (array)$row));
 
         $reader = new Reader($this->getReaderHandler($rows));
 
@@ -90,11 +78,6 @@ class ReaderTest extends TestCase
         }
     }
 
-    /**
-     *
-     * @param array $rows
-     * @param string $expected
-     */
     #[DataProvider('provideRows')]
     public function testReaderSkipRows(array $rows, string $expected): void
     {
@@ -117,7 +100,7 @@ class ReaderTest extends TestCase
 
     public function testReadFailure(): void
     {
-        $this->expectExceptionObject(ReaderReadException::readError(2));
+        $this->expectExceptionObject(ReaderReadException::readError(1));
 
         $reader = new Reader($this->getReaderHandler(['{"type": "json"}', UnreadableException::unreadable('json')]));
 
@@ -145,6 +128,7 @@ class ReaderTest extends TestCase
                     if ($value instanceof Throwable) {
                         throw $value;
                     }
+
                     yield ++$position => $value;
                 }
             });

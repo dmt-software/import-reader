@@ -34,12 +34,11 @@ final readonly class XmlPathPointer implements PointerInterface
      * Set the pointer to the first element in the xml according the given path.
      *
      * @param Parser $reader The file reader to use.
-     * @param int $skip
      * @throws UnreadableException
      */
     public function seek($reader, int $skip): void
     {
-        if ($this->path == '') {
+        if ($this->path === '') {
             return;
         }
 
@@ -61,12 +60,13 @@ final readonly class XmlPathPointer implements PointerInterface
                 if ($depth <= count($paths)) {
                     $stack[$depth] = $node->localName;
                 }
+
                 if ($paths == $stack) {
                     break;
                 }
             }
-        } catch (Throwable $exception) {
-            throw UnreadableException::unreadable('xml', $exception);
+        } catch (Throwable $throwable) {
+            throw UnreadableException::unreadable('xml', $throwable);
         }
 
         if ($paths != $stack) {
@@ -78,6 +78,7 @@ final readonly class XmlPathPointer implements PointerInterface
             if (!$reader->parseXml()) {
                 throw UnreadableException::eof();
             }
+
             if ($node->localName !== $reader->parse()->localName) {
                 throw UnreadableException::eof();
             }

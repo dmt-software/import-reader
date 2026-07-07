@@ -43,6 +43,7 @@ final readonly class ColumnMappingDecorator implements DecoratorInterface, CsvDe
 
             $replace[$column] = $currentRow[$col];
         }
+
         $currentRow->exchangeArray($replace);
 
         return $currentRow;

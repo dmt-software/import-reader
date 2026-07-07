@@ -13,13 +13,14 @@ use DMT\Import\Reader\Handlers\Sanitizers\SanitizerInterface;
 final class CsvReaderHandler implements HandlerInterface
 {
     private readonly array $csvControl;
+
     /** @var array<SanitizerInterface> */
     private array $sanitizers = [];
+
     private ?array $currentRow = null;
 
     /**
      * @param resource $reader
-     * @param SanitizerInterface ...$sanitizers
      */
     public function __construct(private $reader, array $csvControl = [], SanitizerInterface ...$sanitizers)
     {
@@ -57,7 +58,6 @@ final class CsvReaderHandler implements HandlerInterface
      * Empty csv lines will be ignored.
      * During the reading process the handler might sanitize the rows retrieved from the file.
      *
-     * @return iterable
      *
      * @see SanitizerInterface
      */
@@ -70,6 +70,7 @@ final class CsvReaderHandler implements HandlerInterface
                 foreach ($this->sanitizers as $sanitizer) {
                     $currentRow = $sanitizer->sanitize($currentRow);
                 }
+
                 yield ++$processed => $currentRow;
             }
 

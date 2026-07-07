@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DMT\Test\Import\Reader\Decorators;
 
 use ArrayObject;
@@ -39,6 +41,6 @@ class ToArrayDecoratorTest extends TestCase
     {
         $this->expectException(DecoratorException::class);
 
-        (new ToArrayDecorator())->decorate($this);
+        new ToArrayDecorator()->decorate($this);
     }
 }

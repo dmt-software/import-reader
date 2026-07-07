@@ -14,7 +14,7 @@ class ToObjectDecoratorTest extends TestCase
     #[DataProvider('ProvideRow')]
     public function testDecorate(object $currentRow, array $mapping, object $expected): void
     {
-        $decorator = new ToObjectDecorator(get_class($expected), $mapping);
+        $decorator = new ToObjectDecorator($expected::class, $mapping);
 
         $this->assertEquals($expected, $decorator->decorate($currentRow));
     }
@@ -44,6 +44,6 @@ class ToObjectDecoratorTest extends TestCase
     {
         $this->expectException(DecoratorException::class);
 
-        (new ToObjectDecorator(Car::class, []))->decorate(new Car('BMW', 'S3'));
+        new ToObjectDecorator(Car::class, [])->decorate(new Car('BMW', 'S3'));
     }
 }
