@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DMT\Test\Import\Reader\Handlers\Sanitizers;
 
 use DMT\Import\Reader\Handlers\Sanitizers\EncodingSanitizer;

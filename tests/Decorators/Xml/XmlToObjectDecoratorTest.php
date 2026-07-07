@@ -18,7 +18,7 @@ class XmlToObjectDecoratorTest extends TestCase
     #[DataProvider('provideRow')]
     public function testDecorate(SimpleXMLElement $currentRow, array $mapping, object $expected): void
     {
-        $decorator = new XmlToObjectDecorator(get_class($expected), $mapping);
+        $decorator = new XmlToObjectDecorator($expected::class, $mapping);
 
         $this->assertEquals($expected, $decorator->decorate($currentRow));
     }

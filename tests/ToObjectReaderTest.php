@@ -16,7 +16,7 @@ class ToObjectReaderTest extends TestCase
     #[DataProvider('provideFile')]
     public function testReadToObject(string $file, array $options): void
     {
-        $reader = new ToObjectReader((new ReaderBuilder())->createHandler($file, $options), $options);
+        $reader = new ToObjectReader(new ReaderBuilder()->createHandler($file, $options), $options);
 
         foreach ($reader->read() as $object) {
             $this->assertInstanceOf($options['class'], $object);
@@ -52,7 +52,7 @@ class ToObjectReaderTest extends TestCase
     #[DataProvider('provideFileWithFilter')]
     public function testReadToArrayWithFilter(string $file, array $options, Closure $filter, int $unExpectedKey): void
     {
-        $reader = new ToObjectReader((new ReaderBuilder())->createHandler($file, $options), $options);
+        $reader = new ToObjectReader(new ReaderBuilder()->createHandler($file, $options), $options);
 
         $keys = [];
         foreach ($reader->read(0, $filter) as $key => $object) {
@@ -70,9 +70,7 @@ class ToObjectReaderTest extends TestCase
         return [
             array_merge(
                 $files[0], [
-                function (Car $car, int $key) {
-                    return $key <> 2;
-                },
+                fn(Car $car, int $key) => $key !== 2,
                 2,
             ]),
             array_merge(
@@ -87,9 +85,7 @@ class ToObjectReaderTest extends TestCase
             ]),
             array_merge(
                 $files[1], [
-                function (Language $language) {
-                    return $language->name !== 'javascript';
-                },
+                fn(Language $language) => $language->name !== 'javascript',
                 1,
             ]),
         ];

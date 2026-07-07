@@ -24,7 +24,6 @@ class CsvReaderTest extends TestCase
     /**
      *
      * @param string|resource $file
-     * @return void
      */
     #[DataProvider('provideCsvFile')]
     public function testImportCsv($file): void
@@ -98,7 +97,7 @@ class CsvReaderTest extends TestCase
 
     public function testCsvReaderFromBuilder()
     {
-        $reader = (new ReaderBuilder())
+        $reader = new ReaderBuilder()
             ->build(__DIR__ . '/../files/planes.csv', [
                 'trim' => ['.', TrimSanitizer::TRIM_RIGHT],
                 'mapping' => [

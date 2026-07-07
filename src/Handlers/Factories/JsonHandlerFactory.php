@@ -19,7 +19,7 @@ class JsonHandlerFactory implements HandlerFactoryInterface
             $reader = new JsonReader($config['flags'] ?? 0);
             $reader->stream($stream);
         } catch (Exception $exception) {
-            throw new InvalidArgumentException($exception->getMessage());
+            throw new InvalidArgumentException($exception->getMessage(), $exception->getCode(), $exception);
         }
 
         return $this->create($reader, $config, $sanitizers);
@@ -45,7 +45,7 @@ class JsonHandlerFactory implements HandlerFactoryInterface
             $reader = new JsonReader($config['flags'] ?? 0);
             $reader->open($fileOrUri);
         } catch (Exception $exception) {
-            throw new InvalidArgumentException($exception->getMessage());
+            throw new InvalidArgumentException($exception->getMessage(), $exception->getCode(), $exception);
         }
 
         return $this->create($reader, $config, $sanitizers);

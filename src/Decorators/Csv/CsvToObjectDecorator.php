@@ -36,7 +36,7 @@ final readonly class CsvToObjectDecorator implements DecoratorInterface
      */
     public function decorate(object $currentRow): object
     {
-        $entity = (new ReflectionClass($this->className))->newInstanceWithoutConstructor();
+        $entity = new ReflectionClass($this->className)->newInstanceWithoutConstructor();
 
         foreach ($this->mapping as $key => $property) {
             try {

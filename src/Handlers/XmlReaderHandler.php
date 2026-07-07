@@ -19,11 +19,6 @@ final class XmlReaderHandler implements HandlerInterface
      */
     private array $sanitizers = [];
 
-    /**
-     * @param Parser $reader
-     * @param PointerInterface $pointer
-     * @param SanitizerInterface ...$sanitizers
-     */
     public function __construct(
         private readonly Parser               $reader,
         private readonly PointerInterface     $pointer,
@@ -51,7 +46,6 @@ final class XmlReaderHandler implements HandlerInterface
      *
      * During the reading process the handler might sanitize the xml strings retrieved from the file.
      *
-     * @return iterable
      *
      * @see SanitizerInterface
      */
@@ -59,7 +53,7 @@ final class XmlReaderHandler implements HandlerInterface
     {
         $processed = 0;
         do {
-            if (!$xml = $this->reader->parseXml()) {
+            if ((($xml = $this->reader->parseXml())) === '' || (($xml = $this->reader->parseXml())) === '0') {
                 throw UnreadableException::unreadable('xml');
             }
 
@@ -69,7 +63,7 @@ final class XmlReaderHandler implements HandlerInterface
 
             yield ++$processed => $xml;
 
-            if (!$this->reader->parse()) {
+            if (!$this->reader->parse() instanceof \DMT\XmlParser\Node\ElementNode) {
                 break;
             }
         } while (true);

@@ -15,10 +15,6 @@ class JsonPathPointerTest extends TestCase
 {
     /**
      *
-     * @param string $json
-     * @param string $path
-     * @param int $skip
-     * @param array $expected
      * @throws Exception
      */
     #[DataProvider('provideJson')]
@@ -50,8 +46,6 @@ class JsonPathPointerTest extends TestCase
 
     /**
      *
-     * @param string $json
-     * @param string $path
      * @param ExceptionInterface|RuntimeException $exception
      */
     #[DataProvider('provideFailure')]

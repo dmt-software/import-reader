@@ -60,7 +60,7 @@ final readonly class XmlToObjectDecorator implements DecoratorInterface
 
     private function normalizeNodeList($value): ?array
     {
-        if (!is_array($value) || count($value) == 0) {
+        if (!is_array($value) || $value === []) {
             return null;
         }
 

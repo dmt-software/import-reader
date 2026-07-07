@@ -31,7 +31,7 @@ final class ReaderBuilder
         'encoding' => EncodingSanitizer::class,
     ];
 
-    public function __construct(HandlerFactory $handlerFactory = null)
+    public function __construct(?HandlerFactory $handlerFactory = null)
     {
         $this->handlerFactory = $handlerFactory ?? new HandlerFactory();
     }
@@ -57,7 +57,6 @@ final class ReaderBuilder
      *
      * @param string $file The file or protocol wrapper to read.
      * @param array $options The configuration options (@see createHandler())
-     * @return ReaderInterface
      */
     public function build(string $file, array $options): ReaderInterface
     {
@@ -83,7 +82,6 @@ final class ReaderBuilder
      *
      * @param string $file The file or protocol wrapper to read.
      * @param array $options The configuration options (@see createHandler())
-     * @return ReaderInterface
      */
     public function buildToArrayReader(string $file, array $options): ReaderInterface
     {
@@ -101,9 +99,8 @@ final class ReaderBuilder
      * @param string $file The file or protocol wrapper to read.
      * @param array $options The configuration options (@see createHandler())
      * @param SerializerInterface|null $serializer The deserialize handler.
-     * @return ReaderInterface
      */
-    public function buildToObjectReader(string $file, array $options, SerializerInterface $serializer = null): ReaderInterface
+    public function buildToObjectReader(string $file, array $options, ?SerializerInterface $serializer = null): ReaderInterface
     {
         $readerOptions = [
             'class' => $options['class'] ?? null,
@@ -138,16 +135,15 @@ final class ReaderBuilder
      *      class     : the class to return for each read item.
      *      mapping   : csv column, xml xpath of json (dotted) path to property mapping
      *                  if no class is given (csv only) the keys are mapped to array keys.
-     *
-     * @return HandlerInterface
      */
     public function createHandler($source, array $options): HandlerInterface
     {
         try {
             $sourceType = SourceHelper::detect($source);
-        } catch (RuntimeException $exception) {
-            throw UnreadableException::unreadable('from ' . gettype($source), $exception);
+        } catch (RuntimeException $runtimeException) {
+            throw UnreadableException::unreadable('from ' . gettype($source), $runtimeException);
         }
+
         $handler = $options['handler'] ?? $this->getHandlerType($source, $sourceType);
 
         switch ($handler) {
@@ -189,6 +185,7 @@ final class ReaderBuilder
             if (array_key_exists($option, $exclude)) {
                 continue;
             }
+
             if (array_key_exists($option, $options)) {
                 $sanitizers[] = new $sanitizer(...$options[$option]);
             }
@@ -201,9 +198,7 @@ final class ReaderBuilder
      * Get the right handler for the source.
      *
      * @param resource|string $source
-     * @param string $sourceType
      *
-     * @return string
      * @throws UnreadableException
      */
     private function getHandlerType($source, string $sourceType): string

@@ -16,13 +16,9 @@ use JMS\Serializer\SerializerInterface;
 final class DeserializeToObjectDecorator implements HandlerDecoratorInterface
 {
     public const string TYPE_XML = 'xml';
+
     public const string TYPE_JSON = 'json';
 
-    /**
-     * @param SerializerInterface $serializer
-     * @param string $fqcn
-     * @param string|null $type
-     */
     public function __construct(
         private readonly SerializerInterface $serializer,
         private readonly string $fqcn,
@@ -46,7 +42,6 @@ final class DeserializeToObjectDecorator implements HandlerDecoratorInterface
      * This type is determined once based on the content of the current row.
      *
      * @param string $currentRow the current row.
-     * @return string|null
      */
     private function getType(string $currentRow): ?string
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DMT\Import\Reader\Helpers;
 
 use RuntimeException;
@@ -7,7 +9,9 @@ use RuntimeException;
 class SourceHelper
 {
     public const string SOURCE_TYPE_FILE = 'file';
+
     public const string SOURCE_TYPE_STREAM = 'stream';
+
     public const string SOURCE_TYPE_STRING = 'contents';
 
     public static function detect(mixed $source): string
@@ -21,7 +25,7 @@ class SourceHelper
         }
 
         $m = [];
-        if (preg_match('~^(\S+)://~', $source, $m) && in_array($m[1], stream_get_wrappers()) || is_file($source)) {
+        if (preg_match('~^(\S+)://~', $source, $m) && in_array($m[1], stream_get_wrappers(), true) || is_file($source)) {
             return self::SOURCE_TYPE_FILE;
         }
 

@@ -15,11 +15,6 @@ class XmlElementListDecorator implements DecoratorInterface
     {
     }
 
-    /**
-     * @param object|SimpleXMLElement $currentRow
-     *
-     * @return Generator
-     */
     public function decorate(object $currentRow): Generator
     {
         try {

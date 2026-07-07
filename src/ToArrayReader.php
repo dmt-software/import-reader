@@ -57,7 +57,7 @@ final readonly class ToArrayReader implements ReaderInterface
      * @return Iterator<array> A list of arrays retrieved from a file.
      * @throws ReaderReadException When the reader can not continue to read from file.
      */
-    public function read(int $skip = 0, Closure $filter = null): Iterator
+    public function read(int $skip = 0, ?Closure $filter = null): Iterator
     {
         $filter ??= fn($currentRow, $key) => true;
         $iterator = function (int $skip) {

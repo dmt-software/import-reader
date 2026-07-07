@@ -10,10 +10,7 @@ final readonly class JsonToArrayDecorator implements DecoratorInterface
 {
     private ?array $mapping;
 
-    /**
-     * @param array|null $mapping
-     */
-    public function __construct(array $mapping = null)
+    public function __construct(?array $mapping = null)
     {
         $this->mapping = $mapping ?: null;
     }
@@ -22,7 +19,6 @@ final readonly class JsonToArrayDecorator implements DecoratorInterface
      * Transform the rows to an ArrayObject.
      *
      * @param object|stdClass $currentRow The row received from an earlier decorator.
-     * @return ArrayObject
      */
     public function decorate(object $currentRow): ArrayObject
     {
@@ -36,8 +32,10 @@ final readonly class JsonToArrayDecorator implements DecoratorInterface
                 foreach ($paths as $path) {
                     $value = $value[$path] ?? null;
                 }
+
                 $result[$key] = $value;
             }
+
             $currentRow = $result;
         }
 

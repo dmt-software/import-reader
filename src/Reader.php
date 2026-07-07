@@ -35,14 +35,10 @@ final class Reader implements ReaderInterface
 
     /**
      * Reader.
-     *
-     * @param HandlerInterface $handler
-     * @param HandlerDecoratorInterface|null $decorator
-     * @param DecoratorInterface ...$decorators
      */
     public function __construct(
         private readonly HandlerInterface $handler,
-        HandlerDecoratorInterface $decorator = null,
+        ?HandlerDecoratorInterface $decorator = null,
         DecoratorInterface ...$decorators
     ) {
         array_unshift($decorators, $decorator ?? new GenericHandlerDecorator());
@@ -51,9 +47,6 @@ final class Reader implements ReaderInterface
 
     /**
      * Add a decorator.
-     *
-     * @param DecoratorInterface $decorator
-     * @return Reader
      */
     public function addDecorator(DecoratorInterface $decorator): self
     {
@@ -74,7 +67,7 @@ final class Reader implements ReaderInterface
      * @throws ReaderReadException When the reader can not continue to read from file.
      * @throws InvalidArgumentException When the reader is misconfigured.
      */
-    public function read(int $skip = 0, Closure $filter = null): Iterator
+    public function read(int $skip = 0, ?Closure $filter = null): Iterator
     {
         $this->handler->setPointer($skip);
 
@@ -89,7 +82,8 @@ final class Reader implements ReaderInterface
                             foreach ($currentRow as $value) {
                                 $currentRows[] = $decorator->decorate($value);
                             }
-                            $currentRow = call_user_func(fn() => yield from $currentRows);
+
+                            $currentRow = yield from $currentRows;
                             continue;
                         }
 
@@ -103,6 +97,7 @@ final class Reader implements ReaderInterface
                                 yield $key => $value;
                             }
                         }
+
                         continue;
                     }
 
@@ -114,7 +109,7 @@ final class Reader implements ReaderInterface
                 }
             }
         } catch (ExceptionInterface) {
-            throw ReaderReadException::readError(++$position + $skip);
+            throw ReaderReadException::readError($position);
         }
     }
 }

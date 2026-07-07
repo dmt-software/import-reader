@@ -14,9 +14,9 @@ use SimpleXMLElement;
 class ToSimpleXmlElementDecoratorTest extends TestCase
 {
     #[DataProvider('provideXml')]
-    public function testDecorate(string $currentRow, string $namespace = null)
+    public function testDecorate(string $currentRow, ?string $namespace = null)
     {
-        $bookXml = (new ToSimpleXmlElementDecorator($namespace))->decorate($currentRow);
+        $bookXml = new ToSimpleXmlElementDecorator($namespace)->decorate($currentRow);
 
         $this->assertNotEmpty(strval($bookXml->title));
         $this->assertInstanceOf(SimpleXMLElement::class, $bookXml->title);
@@ -42,7 +42,7 @@ class ToSimpleXmlElementDecoratorTest extends TestCase
     {
         $this->expectExceptionObject($exception);
 
-        set_error_handler(static fn() => null);
+        libxml_use_internal_errors(true);
 
         $decorator = new ToSimpleXmlElementDecorator();
         $decorator->decorate($currentRow);

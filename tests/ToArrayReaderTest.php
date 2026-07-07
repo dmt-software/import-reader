@@ -13,7 +13,7 @@ class ToArrayReaderTest extends TestCase
     #[DataProvider('provideFile')]
     public function testReadToArray(string $file, array $options): void
     {
-        $reader = new ToArrayReader((new ReaderBuilder())->createHandler($file, $options), $options);
+        $reader = new ToArrayReader(new ReaderBuilder()->createHandler($file, $options), $options);
 
         foreach ($reader->read() as $array) {
             $this->assertIsArray($array);
@@ -32,7 +32,7 @@ class ToArrayReaderTest extends TestCase
     #[DataProvider('provideFileWithFilter')]
     public function testReadToArrayWithFilter(string $file, array $options, Closure $filter, int $unExpectedKey): void
     {
-        $reader = new ToArrayReader((new ReaderBuilder())->createHandler($file, $options), $options);
+        $reader = new ToArrayReader(new ReaderBuilder()->createHandler($file, $options), $options);
 
         $keys = [];
         foreach ($reader->read(0, $filter) as $key => $array) {
@@ -50,23 +50,17 @@ class ToArrayReaderTest extends TestCase
         return [
             array_merge(
                 $files[0], [
-                function (array $car) {
-                    return $car['make'] !== 'Fiat';
-                },
+                fn(array $car) => $car['make'] !== 'Fiat',
                 2,
             ]),
             array_merge(
                 $files[1], [
-                function (array $plane) {
-                    return !array_keys($plane) == array_values($plane);
-                },
+                fn(array $plane) => !array_keys($plane) == array_values($plane),
                 1,
             ]),
             array_merge(
                 $files[2], [
-                function (array $language, int $key) {
-                    return $key <> 2;
-                },
+                fn(array $language, int $key) => $key !== 2,
                 2,
             ]),
         ];

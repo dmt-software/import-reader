@@ -44,6 +44,7 @@ final readonly class JsonToObjectDecorator implements DecoratorInterface
                 if (!property_exists($entity, $property) && !method_exists($entity, '__set')) {
                     continue;
                 }
+
                 $value = $currentRow;
                 $paths = explode('.', (string) $key);
                 foreach ($paths as $path) {

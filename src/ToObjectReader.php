@@ -33,7 +33,7 @@ final class ToObjectReader implements ReaderInterface
      *      namespace: The namespace for the elements in xml to map [optional].
      * @param SerializerInterface|null $serializer The deserializer (xml and json only).
      */
-    public function __construct(HandlerInterface $handler, array $options, SerializerInterface $serializer = null)
+    public function __construct(HandlerInterface $handler, array $options, ?SerializerInterface $serializer = null)
     {
         $className = $options['class'] ?? null;
         $mapping = $options['mapping'] ?? null;
@@ -59,7 +59,7 @@ final class ToObjectReader implements ReaderInterface
      * @return Iterator<object> A list of objects retrieved from a file.
      * @throws ReaderReadException When the reader can not continue to read from file.
      */
-    public function read(int $skip = 0, Closure $filter = null): Iterator
+    public function read(int $skip = 0, ?Closure $filter = null): Iterator
     {
         return new CallbackFilterIterator(
             $this->reader->read($skip),

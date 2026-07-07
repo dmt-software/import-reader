@@ -12,12 +12,10 @@ use stdClass;
 final class ToArrayDecorator implements DecoratorInterface
 {
     private ?DecoratorInterface $typeDecorator = null;
+
     private readonly ?array $mapping;
 
-    /**
-     * @param array|null $mapping
-     */
-    public function __construct(array $mapping = null)
+    public function __construct(?array $mapping = null)
     {
         $this->mapping = $mapping ?: null;
     }
@@ -26,7 +24,6 @@ final class ToArrayDecorator implements DecoratorInterface
      * Transform the rows to an ArrayObject.
      *
      * @param object $currentRow The row received from an earlier decorator.
-     * @return ArrayObject
      */
     public function decorate(object $currentRow): ArrayObject
     {

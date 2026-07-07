@@ -14,6 +14,7 @@ use Psr\Log\Test\TestLogger;
 trait TestForIntegration
 {
     protected HandlerFactory $handlerFactory;
+
     private LoggerInterface $logger;
 
     public function setUp(): void

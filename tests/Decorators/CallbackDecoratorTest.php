@@ -23,7 +23,7 @@ class CallbackDecoratorTest extends TestCase
     {
         return [
             [
-                function (SimpleXMLElement $currentRow) {
+                function (SimpleXMLElement $currentRow): void {
                     $currentRow->addChild('type', (string) $currentRow->car->attributes()['type']);
                     foreach ($currentRow->xpath('car/@*') as $attribute) {
                         unset($attribute[0]);
@@ -33,14 +33,14 @@ class CallbackDecoratorTest extends TestCase
                 simplexml_load_string('<root><car>ford</car><type>focus</type></root>')
             ],
             [
-                function (object $currentRow) {
+                function (object $currentRow): void {
                     $currentRow->lorem = 'ipsum';
                 },
                 json_decode('{"foo": "bar"}'),
                 (object) ['foo' => 'bar', 'lorem' => 'ipsum']
             ],
             [
-                function (object $currentRow) {
+                function (object $currentRow): void {
                     $currentRow['col2'] = 'value2';
                 },
                 new ArrayObject(['col1' => 'value1']),

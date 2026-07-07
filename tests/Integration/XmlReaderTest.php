@@ -20,7 +20,6 @@ class XmlReaderTest extends TestCase
     /**
      *
      * @param string|resource $file
-     * @return void
      */
     #[DataProvider('provideXmlFile')]
     public function testImportXml($file): void
@@ -38,7 +37,7 @@ class XmlReaderTest extends TestCase
 
         foreach ($reader->read(1) as $row => $car) {
             $this->assertInstanceOf(SimpleXMLElement::class, $car);
-            $this->assertNotContains('ë', array_map('strval', iterator_to_array($car->models->model)));
+            $this->assertNotContains('ë', array_map(strval(...), iterator_to_array($car->models->model)));
         }
 
         $this->assertSame(3, $row);
